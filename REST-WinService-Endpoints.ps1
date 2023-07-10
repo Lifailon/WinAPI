@@ -7,8 +7,7 @@
 # curl http://192.168.3.99:8080/get-service/service
 
 $http = [System.Net.HttpListener]::new()
-#$http.Prefixes.Add("http://192.168.3.99:8080/")
-$http.Prefixes.Add("http://localhost:8080/")
+$http.Prefixes.Add("http://192.168.3.99:8080/")
 $http.Start()
 
 if ($http.IsListening) {
@@ -23,7 +22,7 @@ while ($http.IsListening) {
 
 ### /Get-Service
 if ($context.Request.HttpMethod -eq 'GET' -and $context.Request.RawUrl -eq '/Get-Service') {
-    Write-Host "$($context.Request.UserHostAddress)  =>  $($context.Request.Url)" -f 'Green'
+    Write-Host "$($context.Request.RemoteEndPoint) ($($context.Request.UserAgent))  =>  $($context.Request.LocalEndPoint)" -f 'Green'
 
     $GetService = Get-Service -ErrorAction Ignore | select name,@{Name="Status"; Expression={[string]$_.Status}},@{Name="StartType"; Expression={[string]$_.StartType}} | ConvertTo-Json
     
@@ -35,7 +34,7 @@ if ($context.Request.HttpMethod -eq 'GET' -and $context.Request.RawUrl -eq '/Get
 
 ### /Get-Service/*
 if ($context.Request.HttpMethod -eq 'GET' -and $context.Request.RawUrl -match '/Get-Service/') {
-    Write-Host "$($context.Request.UserHostAddress)  =>  $($context.Request.Url)" -f 'Green'
+    Write-Host "$($context.Request.RemoteEndPoint) ($($context.Request.UserAgent))  =>  $($context.Request.LocalEndPoint)" -f 'Green'
     
     $ServiceName = ($context.Request.RawUrl) -replace ".+/"
     $ServiceName = ($ServiceName -replace "^","*") + "*"
@@ -54,7 +53,7 @@ if ($context.Request.HttpMethod -eq 'POST' -and $context.Request.RawUrl -eq '/Re
     $Keys           = $context.Request.Headers.AllKeys[0]   # get all keys headers
     $ServiceName    = $context.Request.Headers[0]           # get value by key
     
-    Write-Host "$($context.Request.UserHostAddress)  =>  $($context.Request.Url)" -f 'Green'
+    Write-Host "$($context.Request.RemoteEndPoint) ($($context.Request.UserAgent))  =>  $($context.Request.LocalEndPoint)" -f 'Green'
     Write-Host Headers: $Keys - $ServiceName -f 'Green'
 
     Get-Service -Name $ServiceName -ErrorAction Ignore | Restart-Service
@@ -73,7 +72,7 @@ if ($context.Request.HttpMethod -eq 'POST' -and $context.Request.RawUrl -eq '/St
     $Keys           = $context.Request.Headers.AllKeys[0]
     $ServiceName    = $context.Request.Headers[0]
     
-    Write-Host "$($context.Request.UserHostAddress)  =>  $($context.Request.Url)" -f 'Green'
+    Write-Host "$($context.Request.RemoteEndPoint) ($($context.Request.UserAgent))  =>  $($context.Request.LocalEndPoint)" -f 'Green'
     Write-Host Headers: $Keys - $ServiceName -f 'Green'
 
     Get-Service -Name $ServiceName -ErrorAction Ignore | Stop-Service
