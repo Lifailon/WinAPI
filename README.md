@@ -26,4 +26,4 @@ Example create endpoints for **GET** and **POST** request
 
 ### Curl
 
-![Image alt](https://github.com/Lifailon/WinService-Management/blob/rsa/Curl-GET.jpg)
+![Image alt](https://github.com/Lifailon/WinService-Management/blob/rsa/REST-Curl.jpg)
