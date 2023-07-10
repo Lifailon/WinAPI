@@ -4,9 +4,11 @@
 # irm -Uri http://192.168.3.99:8080/get-service/Influx -Method GET
 # irm -Uri http://192.168.3.99:8080/restart-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}
 # irm -Uri http://192.168.3.99:8080/stop-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}
+# curl http://192.168.3.99:8080/get-service/service
 
 $http = [System.Net.HttpListener]::new()
-$http.Prefixes.Add("http://192.168.3.99:8080/")
+#$http.Prefixes.Add("http://192.168.3.99:8080/")
+$http.Prefixes.Add("http://localhost:8080/")
 $http.Start()
 
 if ($http.IsListening) {
