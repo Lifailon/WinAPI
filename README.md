@@ -1,5 +1,7 @@
-# Web-WinServiceMan
+## Web-WinService-Management
 
-Example web server based on **.NET Class System.Net.HttpListener** for windows service managment vie REST API.
+Example simple web server based on **.NET Class System.Net.HttpListener** for windows service management vie REST API.
 
-![Image alt](https://github.com/Lifailon/Web-WinServiceMan/blob/rsa/Example-0.1.jpg)
+![Image alt](https://github.com/Lifailon/Web-WinServiceMan/blob/rsa/Web-WinService-Management.jpg)
+
+## REST-WinService-Endpoints
