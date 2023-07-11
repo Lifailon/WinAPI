@@ -19,8 +19,8 @@ Example create endpoints for **GET** and **POST** request
 
 ### POST
 
-`irm -Uri http://192.168.3.99:8080/restart-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}` \
-`irm -Uri http://192.168.3.99:8080/stop-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}`
+`irm -Uri http://192.168.3.99:8080/stop-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}` \
+`irm -Uri http://192.168.3.99:8080/restart-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}`
 
 ![Image alt](https://github.com/Lifailon/Web-WinServiceMan/blob/rsa/REST-WinService-Endpoints.jpg)
 
