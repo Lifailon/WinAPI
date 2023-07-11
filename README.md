@@ -36,4 +36,4 @@ Linux integration via REST API:
 
 ### Client connections output
 
-![Image alt](https://github.com/Lifailon/WinService-Management/blob/rsa/REST-Connects.jpg)
+![Image alt](https://github.com/Lifailon/WinService-Management/blob/rsa/REST-Connections.jpg)
