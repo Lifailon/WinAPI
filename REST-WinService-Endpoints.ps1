@@ -1,10 +1,13 @@
 # Exaples:
 # irm -Uri http://192.168.3.99:8080/get-service -Method GET
+# irm -Uri http://192.168.3.99:8080/get-service/Any -Method GET
 # irm -Uri http://192.168.3.99:8080/get-service/AnyDesk -Method GET
-# irm -Uri http://192.168.3.99:8080/get-service/Influx -Method GET
-# irm -Uri http://192.168.3.99:8080/restart-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}
 # irm -Uri http://192.168.3.99:8080/stop-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}
-# curl http://192.168.3.99:8080/get-service/service
+# irm -Uri http://192.168.3.99:8080/restart-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}
+# Curl:
+# curl -X GET http://192.168.3.99:8080/get-service/service/ping
+# curl -X POST -H 'ServiceName: PingTo-InfluxDB' -d '' http://192.168.3.99:8080/stop-service
+# curl -X POST -H 'ServiceName: PingTo-InfluxDB' -d '' http://192.168.3.99:8080/restart-service
 
 $http = [System.Net.HttpListener]::new()
 $http.Prefixes.Add("http://192.168.3.99:8080/")
