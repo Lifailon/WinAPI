@@ -34,6 +34,8 @@ Linux integration via REST API:
 
 ![Image alt](https://github.com/Lifailon/PS-REST-Endpoints/blob/rsa/screen/REST-Curl.jpg)
 
+![Image alt](https://github.com/Lifailon/PS-REST-Endpoints/blob/rsa/screen/Wireshark-show.jpg)
+
 ### Client connections output
 
 ![Image alt](https://github.com/Lifailon/PS-REST-Endpoints/blob/rsa/screen/REST-Connections.jpg)
