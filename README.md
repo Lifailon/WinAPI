@@ -1,9 +1,3 @@
-## Web-WinService-Management
-
-Example simple web server based on **.NET Class System.Net.HttpListener** for windows service management vie REST API.
-
-![Image alt](https://github.com/Lifailon/PS-REST-Endpoints/blob/rsa/screen/Web-WinService-Management.jpg)
-
 ## REST-WinService-Endpoints
 
 Example create endpoints for **GET** and **POST** request
@@ -39,3 +33,9 @@ Linux integration via REST API:
 ### Client connections output
 
 ![Image alt](https://github.com/Lifailon/PS-REST-Endpoints/blob/rsa/screen/REST-Connections.jpg)
+
+## Web-WinService-Management
+
+Example simple web server based on **.NET Class System.Net.HttpListener** for windows service management vie REST API.
+
+![Image alt](https://github.com/Lifailon/PS-REST-Endpoints/blob/rsa/screen/Web-WinService-Management.jpg)
