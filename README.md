@@ -1,8 +1,8 @@
 ## REST-WinService-Endpoints
 
-Run server: `powershell.exe -File "REST-WinService-Endpoints.ps1"`
-
 Example create endpoints for **GET** and **POST** request
+
+Run server: `powershell.exe -File "REST-WinService-Endpoints.ps1"`
 
 ### GET
 
