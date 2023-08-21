@@ -1,20 +1,22 @@
 ## REST-WinService-Endpoints
 
+Run: `powershell.exe -File "REST-WinService-Endpoints.ps1"`
+
 Example create endpoints for **GET** and **POST** request
 
 ### GET
 
-`irm -Uri http://192.168.3.99:8080/get-service -Method GET`
+`Invoke-RestMethod -Uri http://192.168.3.99:8080/get-service -Method GET`
 
 ### Wildcard format for endpoint
 
-`irm -Uri http://192.168.3.99:8080/get-service/Any -Method GET` \
-`irm -Uri http://192.168.3.99:8080/get-service/AnyDesk -Method GET`
+`Invoke-RestMethod -Uri http://192.168.3.99:8080/get-service/Any -Method GET` \
+`Invoke-RestMethod -Uri http://192.168.3.99:8080/get-service/AnyDesk -Method GET`
 
 ### POST
 
-`irm -Uri http://192.168.3.99:8080/stop-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}` \
-`irm -Uri http://192.168.3.99:8080/restart-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}`
+`Invoke-RestMethod -Uri http://192.168.3.99:8080/stop-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}` \
+`Invoke-RestMethod -Uri http://192.168.3.99:8080/restart-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}`
 
 ![Image alt](https://github.com/Lifailon/PS-REST-Endpoints/blob/rsa/screen/REST-WinService-Endpoints.jpg)
 
