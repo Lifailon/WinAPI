@@ -1,6 +1,6 @@
 ## REST-WinService-Endpoints
 
-Example create endpoints for **GET** and **POST** request
+Example create endpoints **GET** and **POST** request for windows service managment via REST API use PowerShell.
 
 Run server: `powershell.exe -File "REST-WinService-Endpoints.ps1"`
 
@@ -38,6 +38,6 @@ Linux integration via REST API:
 
 ## Web-WinService-Management
 
-Example simple web server based on **.NET Class System.Net.HttpListener** for windows service management vie REST API.
+Example simple web server based on **.NET Class System.Net.HttpListener** for windows service management via REST API.
 
 ![Image alt](https://github.com/Lifailon/PS-REST-Endpoints/blob/rsa/screen/Web-WinService-Management.jpg)
