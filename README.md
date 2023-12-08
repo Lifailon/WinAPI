@@ -1,6 +1,6 @@
 # WinAPI
 
-[README pre-test](https://github.com/Lifailon/WinAPI/WinService/blob/rsa/README.md)
+[Readme test](https://github.com/Lifailon/WinAPI/WinService/blob/rsa/README.md)
 
 A simple and versatile REST API server based on .NET HttpListener. Thanks to WinAPI you can quickly set up remote interaction with Windows OS without the need to configure WinRM or ssh using API and get control from any platform using any REST client, including 🐧 Linux. The goal of the project is to demonstrate the capabilities of PowerShell language and implementation of the functionality in Kinozak-Bot due to the lack of a suitable ready-made solution on the market. This implementation is multiplatform, you can read my other work for managing systemd services in Linux.
 
