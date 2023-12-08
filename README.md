@@ -1,43 +1,67 @@
-## REST-WinService-Endpoints
+# WinAPI
 
-Example create endpoints **GET** and **POST** request for windows service managment via REST API use PowerShell.
+[README pre-test](https://github.com/Lifailon/WinAPI/WinService/blob/rsa/README.md)
 
-Run server: `powershell.exe -File "REST-WinService-Endpoints.ps1"`
+A simple and versatile REST API server based on .NET HttpListener. Thanks to WinAPI you can quickly set up remote interaction with Windows OS without the need to configure WinRM or ssh using API and get control from any platform using any REST client, including 🐧 Linux. The goal of the project is to demonstrate the capabilities of PowerShell language and implementation of the functionality in Kinozak-Bot due to the lack of a suitable ready-made solution on the market. This implementation is multiplatform, you can read my other work for managing systemd services in Linux.
 
-### GET
+### 📑 Implemented endpoints:
 
-`Invoke-RestMethod -Uri http://192.168.3.99:8080/get-service -Method GET`
+- GET
 
-### Wildcard format for endpoint
+`/service` - simple HTTP server with the ability to stop and start services using buttons (using JavaScript functions) \
+`/api/service` - Get list all services \
+`/apt/service/service_name` - Get list service by the specified name passed in URL (using wildcard format) \
+`/apt/process` - Get a list all running processes in an easy-to-read format \
+`/apt/process/process_name` - Get list running processes by the specified name passed in URL (using wildcard format)
 
-`Invoke-RestMethod -Uri http://192.168.3.99:8080/get-service/Any -Method GET` \
-`Invoke-RestMethod -Uri http://192.168.3.99:8080/get-service/AnyDesk -Method GET`
+All GET requests can be output in one of the following formats: JSON (default), HTML, XML, CSV. When using a browser for GET requests, by default the response is processed in table format using HTML markup.
 
-### POST
+- POST
 
-`Invoke-RestMethod -Uri http://192.168.3.99:8080/stop-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}` \
-`Invoke-RestMethod -Uri http://192.168.3.99:8080/restart-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}`
+`/apt/service/service_name` - stop, start and restart services by name (only one at a time, not wildcard format), status is transmitted in the request header (**Status: <Stop/Start/Restart>**). \
+`/apt/process/process_name` - check the number of running processes (**Status: Check**), stop a process by name (**Status: Stop**) and start a process (**Status: Start**). To start a process, you can use the function to search for an executable file in the file system by its name, but you can also pass the path to the executable file through the request header (e.g. **Path: C:\Program Files\qBittorrent\qbittorrent.exe**).
 
-![Image alt](https://github.com/Lifailon/PS-REST-Endpoints/blob/rsa/screen/REST-WinService-Endpoints.jpg)
+### 🔒 Authorization
 
-### Curl
+Base authorization has been implemented (based on Base64).
 
-Linux integration via REST API:
+Default login and password:
+```PowerShell
+$user = "rest"
+$pass = "api"
+```
+- Example 1.
+```PowerShell
+$SecureString = ConvertTo-SecureString $pass -AsPlainText -Force
+$Credential = New-Object System.Management.Automation.PSCredential($user, $SecureString)
+Invoke-RestMethod -Credential $Credential -AllowUnencryptedAuthentication -Uri http://192.168.3.99:8443/api/service
+```
+- Example 2. Password transfer via the request header, also used for password decoding.
+```PowerShell
+$EncodingCred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${user}:${pass}"))
+$Headers = @{"Authorization" = "Basic ${EncodingCred}"}
+Invoke-RestMethod -Headers $Headers -Uri http://192.168.3.99:8443/api/service
+```
+- Example 3. cURL client.
+```Bash
+user="rest"
+pass="api"
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/service
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/service | jq  -r '.[] | {data: "\(.Name) - \(.Status)"} | .data'
+curl -s -X GET -u $user:$pass -H 'Content-Type: application/json' http://192.168.3.99:8443/api/service/win
+curl -s -X GET -u $user:$pass -H 'Content-Type: application/html' http://192.168.3.99:8443/api/service/winrm
+curl -s -X GET -u $user:$pass -H 'Content-Type: application/xml' http://192.168.3.99:8443/api/service/winrm
+curl -s -X GET -u $user:$pass -H 'Content-Type: application/csv' http://192.168.3.99:8443/api/service/winrm
+```
 
-`curl -X GET http://192.168.3.99:8080/get-service/service/ping` \
-`curl -X POST -H 'ServiceName: PingTo-InfluxDB' -d '' http://192.168.3.99:8080/stop-service` \
-`curl -X POST -H 'ServiceName: PingTo-InfluxDB' -d '' http://192.168.3.99:8080/restart-service`
+### 💡 Response code
 
-![Image alt](https://github.com/Lifailon/PS-REST-Endpoints/blob/rsa/screen/REST-Curl.jpg)
+**200. Request completed successfully.**
 
-![Image alt](https://github.com/Lifailon/PS-REST-Endpoints/blob/rsa/screen/Wireshark-show.jpg)
+**400. Bad Request.** Invalid header and service or process could not be found.
 
-### Client connections output
+**401. Unauthorized.** Login or password is invalid.
 
-![Image alt](https://github.com/Lifailon/PS-REST-Endpoints/blob/rsa/screen/REST-Connections.jpg)
+**404. Not found endpoint.** Response to the lack of endpoints.
 
-## Web-WinService-Management
-
-Example simple web server based on **.NET Class System.Net.HttpListener** for windows service management via REST API.
-
-![Image alt](https://github.com/Lifailon/PS-REST-Endpoints/blob/rsa/screen/Web-WinService-Management.jpg)
+**405. Method not allowed.** Response to other methods.
