@@ -2,7 +2,7 @@
 
 [Readme test](https://github.com/Lifailon/WinAPI/WinService/blob/rsa/README.md)
 
-A simple and versatile REST API server based on .NET HttpListener. Thanks to WinAPI you can quickly set up remote interaction with Windows OS without the need to configure WinRM or ssh using API and get control from any platform using any REST client, including 🐧 Linux. The goal of the project is to demonstrate the capabilities of PowerShell language and implementation of the functionality in Kinozak-Bot due to the lack of a suitable ready-made solution on the market. This implementation is multiplatform, you can read my other work for managing systemd services in Linux.
+A simple and versatile REST API server based on .NET HttpListener. Thanks to WinAPI you can quickly set up remote interaction with Windows OS without the need to configure WinRM or ssh using API and get control from any platform using any REST client, including 🐧 Linux. The goal of the project is to demonstrate the capabilities of PowerShell language and implementation of the functionality in **[Kinozak-Bot](https://github.com/Lifailon/Kinozal-Bot)** due to the lack of a suitable ready-made solution on the market. This implementation is cross-platform, you can try other work for cross-platform managing systemd services in Linux, example **[dotNET-Systemd-API](https://github.com/Lifailon/dotNET-Systemd-API)**.
 
 ### 📑 Implemented endpoints:
 
@@ -65,3 +65,7 @@ curl -s -X GET -u $user:$pass -H 'Content-Type: application/csv' http://192.168.
 **404. Not found endpoint.** Response to the lack of endpoints.
 
 **405. Method not allowed.** Response to other methods.
+
+### Get services from browser
+
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/endpoint-service-web.jpg)
