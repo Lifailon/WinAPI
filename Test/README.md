@@ -20,7 +20,7 @@ Run server: `powershell.exe -File "REST-WinService-Endpoints.ps1"`
 `Invoke-RestMethod -Uri http://192.168.3.99:8080/stop-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}` \
 `Invoke-RestMethod -Uri http://192.168.3.99:8080/restart-service -Method POST -Headers @{"ServiceName" = "AnyDesk"}`
 
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/REST-WinService-Endpoints.jpg)
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Test/REST-WinService-Endpoints.jpg)
 
 ### Curl
 
@@ -30,16 +30,16 @@ Linux integration via REST API:
 `curl -X POST -H 'ServiceName: PingTo-InfluxDB' -d '' http://192.168.3.99:8080/stop-service` \
 `curl -X POST -H 'ServiceName: PingTo-InfluxDB' -d '' http://192.168.3.99:8080/restart-service`
 
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/REST-Curl.jpg)
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Test/REST-Curl.jpg)
 
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Wireshark-Show.jpg)
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Test/Wireshark-Show.jpg)
 
 ### Client connections output
 
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/REST-Connections.jpg)
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Test/REST-Connections.jpg)
 
 ## Web-WinService-Management
 
 Example simple web server based on **.NET Class System.Net.HttpListener** for windows service management via REST API.
 
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-WinService-Management.jpg)
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Test/Web-WinService-Management.jpg)
