@@ -1,5 +1,11 @@
 # WinAPI
 
+![GitHub release (with filter)](https://img.shields.io/github/v/release/lifailon/WinAPI?color=<green>)
+![GitHub top language](https://img.shields.io/github/languages/top/lifailon/WinAPI)
+![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/lifailon/WinAPI)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/lifailon/WinAPI)
+![GitHub License](https://img.shields.io/github/license/lifailon/WinAPI?color=<green>)
+
 [Readme test](https://github.com/Lifailon/WinAPI/Test/blob/rsa/README.md)
 
 Simple REST API and Web server **based on .NET HttpListener**. Using WinAPI, you can quickly set up remote communication with Windows OS without the need to configure WinRM or OpenSSH using APIs and get control from any platform and any REST client, including 🐧 Linux. The goal of the project is to demonstrate the capabilities of PowerShell language and implementation of the functionality in **[Kinozak-Bot](https://github.com/Lifailon/Kinozal-Bot)** due to the lack of a suitable ready-made solution on the market. This implementation is cross-platform, you can try other work for cross-platform managing systemd services in Linux, example **[dotNET-Systemd-API](https://github.com/Lifailon/dotNET-Systemd-API)**.
