@@ -16,13 +16,14 @@ All GET requests can be output in one of the following formats: **JSON (default)
 
 - GET
 
-`/service` - simple HTTP server with the ability to stop and start services using buttons (using JavaScript functions) \
-`/api/service` - Get list all services \
-`/apt/service/service_name` - Get list service by the specified name passed in URL (using wildcard format) \
-`/apt/process` - Get a list all running processes in an easy-to-read format \
-`/apt/process/process_name` - Get list running processes by the specified name passed in URL (using wildcard format)
-`/api/hardware` - Output of summary statistics of metrics close to Task Manager \
-`/api/performance` \
+`/service` - simple HTTP server with the ability to stop and start services using buttons (using JavaScript functions, **only for Web Browser**) \
+`/api/service` - Get list **all services** \
+`/apt/service/service_name` - Get list service by the specified name passed in URL (using **wildcard** format) \
+`/process` - simple HTTP server with the ability to stop and start process using buttons (using JavaScript functions, **only for Web Browser**) \
+`/apt/process` - Get a list **all running processes** in an easy-to-read format \
+`/apt/process/process_name` - Get list running processes by the specified name passed in URL (using **wildcard** format)
+`/api/hardware` - Output of summary statistics of metrics close to Task Manager from **Common Information Model** \
+`/api/performance` - Output metrics from **Counter** \
 `/api/cpu` \
 `/api/memory` \
 `/api/memory/slots` \
