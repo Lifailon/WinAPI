@@ -47,7 +47,7 @@ Simple HTTP server with the ability to stop and start services and process using
 
 Download the latest [WinAPI-0.2.ps1](https://github.com/Lifailon/WinAPI/blob/rsa/WinAPI/WinAPI-0.2.ps1) script. Use in **PowerShell Core**. No dependencies.
 
-The following variables at the beginning of the script are used to configure the **ip, port, login and password**:
+The following variables at the beginning of the script are used to configure the **ip, port, login and password** for connect to the server:
 
 ```PowerShell
 $ip          = "192.168.3.99"
@@ -70,7 +70,7 @@ And open a port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-Run script in console with **administrator privileges**.
+Run script in console with 💡 **administrator privileges**.
 
 ### 🔒 Authorization
 
@@ -107,7 +107,7 @@ curl -s -X GET -u $user:$pass -H 'Content-Type: application/xml' http://192.168.
 curl -s -X GET -u $user:$pass -H 'Content-Type: application/csv' http://192.168.3.99:8443/api/service/winrm
 ```
 
-### 💡 Response code
+### 📢 Response code
 
 **200. Request completed successfully.**
 
@@ -148,7 +148,7 @@ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qb
 curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Start" -H "Path: C:\Program Files\qBittorrent\qbittorrent.exe"
 ```
 
-### Windows client
+### 🔌 Windows client
 
 ```PowerShell
 $user = "rest"
