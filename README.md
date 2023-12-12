@@ -14,12 +14,10 @@ Simple REST API and Web server **based on .NET HttpListener**. Using WinAPI, you
 
 All GET requests can be output in one of the following formats: **JSON (default), HTML, XML, CSV**. When using a browser for GET requests, by default the response is processed in table format using HTML markup.
 
-- GET
+- **GET**
 
-`/service` - simple HTTP server with the ability to stop and start services using buttons (using JavaScript functions, **only for Web Browser**) \
 `/api/service` - Get list **all services** \
 `/apt/service/service_name` - Get list service by the specified name passed in URL (using **wildcard** format) \
-`/process` - simple HTTP server with the ability to stop and start process using buttons (using JavaScript functions, **only for Web Browser**) \
 `/apt/process` - Get a list **all running processes** in an easy-to-read format \
 `/apt/process/process_name` - Get list running processes by the specified name passed in URL (using **wildcard** format)
 `/api/hardware` - Output of summary statistics of metrics close to Task Manager from **Common Information Model** \
@@ -33,7 +31,14 @@ All GET requests can be output in one of the following formats: **JSON (default)
 `/api/video` \
 `/api/network`
 
-- POST
+- **Web**
+
+Simple HTTP server with the ability to stop and start services and process using buttons (using JavaScript functions). **Only for Web Browser**.
+
+`/service` \
+`/process`
+
+- **POST**
 
 `/apt/service/service_name` - stop, start and restart services by name (only one at a time, not wildcard format), status is transmitted in the request header (**Status: <Stop/Start/Restart>**). Upon execution, the service status is returned in the format of a GET request. \
 `/apt/process/process_name` - check the number of running processes (**Status: Check**), stop a process by name (**Status: Stop**) and start a process (**Status: Start**). To start a process, you can use the function to search for an executable file in the file system by its name, but you can also pass the path to the executable file through the request header (e.g. **Path: C:\Program Files\qBittorrent\qbittorrent.exe**).
