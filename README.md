@@ -39,7 +39,7 @@ All GET requests can be output in one of the following formats: **JSON (default)
 
 ### 🚀 Install
 
-Download the latest [WinAPI-0.2.ps1](https://github.com/Lifailon/WinAPI/blob/rsa/WinAPI/WinAPI-0.2.ps1) script. No dependencies.
+Download the latest [WinAPI-0.2.ps1](https://github.com/Lifailon/WinAPI/blob/rsa/WinAPI/WinAPI-0.2.ps1) script. Use in **PowerShell Core**. No dependencies.
 
 The following variables at the beginning of the script are used to configure the **ip, port, login and password**:
 
@@ -142,7 +142,7 @@ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qb
 curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Start" -H "Path: C:\Program Files\qBittorrent\qbittorrent.exe"
 ```
 
-### Windows clint
+### Windows client
 
 ```PowerShell
 $user = "rest"
@@ -182,14 +182,18 @@ You can add endpoints to the module yourself for fast remote communication via A
 
 There are buttons for switching between all web pages.
 
-- Process management
+- Process management:
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Process.jpg)
 
-- Service management
+- Service management:
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Service.jpg)
 
-- Hardware statistics from CIM
+- Hardware statistics from CIM:
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Hardware.jpg)
+
+- Metrics performance, physical, logical disk and iops:
+
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Metrics.jpg)
