@@ -20,17 +20,17 @@ All GET requests can be output in one of the following formats: **JSON (default)
 `/apt/service/service_name` - Get list service by the specified name passed in URL (using **wildcard** format) \
 `/apt/process` - Get a list **all running processes** in an easy-to-read format \
 `/apt/process/process_name` - Get list running processes by the specified name passed in URL (using **wildcard** format) \
-`/api/files` - Get a list of files and directories at the specified path in the Path header with the size and date of creation, access and modification \
 `/api/hardware` - Output of summary statistics of metrics close to Task Manager from **CIM (Common Information Model)** \
 `/api/performance` - Output metrics from **Counter** \
-`/api/cpu` \
-`/api/memory` \
-`/api/memory/slots` \
-`/api/disk/physical` \
-`/api/disk/logical` \
-`/api/disk/iops` \
-`/api/video` \
-`/api/network`
+`/api/cpu` - CPU use to procent \
+`/api/memory` - Memory use to GB and procent \
+`/api/memory/slots` - Number of memory slots and their frequency \
+`/api/disk/physical` - List of all physical disks, their model and siz \
+`/api/disk/logical` - List of all logical disks, their model and siz \
+`/api/disk/iops` - Input and Output operations per second for all physical disks \
+`/api/video` - List of all video adapters, video memory size and resolution \
+`/api/network` - List of all network adapters and their settings \
+`/api/files` - Get a list of files and directories at the specified path in the **Path header** with the size and date of creation, access and modification
 
 - **Web**
 
@@ -221,3 +221,319 @@ There are buttons for switching between all web pages.
 - Metrics performance, physical, logical disk and iops:
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Metrics.jpg)
+
+### 📊 GET data examples
+
+```Bash
+lifailon@hv-devops-01:~$ user="rest"
+lifailon@hv-devops-01:~$ pass="api"
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/service/win
+[
+  {
+    "Name": "WinDefend",
+    "DisplayName": "Служба антивирусной программы Microsoft Defender",
+    "Status": "Running",
+    "StartType": "Automatic"
+  },
+  {
+    "Name": "WinHttpAutoProxySvc",
+    "DisplayName": "Служба автоматического обнаружения веб-прокси WinHTTP",
+    "Status": "Running",
+    "StartType": "Manual"
+  },
+  {
+    "Name": "Winmgmt",
+    "DisplayName": "Инструментарий управления Windows",
+    "Status": "Running",
+    "StartType": "Automatic"
+  },
+  {
+    "Name": "WinRM",
+    "DisplayName": "Служба удаленного управления Windows (WS-Management)",
+    "Status": "Stopped",
+    "StartType": "Manual"
+  }
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass -H 'Content-Type: application/json' http://192.168.3.99:8443/api/service/winrm
+{
+  "Name": "WinRM",
+  "DisplayName": "Служба удаленного управления Windows (WS-Management)",
+  "Status": "Stopped",
+  "StartType": "Manual"
+}
+lifailon@hv-devops-01:~$ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/service/winrm -H "Status: Start"
+{
+  "Name": "winrm",
+  "DisplayName": "Служба удаленного управления Windows (WS-Management)",
+  "Status": "Running",
+  "StartType": "Manual"
+}
+lifailon@hv-devops-01:~$ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Check"
+Number active qbittorrent processes: 0
+lifailon@hv-devops-01:~$ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Start"
+Number active qbittorrent processes: 1
+lifailon@hv-devops-01:~$ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Stop"
+Number active qbittorrent processes: 0
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/hardware
+{
+  "Host": "HUAWEI-BOOK",
+  "Uptime": "6.08:37",
+  "BootDate": "12.12.2023 04:16:35",
+  "Owner": "lifailon",
+  "OS": "Майкрософт Windows 10 Pro",
+  "Motherboard": "HUAWEI MRGF-XX-PCB M1010",
+  "Processor": "12th Gen Intel(R) Core(TM) i7-1260P",
+  "Core": 12,
+  "Thread": 16,
+  "CPU": "13 %",
+  "ProcessCount": 286,
+  "ThreadsCount": 3842,
+  "HandlesCount": 131846,
+  "MemoryAll": "16 GB",
+  "MemoryUse": "10,49 GB",
+  "MemoryUseProc": "67 %",
+  "WorkingSet": "9,54 GB",
+  "PageMemory": "10,49 GB",
+  "MemorySlots": 8,
+  "PhysicalDiskCount": 1,
+  "PhysicalDiskAllSize": "954 Gb",
+  "LogicalDiskCount": 3,
+  "LogicalDiskAllSize": "1053 Gb",
+  "DiskTotalTime": "0 %",
+  "VideoCardCount": 3,
+  "VideoCardAllSize": "1 Gb",
+  "NetworkAdapterEnableCount": 3
+}
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/performance
+{
+  "CPUTotalTime": "2 %",
+  "MemoryUse": "46 %",
+  "DiskTotalTime": "4 %",
+  "AdapterName": "intel[r] wi-fi 6e ax211 160mhz",
+  "AdapterSpeed": "0,339 MByte/Sec"
+}
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/cpu
+{
+  "CPU": "13 %"
+}
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/memory
+{
+  "MemoryAll": "15,73 GB",
+  "MemoryUse": "10,62 GB",
+  "MemoryUseProc": "67 %",
+  "WorkingSet": "9,81 GB",
+  "PageMemory": "10,44 GB"
+}
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/memory/slots
+[
+  {
+    "Tag": "Physical Memory 0",
+    "Model": "5200 Mhz  ",
+    "Size": "2048 Mb",
+    "Device": "Controller0-ChannelA",
+    "Bank": "BANK 0"
+  },
+  {
+    "Tag": "Physical Memory 1",
+    "Model": "5200 Mhz  ",
+    "Size": "2048 Mb",
+    "Device": "Controller0-ChannelB",
+    "Bank": "BANK 1"
+  },
+  {
+    "Tag": "Physical Memory 2",
+    "Model": "5200 Mhz  ",
+    "Size": "2048 Mb",
+    "Device": "Controller0-ChannelC",
+    "Bank": "BANK 2"
+  },
+  {
+    "Tag": "Physical Memory 3",
+    "Model": "5200 Mhz  ",
+    "Size": "2048 Mb",
+    "Device": "Controller0-ChannelD",
+    "Bank": "BANK 3"
+  },
+  {
+    "Tag": "Physical Memory 4",
+    "Model": "5200 Mhz  ",
+    "Size": "2048 Mb",
+    "Device": "Controller1-ChannelA",
+    "Bank": "BANK 0"
+  },
+  {
+    "Tag": "Physical Memory 5",
+    "Model": "5200 Mhz  ",
+    "Size": "2048 Mb",
+    "Device": "Controller1-ChannelB",
+    "Bank": "BANK 1"
+  },
+  {
+    "Tag": "Physical Memory 6",
+    "Model": "5200 Mhz  ",
+    "Size": "2048 Mb",
+    "Device": "Controller1-ChannelC",
+    "Bank": "BANK 2"
+  },
+  {
+    "Tag": "Physical Memory 7",
+    "Model": "5200 Mhz  ",
+    "Size": "2048 Mb",
+    "Device": "Controller1-ChannelD",
+    "Bank": "BANK 3"
+  }
+]
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/physical
+{
+  "Model": "WD PC SN740 SDDPNQD-1T00-1027",
+  "Size": "954 Gb",
+  "PartitionCount": 4,
+  "Interface": "SCSI"
+}
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/logical
+[
+  {
+    "Logical_Disk": "C:",
+    "FileSystem": "NTFS",
+    "VolumeName": "",
+    "AllSize": "153 Gb",
+    "FreeSize": "66 Gb",
+    "Free": "43 %"
+  },
+  {
+    "Logical_Disk": "D:",
+    "FileSystem": "NTFS",
+    "VolumeName": "",
+    "AllSize": "800 Gb",
+    "FreeSize": "452 Gb",
+    "Free": "57 %"
+  },
+  {
+    "Logical_Disk": "G:",
+    "FileSystem": "FAT32",
+    "VolumeName": "Google Drive",
+    "AllSize": "100 Gb",
+    "FreeSize": "49 Gb",
+    "Free": "49 %"
+  }
+]
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/iops
+{
+  "Name": "0 D: C:",
+  "PercentDiskTime": 1,
+  "PercentIdleTime": 95,
+  "PercentDiskWriteTime": 1,
+  "PercentDiskReadTime": 0,
+  "CurrentDiskQueueLength": 0,
+  "DiskBytesPersec": 1237822,
+  "DiskReadBytesPersec": 32151,
+  "DiskReadsPersec": 3,
+  "DiskTransfersPersec": 149,
+  "DiskWriteBytesPersec": 1205670,
+  "DiskWritesPersec": 145
+}
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/video
+[
+  {
+    "Model": "Intel(R) Iris(R) Xe Graphics",
+    "Display": "3120x2080",
+    "VideoRAM": "1 Gb"
+  },
+  {
+    "Model": "Virtual Display Device",
+    "Display": "3840x2560",
+    "VideoRAM": "0 Gb"
+  },
+  {
+    "Model": "Citrix Indirect Display Adapter",
+    "Display": "x",
+    "VideoRAM": "0 Gb"
+  }
+]
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies"
+[
+  {
+    "Name": "МДЖ-03",
+    "FullName": "D:\\Movies\\МДЖ-03",
+    "Type": "Directory",
+    "Size": "14.243 GB",
+    "CreationTime": "25.10.2023 03:58:41",
+    "LastAccessTime": "17.12.2023 11:44:33",
+    "LastWriteTime": "25.10.2023 04:05:22"
+  },
+  {
+    "Name": "Adventure-Time",
+    "FullName": "D:\\Movies\\Adventure-Time",
+    "Type": "Directory",
+    "Size": "61.73 GB",
+    "CreationTime": "04.05.2023 10:05:23",
+    "LastAccessTime": "17.12.2023 11:44:33",
+    "LastWriteTime": "04.05.2023 10:06:22"
+  },
+  {
+    "Name": "Lupin-S03-1080",
+    "FullName": "D:\\Movies\\Lupin-S03-1080",
+    "Type": "Directory",
+    "Size": "13.401 GB",
+    "CreationTime": "25.10.2023 03:51:41",
+    "LastAccessTime": "17.12.2023 11:44:33",
+    "LastWriteTime": "25.10.2023 03:57:34"
+  },
+  {
+    "Name": "Prikluchenie-Dsheki-Chana",
+    "FullName": "D:\\Movies\\Prikluchenie-Dsheki-Chana",
+    "Type": "Directory",
+    "Size": "22.862 GB",
+    "CreationTime": "10.07.2023 10:00:55",
+    "LastAccessTime": "17.12.2023 11:44:33",
+    "LastWriteTime": "10.07.2023 10:03:28"
+  },
+  {
+    "Name": "Shaman-King",
+    "FullName": "D:\\Movies\\Shaman-King",
+    "Type": "Directory",
+    "Size": "15.123 GB",
+    "CreationTime": "10.07.2023 10:03:10",
+    "LastAccessTime": "17.12.2023 11:44:33",
+    "LastWriteTime": "10.07.2023 10:07:01"
+  },
+  {
+    "Name": "The-Cleaner-S02",
+    "FullName": "D:\\Movies\\The-Cleaner-S02",
+    "Type": "Directory",
+    "Size": "7.829 GB",
+    "CreationTime": "25.10.2023 03:47:32",
+    "LastAccessTime": "17.12.2023 11:44:33",
+    "LastWriteTime": "25.10.2023 03:51:10"
+  },
+  {
+    "Name": "The-Flash",
+    "FullName": "D:\\Movies\\The-Flash",
+    "Type": "Directory",
+    "Size": "76.569 GB",
+    "CreationTime": "30.07.2023 01:13:20",
+    "LastAccessTime": "17.12.2023 11:41:49",
+    "LastWriteTime": "30.07.2023 03:22:09"
+  }
+]
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies/The-Flash"
+[
+  {
+    "Name": "3 sezon",
+    "FullName": "D:\\Movies\\The-Flash\\3 sezon",
+    "Type": "Directory",
+    "Size": "41.01 GB",
+    "CreationTime": "30.07.2023 01:13:20",
+    "LastAccessTime": "19.12.2023 12:40:53",
+    "LastWriteTime": "30.07.2023 01:14:37"
+  },
+  {
+    "Name": "4 sezon",
+    "FullName": "D:\\Movies\\The-Flash\\4 sezon",
+    "Type": "Directory",
+    "Size": "35.559 GB",
+    "CreationTime": "30.07.2023 01:22:15",
+    "LastAccessTime": "19.12.2023 12:40:53",
+    "LastWriteTime": "18.12.2023 12:00:37"
+  }
+]
+```
