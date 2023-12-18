@@ -19,8 +19,9 @@ All GET requests can be output in one of the following formats: **JSON (default)
 `/api/service` - Get list **all services** \
 `/apt/service/service_name` - Get list service by the specified name passed in URL (using **wildcard** format) \
 `/apt/process` - Get a list **all running processes** in an easy-to-read format \
-`/apt/process/process_name` - Get list running processes by the specified name passed in URL (using **wildcard** format)
-`/api/hardware` - Output of summary statistics of metrics close to Task Manager from **Common Information Model** \
+`/apt/process/process_name` - Get list running processes by the specified name passed in URL (using **wildcard** format) \
+`/api/files` - Get a list of files and directories at the specified path in the Path header with the size and date of creation, access and modification \
+`/api/hardware` - Output of summary statistics of metrics close to Task Manager from **CIM (Common Information Model)** \
 `/api/performance` - Output metrics from **Counter** \
 `/api/cpu` \
 `/api/memory` \
@@ -41,7 +42,8 @@ Simple HTTP server with the ability to stop and start services and process using
 - **POST**
 
 `/apt/service/service_name` - stop, start and restart services by name (only one at a time, not wildcard format), status is transmitted in the request header (**Status: <Stop/Start/Restart>**). Upon execution, the service status is returned in the format of a GET request. \
-`/apt/process/process_name` - check the number of running processes (**Status: Check**), stop a process by name (**Status: Stop**) and start a process (**Status: Start**). To start a process, you can use the function to search for an executable file in the file system by its name, but you can also pass the path to the executable file through the request header (e.g. **Path: C:\Program Files\qBittorrent\qbittorrent.exe**).
+`/apt/process/process_name` - check the number of running processes (**Status: Check**), stop a process by name (**Status: Stop**) and start a process (**Status: Start**). To start a process, you can use the function to search for an executable file in the file system by its name, but you can also pass the path to the executable file through the request header (e.g. **Path: C:\Program Files\qBittorrent\qbittorrent.exe**). \
+`/api/file-delete` - deleting the file or directory specified in the header (**Path:**) one at a time
 
 ### 🚀 Install
 
@@ -88,7 +90,7 @@ $SecureString = ConvertTo-SecureString $pass -AsPlainText -Force
 $Credential = New-Object System.Management.Automation.PSCredential($user, $SecureString)
 Invoke-RestMethod -Credential $Credential -AllowUnencryptedAuthentication -Uri http://192.168.3.99:8443/api/service
 ```
-- Example 2. Password transfer via the request header, also used for password decoding.
+- Example 2.
 
 ```PowerShell
 $EncodingCred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${user}:${pass}"))
@@ -101,10 +103,13 @@ Invoke-RestMethod -Headers $Headers -Uri http://192.168.3.99:8443/api/service
 user="rest"
 pass="api"
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/service | jq  -r '.[] | {data: "\(.Name) - \(.Status)"} | .data'
-curl -s -X GET -u $user:$pass -H 'Content-Type: application/json' http://192.168.3.99:8443/api/service/win
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/service/win
+curl -s -X GET -u $user:$pass -H 'Content-Type: application/json' http://192.168.3.99:8443/api/service/winrm
 curl -s -X GET -u $user:$pass -H 'Content-Type: application/html' http://192.168.3.99:8443/api/service/winrm
 curl -s -X GET -u $user:$pass -H 'Content-Type: application/xml' http://192.168.3.99:8443/api/service/winrm
 curl -s -X GET -u $user:$pass -H 'Content-Type: application/csv' http://192.168.3.99:8443/api/service/winrm
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/process
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/process/torrent
 ```
 
 ### 📢 Response code
@@ -146,6 +151,19 @@ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qb
 curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Stop"
 curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Start"
 curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Start" -H "Path: C:\Program Files\qBittorrent\qbittorrent.exe"
+```
+
+- Delete file
+
+First, we look through the parent directories and look for the required file. **In the Path header we pass the FullName** of the desired file (or directory).
+
+```Bash
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/"
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies"
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies/The-Flash"
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies/The-Flash/4 sezon"
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies/The-Flash/4 sezon/The.Flash.S04E23.1080p.rus.LostFilm.TV.mkv"
+curl -s -X POST -u $user:$pass -data '' http://192.168.3.99:8443/api/file-delete -H "Path: D:/Movies/The-Flash/4 sezon/The.Flash.S04E23.1080p.rus.LostFilm.TV.mkv"
 ```
 
 ### 🔌 Windows client
