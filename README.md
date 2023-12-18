@@ -20,7 +20,7 @@ All GET requests can be output in one of the following formats: **JSON (default)
 `/apt/service/service_name` - Get list service by the specified name passed in URL (using **wildcard** format) \
 `/apt/process` - Get a list **all running processes** in an easy-to-read format \
 `/apt/process/process_name` - Get list running processes by the specified name passed in URL (using **wildcard** format) \
-`/api/hardware` - Output of summary statistics of metrics close to Task Manager from **CIM (Common Information Model)** \
+`/api/hardware` - Output of summary statistics of metrics close to Task Manager from **CIM** \
 `/api/performance` - Output metrics from **Counter** \
 `/api/cpu` - CPU use to procent \
 `/api/memory` - Memory use to GB and procent \
@@ -41,13 +41,13 @@ Simple HTTP server with the ability to stop and start services and process using
 
 - **POST**
 
-`/apt/service/service_name` - stop, start and restart services by name (only one at a time, not wildcard format), status is transmitted in the request header (**Status: <Stop/Start/Restart>**). Upon execution, the service status is returned in the format of a GET request. \
-`/apt/process/process_name` - check the number of running processes (**Status: Check**), stop a process by name (**Status: Stop**) and start a process (**Status: Start**). To start a process, you can use the function to search for an executable file in the file system by its name, but you can also pass the path to the executable file through the request header (e.g. **Path: C:\Program Files\qBittorrent\qbittorrent.exe**). \
-`/api/file-delete` - deleting the file or directory specified in the header (**Path:**) one at a time
+`/apt/service/service_name` - Stop, start and restart services by name (only one at a time, not wildcard format), status is transmitted in the request header (**Status: <Stop/Start/Restart>**). Upon execution, the service status is returned in the format of a GET request. \
+`/apt/process/process_name` - Check the number of running processes (**Status: Check**), stop a process by name (**Status: Stop**) and start a process (**Status: Start**). To start a process, you can use the function to search for an executable file in the file system by its name, but you can also pass the path to the executable file through the request header (e.g. **Path: C:\Program Files\qBittorrent\qbittorrent.exe**). \
+`/api/file-delete` - Deleting the file or directory specified in the header (**Path:**) one at a time
 
 ### 🚀 Install
 
-Download the latest [WinAPI-0.2.ps1](https://github.com/Lifailon/WinAPI/blob/rsa/WinAPI/WinAPI-0.2.ps1) script. Use in **PowerShell Core**. No dependencies.
+Download the latest [WinAPI-0.3.ps1](https://github.com/Lifailon/WinAPI/blob/rsa/WinAPI/WinAPI-0.3.ps1) script. Use in **PowerShell Core**. No dependencies.
 
 The following variables at the beginning of the script are used to configure the **ip, port, login and password** for connect to the server:
 
@@ -155,7 +155,7 @@ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qb
 
 - Delete file
 
-First, we look through the parent directories and look for the required file. **In the Path header we pass the FullName** of the desired file (or directory).
+First, we look through the parent directories and look for the required file. In the **Path header we pass the FullName** of the desired file (or directory).
 
 ```Bash
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/"
@@ -214,7 +214,7 @@ There are buttons for switching between all web pages.
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Service.jpg)
 
-- Hardware statistics from CIM:
+- Hardware statistics from CIM (Common Information Model):
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Hardware.jpg)
 
@@ -452,15 +452,6 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
 lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies"
 [
   {
-    "Name": "МДЖ-03",
-    "FullName": "D:\\Movies\\МДЖ-03",
-    "Type": "Directory",
-    "Size": "14.243 GB",
-    "CreationTime": "25.10.2023 03:58:41",
-    "LastAccessTime": "17.12.2023 11:44:33",
-    "LastWriteTime": "25.10.2023 04:05:22"
-  },
-  {
     "Name": "Adventure-Time",
     "FullName": "D:\\Movies\\Adventure-Time",
     "Type": "Directory",
@@ -477,15 +468,6 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "CreationTime": "25.10.2023 03:51:41",
     "LastAccessTime": "17.12.2023 11:44:33",
     "LastWriteTime": "25.10.2023 03:57:34"
-  },
-  {
-    "Name": "Prikluchenie-Dsheki-Chana",
-    "FullName": "D:\\Movies\\Prikluchenie-Dsheki-Chana",
-    "Type": "Directory",
-    "Size": "22.862 GB",
-    "CreationTime": "10.07.2023 10:00:55",
-    "LastAccessTime": "17.12.2023 11:44:33",
-    "LastWriteTime": "10.07.2023 10:03:28"
   },
   {
     "Name": "Shaman-King",
