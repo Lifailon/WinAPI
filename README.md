@@ -456,8 +456,10 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "FullName": "D:\\Movies\\Adventure-Time",
     "Type": "Directory",
     "Size": "61.73 GB",
+    "Files": 292,
+    "Directory": 11,
     "CreationTime": "04.05.2023 10:05:23",
-    "LastAccessTime": "17.12.2023 11:44:33",
+    "LastAccessTime": "19.12.2023 12:12:24",
     "LastWriteTime": "04.05.2023 10:06:22"
   },
   {
@@ -465,8 +467,10 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "FullName": "D:\\Movies\\Lupin-S03-1080",
     "Type": "Directory",
     "Size": "13.401 GB",
+    "Files": 7,
+    "Directory": 0,
     "CreationTime": "25.10.2023 03:51:41",
-    "LastAccessTime": "17.12.2023 11:44:33",
+    "LastAccessTime": "19.12.2023 12:12:24",
     "LastWriteTime": "25.10.2023 03:57:34"
   },
   {
@@ -474,8 +478,10 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "FullName": "D:\\Movies\\Shaman-King",
     "Type": "Directory",
     "Size": "15.123 GB",
+    "Files": 64,
+    "Directory": 0,
     "CreationTime": "10.07.2023 10:03:10",
-    "LastAccessTime": "17.12.2023 11:44:33",
+    "LastAccessTime": "19.12.2023 12:12:24",
     "LastWriteTime": "10.07.2023 10:07:01"
   },
   {
@@ -483,8 +489,10 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "FullName": "D:\\Movies\\The-Cleaner-S02",
     "Type": "Directory",
     "Size": "7.829 GB",
+    "Files": 6,
+    "Directory": 0,
     "CreationTime": "25.10.2023 03:47:32",
-    "LastAccessTime": "17.12.2023 11:44:33",
+    "LastAccessTime": "19.12.2023 12:12:24",
     "LastWriteTime": "25.10.2023 03:51:10"
   },
   {
@@ -492,8 +500,10 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "FullName": "D:\\Movies\\The-Flash",
     "Type": "Directory",
     "Size": "76.569 GB",
+    "Files": 43,
+    "Directory": 2,
     "CreationTime": "30.07.2023 01:13:20",
-    "LastAccessTime": "17.12.2023 11:41:49",
+    "LastAccessTime": "19.12.2023 12:12:24",
     "LastWriteTime": "30.07.2023 03:22:09"
   }
 ]
@@ -504,8 +514,10 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "FullName": "D:\\Movies\\The-Flash\\3 sezon",
     "Type": "Directory",
     "Size": "41.01 GB",
+    "Files": 23,
+    "Directory": 0,
     "CreationTime": "30.07.2023 01:13:20",
-    "LastAccessTime": "19.12.2023 12:40:53",
+    "LastAccessTime": "19.12.2023 12:12:24",
     "LastWriteTime": "30.07.2023 01:14:37"
   },
   {
@@ -513,8 +525,10 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "FullName": "D:\\Movies\\The-Flash\\4 sezon",
     "Type": "Directory",
     "Size": "35.559 GB",
+    "Files": 22,
+    "Directory": 0,
     "CreationTime": "30.07.2023 01:22:15",
-    "LastAccessTime": "19.12.2023 12:40:53",
+    "LastAccessTime": "19.12.2023 12:12:24",
     "LastWriteTime": "18.12.2023 12:00:37"
   }
 ]
