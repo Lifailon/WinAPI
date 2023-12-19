@@ -30,7 +30,7 @@ All GET requests can be output in one of the following formats: **JSON (default)
 `/api/disk/iops` - Input and Output operations per second for all physical disks \
 `/api/video` - List of all video adapters, video memory size and resolution \
 `/api/network` - List of all network adapters and their settings \
-`/api/files` - Get a list of files and directories at the specified path in the **Path header** with the size and date of creation, access and modification
+`/api/files` - Get a list of files and directories at the specified path in the **Path header** with the size, number of child files and directories, date of creation, access and modification
 
 - **Web**
 
@@ -43,7 +43,7 @@ Simple HTTP server with the ability to stop and start services and process using
 
 `/apt/service/service_name` - Stop, start and restart services by name (only one at a time, not wildcard format), status is transmitted in the request header (**Status: <Stop/Start/Restart>**). Upon execution, the service status is returned in the format of a GET request. \
 `/apt/process/process_name` - Check the number of running processes (**Status: Check**), stop a process by name (**Status: Stop**) and start a process (**Status: Start**). To start a process, you can use the function to search for an executable file in the file system by its name, but you can also pass the path to the executable file through the request header (e.g. **Path: C:\Program Files\qBittorrent\qbittorrent.exe**). \
-`/api/file-delete` - Deleting the file or directory specified in the header (**Path:**) one at a time
+`/api/file-delete` - Deleting the file or directory specified in the header **Path** one at a time
 
 ### 🚀 Install
 
