@@ -206,7 +206,7 @@ You can add endpoints to the module yourself for fast remote communication via A
 
 There are buttons for switching between all web pages.
 
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Example.jpg)
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Example.gif)
 
 - Process management:
 
