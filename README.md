@@ -192,7 +192,7 @@ Invoke-RestMethod -Headers $Headers -Method Post -Uri http://192.168.3.99:8443/a
 
 - Module **Get-Hardware**
 
-For an example, import the **[Get-Hardware](https://github.com/Lifailon/WinAPI/blob/rsa/WinAPI/Get-Hardware)** module (or copy it to your modules directory). For local retrieval of information, use the command without parameters, for remote launch via API, use the parameter **-ComputerName**.
+For an example, import the **[Get-Hardware](https://github.com/Lifailon/WinAPI/blob/rsa/WinAPI/Modules/Get-Hardware)** module (or copy it to your modules directory). For local retrieval of information, use the command without parameters, for remote launch via API, use the parameter **-ComputerName**.
 
 ```PowerShell
 Import-Modules .\Get-Hardware.psm1
