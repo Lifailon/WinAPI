@@ -558,7 +558,7 @@ Example of logging different clients (Google chrome, powershell and curl).
 
 ```PowerShell
 PS C:\Users\lifailon\Documents\Git\WinAPI> . 'C:\Users\lifailon\Documents\Git\WinAPI\WinAPI\WinAPI-0.3.ps1'
-Running on http://192.168.3.99:8443/
+Running on port 8443
 192.168.3.99:49843 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 => GET /api/service => 200
 192.168.3.99:49843 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 => GET /api/process => 200
 192.168.3.99:49843 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 => GET / => 200
