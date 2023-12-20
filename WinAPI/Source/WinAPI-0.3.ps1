@@ -64,7 +64,7 @@ if (!(Test-Path $winapi_path)) {
     New-Item -ItemType Directory -Path $winapi_path
 }
 if (!(Test-Path $ini_path)) {
-    Invoke-RestMethod -Uri "https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Bin/winapi.ini" -OutFile $ini_path
+    Invoke-RestMethod -Uri "https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Source/winapi.ini" -OutFile $ini_path
 }
 
 ###### Read ini and write variables
@@ -479,424 +479,451 @@ function Get-NetAdapter {
 }
 ###### End Hardware
 
-### Creat socket
-Add-Type -AssemblyName System.Net.Http
-$http = New-Object System.Net.HttpListener
-$http.Prefixes.Add("http://+:$port/")
-### Use Basic Authentication
-$http.AuthenticationSchemes = [System.Net.AuthenticationSchemes]::Basic
-### Start socket
-$http.Start()
-Write-Host "Running on port $port" -ForegroundColor Green
-try {
-    while ($http.IsListening) {
-        $contextTask = $http.GetContextAsync()
-        while (-not $contextTask.AsyncWaitHandle.WaitOne(200)) { }
-        $context = $contextTask.GetAwaiter().GetResult()
-        ### Authorization
-        $CredRequest = $context.Request.Headers["Authorization"]
-        ### Debug (read decoded credentials)
-        # Write-Host $CredRequest
-        $CredRequest = $CredRequest -replace "Basic\s"
-        if ( $CredRequest -ne $cred ) {
-            $Data = "Unauthorized (login or password is invalid)"
-            ### Response on not authorization (code 401)
-            Send-Response -Data $Data -Code 401
-        }
-        else {
-            ### GET /
-            if ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/") {
-                $html = "
-                <style>
-                    .navButton {
-                        display: block;
-                        margin-bottom: 10px;
-                    }
-                </style>
-                <html>
-                <head>
-                    <title>WinAPI</title>
-                </head>
-                <body>
-                    <button class='navButton' onclick='location.href=""/service""'>Service</button>
-                    <button class='navButton' onclick='location.href=""/process""'>Process</button>
-                    <button class='navButton' onclick='location.href=""/api/hardware""'>Hardware</button>
-                    <button class='navButton' onclick='location.href=""/api/performance""'>Performance</button>
-                    <button class='navButton' onclick='location.href=""/api/cpu""'>CPU</button>
-                    <button class='navButton' onclick='location.href=""/api/memory""'>Memory</button>
-                    <button class='navButton' onclick='location.href=""/api/disk/physical""'>Physical Disk</button>
-                    <button class='navButton' onclick='location.href=""/api/disk/logical""'>Logical Disk</button>
-                    <button class='navButton' onclick='location.href=""/api/disk/iops""'>IOps</button>
-                    <button class='navButton' onclick='location.href=""/api/video""'>Video</button>
-                    <button class='navButton' onclick='location.href=""/api/network""'>Network</button>
-                </body>
-                </html>
-                "
-                Send-Response -Data $html -Code 200 -v2
+function Start-Socket {
+    Add-Type -AssemblyName System.Net.Http
+    $http = New-Object System.Net.HttpListener
+    $http.Prefixes.Add("http://+:$port/")
+    ### Use Basic Authentication
+    $http.AuthenticationSchemes = [System.Net.AuthenticationSchemes]::Basic
+    ### Start socket
+    $http.Start()
+    try {
+        while ($http.IsListening) {
+            $contextTask = $http.GetContextAsync()
+            while (-not $contextTask.AsyncWaitHandle.WaitOne(200)) { }
+            $context = $contextTask.GetAwaiter().GetResult()
+            ### Authorization
+            $CredRequest = $context.Request.Headers["Authorization"]
+            ### Debug (read decoded credentials)
+            # Write-Host $CredRequest
+            $CredRequest = $CredRequest -replace "Basic\s"
+            if ( $CredRequest -ne $cred ) {
+                $Data = "Unauthorized (login or password is invalid)"
+                ### Response on not authorization (code 401)
+                Send-Response -Data $Data -Code 401
             }
-            ### GET /service
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/service") {
-                $Services = Get-ServiceDescription *
-                $GetService = "<html><head><title>Service</title></head><body>"
-                ### Add button to process page
-                $GetService += $BodyButtons
-                $GetService += "<table border='1'>"
-                $GetService += "<tr><th>Name</th><th>Status</th><th>Action</th><th>Start Type</th></tr>"
-                foreach ($Service in $Services) {
-                    $name   = "<b>$($Service.Name)</b>"
-                    $status = $Service.Status
-                    if ($status -eq "Running") {
-                        $status = "<font color='green'><b>$status</b></font>"
-                    } else {
-                        $status = "<font color='red'><b>$status</b></font>"
-                    }
-                    $StartType  = $Service.StartType
-                    $GetService += "<tr><td>$name</td><td>$status</td>"
-                    $GetService += "<td><button onclick='startService(""$($Service.Name)"")'>Start</button> "
-                    $GetService += "<button onclick='stopService(""$($Service.Name)"")'>Stop</button></td>"
-                    $GetService += "<td>$StartType</td></tr>"
+            else {
+                ### GET /
+                if ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/") {
+                    $html = "
+                    <style>
+                        .navButton {
+                            display: block;
+                            margin-bottom: 10px;
+                        }
+                    </style>
+                    <html>
+                    <head>
+                        <title>WinAPI</title>
+                    </head>
+                    <body>
+                        <button class='navButton' onclick='location.href=""/service""'>Service</button>
+                        <button class='navButton' onclick='location.href=""/process""'>Process</button>
+                        <button class='navButton' onclick='location.href=""/api/hardware""'>Hardware</button>
+                        <button class='navButton' onclick='location.href=""/api/performance""'>Performance</button>
+                        <button class='navButton' onclick='location.href=""/api/cpu""'>CPU</button>
+                        <button class='navButton' onclick='location.href=""/api/memory""'>Memory</button>
+                        <button class='navButton' onclick='location.href=""/api/disk/physical""'>Physical Disk</button>
+                        <button class='navButton' onclick='location.href=""/api/disk/logical""'>Logical Disk</button>
+                        <button class='navButton' onclick='location.href=""/api/disk/iops""'>IOps</button>
+                        <button class='navButton' onclick='location.href=""/api/video""'>Video</button>
+                        <button class='navButton' onclick='location.href=""/api/network""'>Network</button>
+                    </body>
+                    </html>
+                    "
+                    Send-Response -Data $html -Code 200 -v2
                 }
-                $GetService += "</table>"
-                $GetService += '
-                <script>
-                    function startService(serviceName) {
-                        sendServiceAction("Start", serviceName);
+                ### GET /service
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/service") {
+                    $Services = Get-ServiceDescription *
+                    $GetService = "<html><head><title>Service</title></head><body>"
+                    ### Add button to process page
+                    $GetService += $BodyButtons
+                    $GetService += "<table border='1'>"
+                    $GetService += "<tr><th>Name</th><th>Status</th><th>Action</th><th>Start Type</th></tr>"
+                    foreach ($Service in $Services) {
+                        $name   = "<b>$($Service.Name)</b>"
+                        $status = $Service.Status
+                        if ($status -eq "Running") {
+                            $status = "<font color='green'><b>$status</b></font>"
+                        } else {
+                            $status = "<font color='red'><b>$status</b></font>"
+                        }
+                        $StartType  = $Service.StartType
+                        $GetService += "<tr><td>$name</td><td>$status</td>"
+                        $GetService += "<td><button onclick='startService(""$($Service.Name)"")'>Start</button> "
+                        $GetService += "<button onclick='stopService(""$($Service.Name)"")'>Stop</button></td>"
+                        $GetService += "<td>$StartType</td></tr>"
                     }
-                    function stopService(serviceName) {
-                        sendServiceAction("Stop", serviceName);
-                    }
-                    function sendServiceAction(action, serviceName) {
-                        var request = new XMLHttpRequest();
-                        request.open("POST", "/api/service/" + serviceName, true);
-                        request.setRequestHeader("Status", action);
-                        request.onreadystatechange = function () {
-                            if (request.readyState === 4 && request.status === 200) {
-                                console.log("True");
-                                location.reload();
-                            }
-                        };
-                        request.send();
-                    }
-                </script>
-                </body></html>
-                '
-                Send-Response -Data $GetService -Code 200 -v2
-            }
-            ### GET /api/service
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/service") {
-                $GetService = Get-ServiceDescription *
-                Send-Response -Data $GetService -Code 200
-            }
-            ### GET /api/service/*ServiceName* (windcard format)
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -match "/api/service/.") {
-                $ServiceName = ($context.Request.RawUrl) -replace ".+/"
-                $GetService = Get-ServiceDescription *$ServiceName*
-                ### Response on not fount service (code 400)
-                if ($null -eq $GetService) {
-                    $Code = 400
-                    $GetService = "Bad Request. Service $ServiceName could not be found."
+                    $GetService += "</table>"
+                    $GetService += '
+                    <script>
+                        function startService(serviceName) {
+                            sendServiceAction("Start", serviceName);
+                        }
+                        function stopService(serviceName) {
+                            sendServiceAction("Stop", serviceName);
+                        }
+                        function sendServiceAction(action, serviceName) {
+                            var request = new XMLHttpRequest();
+                            request.open("POST", "/api/service/" + serviceName, true);
+                            request.setRequestHeader("Status", action);
+                            request.onreadystatechange = function () {
+                                if (request.readyState === 4 && request.status === 200) {
+                                    console.log("True");
+                                    location.reload();
+                                }
+                            };
+                            request.send();
+                        }
+                    </script>
+                    </body></html>
+                    '
+                    Send-Response -Data $GetService -Code 200 -v2
                 }
-                else {
-                    $Code = 200                    
+                ### GET /api/service
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/service") {
+                    $GetService = Get-ServiceDescription *
+                    Send-Response -Data $GetService -Code 200
                 }
-                Send-Response -Data $GetService -Code $Code
-            }
-            ### POST /api/service/ServiceName (not windcard format)
-            elseif ($context.Request.HttpMethod -eq "POST" -and $context.Request.RawUrl -match "/api/service/.") {
-                ### Get Service Name from endpoint
-                $ServiceName = ($context.Request.RawUrl) -replace ".+/"
-                ### Get Status from Headers Request (stop/start/restart)
-                $Status = $context.Request.Headers["Status"]
-                ### Check Service
-                $GetService = Get-Service -ErrorAction Ignore $ServiceName
-                if ($null -eq $GetService) {
-                    $Code = 400
-                    $GetService = "Bad Request. Service $ServiceName could not be found."
-                }
-                else {
-                    $Code = 200
-                    if ($status -eq "stop") {
-                        $GetService | Stop-Service
-                    }
-                    elseif ($status -eq "start") {
-                        $GetService | Start-Service
-                    }
-                    elseif ($status -eq "restart") {
-                        $GetService | Restart-Service
-                    }
-                    else {
+                ### GET /api/service/*ServiceName* (windcard format)
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -match "/api/service/.") {
+                    $ServiceName = ($context.Request.RawUrl) -replace ".+/"
+                    $GetService = Get-ServiceDescription *$ServiceName*
+                    ### Response on not fount service (code 400)
+                    if ($null -eq $GetService) {
                         $Code = 400
-                        $GetService = "Bad Request. Invalid status in the header. Available: stop, start, restart."
+                        $GetService = "Bad Request. Service $ServiceName could not be found."
                     }
-                }
-                if ($code -eq 200) {
-                    $GetService = Get-ServiceDescription $ServiceName
-                }
-                Send-Response -Data $GetService -Code $Code
-            }
-            ### GET /process
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/process") {
-                $Process = Get-ProcessDescription
-                $GetProcess = "<html><head><title>Process</title></head><body>"
-                ### Add button to service page 
-                $GetProcess += $BodyButtons
-                ### Add form input text
-                $GetProcess += "
-                <form action='/api/process/' method='post' onsubmit='return startProcess(this);'>
-                    <input type='text' name='processName' id='processName'>
-                    <input type='submit' value='Start'>
-                </form>
-                "
-                $GetProcess += "<table border='1'>"
-                $GetProcess += "<tr>"
-                $GetProcess += "<th>Name</th><th>Action</th><th>Total Process Time</th>"
-                $GetProcess += "<th>User Process Time</th><th>Privileged Process Time</th>"
-                $GetProcess += "<th>Working Set</th><th>Peak Working Set</th><th>Page Memory</th>"
-                $GetProcess += "<th>Virtual Memory</th><th>Private Memory</th><th>Running Time</th>"
-                $GetProcess += "<th>Threads</th><th>Handles</th>"
-                $GetProcess += "</tr>"
-                foreach ($Proces in $Process) {
-                    $name               = "<b>$($Proces.ProcessName)</b>"
-                    $TotalProcTime      = "<b>$($Proces.TotalProcTime)</b>"
-                    $UserProcTime       = "<b>$($Proces.UserProcTime)</b>"
-                    $PrivilegedProcTime = "<b>$($Proces.PrivilegedProcTime)</b>"
-                    $WorkingSet         = "<b>$($Proces.WorkingSet)</b>"
-                    $PeakWorkingSet     = "<b>$($Proces.PeakWorkingSet)</b>"
-                    $PageMemory         = "<b>$($Proces.PageMemory)</b>"
-                    $VirtualMemory      = "<b>$($Proces.VirtualMemory)</b>"
-                    $PrivateMemory      = "<b>$($Proces.PrivateMemory)</b>"
-                    $RunTime            = "<b>$($Proces.RunTime)</b>"
-                    $Threads            = "<b>$($Proces.Threads)</b>"
-                    $Handles            = "<b>$($Proces.Handles)</b>"
-                    $GetProcess         += "<tr>"
-                    $GetProcess         += "<td>$name</td>"
-                    $GetProcess         += "<td><button onclick='stopProcess(""$($Proces.ProcessName)"")'>Stop</button></td>"
-                    $GetProcess         += "<td>$TotalProcTime</td><td>$UserProcTime</td><td>$PrivilegedProcTime</td>"
-                    $GetProcess         += "<td>$WorkingSet</td><td>$PeakWorkingSet</td><td>$PageMemory</td>"
-                    $GetProcess         += "<td>$VirtualMemory</td><td>$PrivateMemory</td><td>$RunTime</td>"
-                    $GetProcess         += "<td>$Threads</td><td>$Handles</td>"
-                    $GetProcess         += "</tr>"
-                }
-                $GetProcess += "</table>"
-                $GetProcess += '
-                <script>
-                    function startProcess(form) {
-                        // Get variable from form by id
-                        var processName = form.processName.value;
-                        sendProcessAction("Start", processName);
-                    }
-                    function stopProcess(processName) {
-                        sendProcessAction("Stop", processName);
-                    }
-                    function sendProcessAction(action, processName) {
-                        var request = new XMLHttpRequest();
-                        request.open("POST", "/api/process/" + processName, true);
-                        request.setRequestHeader("Status", action);
-                        request.onreadystatechange = function () {
-                            if (request.readyState === 4 && request.status === 200) {
-                                console.log("True");
-                                location.reload();
-                            }
-                        };
-                        request.send();
-                    }
-                </script>
-                </body></html>
-                '
-                Send-Response -Data $GetProcess -Code 200 -v2
-            }
-            ### GET /api/process
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/process") {
-                $GetProcess = Get-ProcessDescription
-                Send-Response -Data $GetProcess -Code 200
-            }
-            ### GET /api/process/*ProcessName* (windcard format)
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -match "/api/process/.") {
-                $ProcessName = ($context.Request.RawUrl) -replace ".+/"
-                $GetProcess = Get-ProcessDescription *$ProcessName*
-                ### Response on not fount service (code 400)
-                if ($null -eq $GetProcess) {
-                    $Code = 400
-                    $GetProcess = "Bad Request. Process $ProcessName could not be found."
-                }
-                else {
-                    $Code = 200                    
-                }
-                Send-Response -Data $GetProcess -Code $Code
-            }
-            ### POST /api/process/ProcessName (not windcard format)
-            elseif ($context.Request.HttpMethod -eq "POST" -and $context.Request.RawUrl -match "/api/process/.") {
-                $ProcessName = ($context.Request.RawUrl) -replace ".+/"
-                ### Get Status (check/stop/start) and Path from Headers Request
-                $Status      = $context.Request.Headers["Status"]
-                $PathProcess = $context.Request.Headers["Path"]
-                if ($status -eq "check") {
-                    $Code = 200
-                    $GetProcess = "Number active $ProcessName processes: $((Get-Process -ErrorAction Ignore $ProcessName).Count)"
-                }
-                elseif ($status -eq "start") {
-                    if ($null -eq $PathProcess) {
-                        ### Find Path Execude for Start Process
-                        $PathProcess = Find-Process $ProcessName
-                        ### Check Path for Start Process
-                        if ($null -eq $PathProcess) {
-                            $Code = 400
-                            $GetProcess = "Bad Request. Path for start process $ProcessName could not be found. Use header: path."
-                        }
-                        else {
-                            $Code = 200
-                            Start-Process "$PathProcess" -WindowStyle Hidden
-                            Start-Sleep 1
-                            $GetProcess = "Number active $ProcessName processes: $((Get-Process -ErrorAction Ignore $ProcessName).Count)"
-                        }
-                    }
-                    ### Use path from Header for Start Process
                     else {
-                        ### Check Path and Extension for Start Process
-                        if ($(Test-Path $PathProcess) -and $($PathProcess -match ".exe$")) {
-                            $Code = 200
-                            Start-Process "$PathProcess" -WindowStyle Hidden
-                            Start-Sleep 1
-                            $GetProcess = "Number active $ProcessName processes: $((Get-Process -ErrorAction Ignore $ProcessName).Count)"
+                        $Code = 200                    
+                    }
+                    Send-Response -Data $GetService -Code $Code
+                }
+                ### POST /api/service/ServiceName (not windcard format)
+                elseif ($context.Request.HttpMethod -eq "POST" -and $context.Request.RawUrl -match "/api/service/.") {
+                    ### Get Service Name from endpoint
+                    $ServiceName = ($context.Request.RawUrl) -replace ".+/"
+                    ### Get Status from Headers Request (stop/start/restart)
+                    $Status = $context.Request.Headers["Status"]
+                    ### Check Service
+                    $GetService = Get-Service -ErrorAction Ignore $ServiceName
+                    if ($null -eq $GetService) {
+                        $Code = 400
+                        $GetService = "Bad Request. Service $ServiceName could not be found."
+                    }
+                    else {
+                        $Code = 200
+                        if ($status -eq "stop") {
+                            $GetService | Stop-Service
+                        }
+                        elseif ($status -eq "start") {
+                            $GetService | Start-Service
+                        }
+                        elseif ($status -eq "restart") {
+                            $GetService | Restart-Service
                         }
                         else {
                             $Code = 400
-                            $GetProcess = "Bad Request. Path $PathProcess for start process $ProcessName could not be found."
+                            $GetService = "Bad Request. Invalid status in the header. Available: stop, start, restart."
                         }
                     }
+                    if ($code -eq 200) {
+                        $GetService = Get-ServiceDescription $ServiceName
+                    }
+                    Send-Response -Data $GetService -Code $Code
                 }
-                elseif ($status -eq "stop") {
-                    ### Check Service
-                    $GetProcess = Get-Process -ErrorAction Ignore $ProcessName
+                ### GET /process
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/process") {
+                    $Process = Get-ProcessDescription
+                    $GetProcess = "<html><head><title>Process</title></head><body>"
+                    ### Add button to service page 
+                    $GetProcess += $BodyButtons
+                    ### Add form input text
+                    $GetProcess += "
+                    <form action='/api/process/' method='post' onsubmit='return startProcess(this);'>
+                        <input type='text' name='processName' id='processName'>
+                        <input type='submit' value='Start'>
+                    </form>
+                    "
+                    $GetProcess += "<table border='1'>"
+                    $GetProcess += "<tr>"
+                    $GetProcess += "<th>Name</th><th>Action</th><th>Total Process Time</th>"
+                    $GetProcess += "<th>User Process Time</th><th>Privileged Process Time</th>"
+                    $GetProcess += "<th>Working Set</th><th>Peak Working Set</th><th>Page Memory</th>"
+                    $GetProcess += "<th>Virtual Memory</th><th>Private Memory</th><th>Running Time</th>"
+                    $GetProcess += "<th>Threads</th><th>Handles</th>"
+                    $GetProcess += "</tr>"
+                    foreach ($Proces in $Process) {
+                        $name               = "<b>$($Proces.ProcessName)</b>"
+                        $TotalProcTime      = "<b>$($Proces.TotalProcTime)</b>"
+                        $UserProcTime       = "<b>$($Proces.UserProcTime)</b>"
+                        $PrivilegedProcTime = "<b>$($Proces.PrivilegedProcTime)</b>"
+                        $WorkingSet         = "<b>$($Proces.WorkingSet)</b>"
+                        $PeakWorkingSet     = "<b>$($Proces.PeakWorkingSet)</b>"
+                        $PageMemory         = "<b>$($Proces.PageMemory)</b>"
+                        $VirtualMemory      = "<b>$($Proces.VirtualMemory)</b>"
+                        $PrivateMemory      = "<b>$($Proces.PrivateMemory)</b>"
+                        $RunTime            = "<b>$($Proces.RunTime)</b>"
+                        $Threads            = "<b>$($Proces.Threads)</b>"
+                        $Handles            = "<b>$($Proces.Handles)</b>"
+                        $GetProcess         += "<tr>"
+                        $GetProcess         += "<td>$name</td>"
+                        $GetProcess         += "<td><button onclick='stopProcess(""$($Proces.ProcessName)"")'>Stop</button></td>"
+                        $GetProcess         += "<td>$TotalProcTime</td><td>$UserProcTime</td><td>$PrivilegedProcTime</td>"
+                        $GetProcess         += "<td>$WorkingSet</td><td>$PeakWorkingSet</td><td>$PageMemory</td>"
+                        $GetProcess         += "<td>$VirtualMemory</td><td>$PrivateMemory</td><td>$RunTime</td>"
+                        $GetProcess         += "<td>$Threads</td><td>$Handles</td>"
+                        $GetProcess         += "</tr>"
+                    }
+                    $GetProcess += "</table>"
+                    $GetProcess += '
+                    <script>
+                        function startProcess(form) {
+                            // Get variable from form by id
+                            var processName = form.processName.value;
+                            sendProcessAction("Start", processName);
+                        }
+                        function stopProcess(processName) {
+                            sendProcessAction("Stop", processName);
+                        }
+                        function sendProcessAction(action, processName) {
+                            var request = new XMLHttpRequest();
+                            request.open("POST", "/api/process/" + processName, true);
+                            request.setRequestHeader("Status", action);
+                            request.onreadystatechange = function () {
+                                if (request.readyState === 4 && request.status === 200) {
+                                    console.log("True");
+                                    location.reload();
+                                }
+                            };
+                            request.send();
+                        }
+                    </script>
+                    </body></html>
+                    '
+                    Send-Response -Data $GetProcess -Code 200 -v2
+                }
+                ### GET /api/process
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/process") {
+                    $GetProcess = Get-ProcessDescription
+                    Send-Response -Data $GetProcess -Code 200
+                }
+                ### GET /api/process/*ProcessName* (windcard format)
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -match "/api/process/.") {
+                    $ProcessName = ($context.Request.RawUrl) -replace ".+/"
+                    $GetProcess = Get-ProcessDescription *$ProcessName*
+                    ### Response on not fount service (code 400)
                     if ($null -eq $GetProcess) {
                         $Code = 400
                         $GetProcess = "Bad Request. Process $ProcessName could not be found."
                     }
                     else {
+                        $Code = 200                    
+                    }
+                    Send-Response -Data $GetProcess -Code $Code
+                }
+                ### POST /api/process/ProcessName (not windcard format)
+                elseif ($context.Request.HttpMethod -eq "POST" -and $context.Request.RawUrl -match "/api/process/.") {
+                    $ProcessName = ($context.Request.RawUrl) -replace ".+/"
+                    ### Get Status (check/stop/start) and Path from Headers Request
+                    $Status      = $context.Request.Headers["Status"]
+                    $PathProcess = $context.Request.Headers["Path"]
+                    if ($status -eq "check") {
                         $Code = 200
-                        $GetProcess | Stop-Process
-                        Start-Sleep 1
                         $GetProcess = "Number active $ProcessName processes: $((Get-Process -ErrorAction Ignore $ProcessName).Count)"
                     }
-                }
-                else {
-                    $Code = 400
-                    $GetProcess = "Bad Request. Invalid status in the header. Available: check, stop, start."
-                }
-                Send-Response -Data $GetProcess -Code $Code -v2
-            }
-            ### GET /api/hardware
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/hardware") {
-                $Data = Get-Hardware
-                Send-Response -Data $Data -Code 200 -Body -fl
-            }
-            ### GET /api/performance
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/performance") {
-                $Data = Get-Performance
-                Send-Response -Data $Data -Code 200 -Body -fl
-            }
-            ### GET /api/cpu
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/cpu") {
-                $Data = Get-CPUse
-                Send-Response -Data $Data -Code 200 -Body
-            }
-            ### GET /api/memory
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/memory") {
-                $Data = Get-MemorySize
-                Send-Response -Data $Data -Code 200 -Body -fl
-            }
-            ### GET /api/memory/slots
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/memory/slots") {
-                $Data = Get-MemorySlots
-                Send-Response -Data $Data -Code 200 -Body
-            }
-            ### GET /api/disk/physical
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/disk/physical") {
-                $Data = Get-PD
-                Send-Response -Data $Data -Code 200 -Body
-            }
-            ### GET /api/disk/logical
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/disk/logical") {
-                $Data = Get-LD
-                Send-Response -Data $Data -Code 200 -Body
-            }
-            ### GET /api/disk/iops
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/disk/iops") {
-                $Data = Get-IOps
-                Send-Response -Data $Data -Code 200 -Body -fl
-            }
-            ### GET /api/video
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/video") {
-                $Data = Get-VideoCard
-                Send-Response -Data $Data -Code 200 -Body
-            }
-            ### GET /api/network
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/network") {
-                $Data = Get-NetAdapter
-                Send-Response -Data $Data -Code 200 -Body
-            }
-            ### GET /api/files
-            elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/files") {
-                $PathFiles = $context.Request.Headers["Path"]
-                if ($null -eq $PathFiles) {
-                    $Code = 400
-                    $Data = "Bad Request. Path header is null."
-                }
-                elseif (!(Test-Path $PathFiles)) {
-                    $Code = 400
-                    $Data = "Bad Request. Path $Path could not be found."
-                }
-                else {
-                    $Code = 200
-                    $Data = Get-Files -Path $PathFiles
-                }
-                Send-Response -Data $Data -Code $Code -Body
-            }
-            ### POST /api/file-delete
-            elseif ($context.Request.HttpMethod -eq "POST" -and $context.Request.RawUrl -match "/api/file-delete") {
-                $PathFiles = $context.Request.Headers["Path"]
-                if ($null -eq $PathFiles) {
-                    $Code = 400
-                    $Data = "Bad Request. Path header is null."
-                }
-                elseif (!(Test-Path $PathFiles)) {
-                    $Code = 400
-                    $Data = "Bad Request. Path $Path could not be found."
-                }
-                else {
-                    $File = Get-Files -Path $PathFiles
-                    if ($File.Count -eq 1) {
-                        $Type = $File.Type
-                        Remove-Item $PathFiles -Force -Recurse
-                        if (!(Test-Path $PathFiles)) {
-                            $Code = 200
-                            $Data = "Deleted successfully: $PathFiles ($Type)."
-                        } 
+                    elseif ($status -eq "start") {
+                        if ($null -eq $PathProcess) {
+                            ### Find Path Execude for Start Process
+                            $PathProcess = Find-Process $ProcessName
+                            ### Check Path for Start Process
+                            if ($null -eq $PathProcess) {
+                                $Code = 400
+                                $GetProcess = "Bad Request. Path for start process $ProcessName could not be found. Use header: path."
+                            }
+                            else {
+                                $Code = 200
+                                Start-Process "$PathProcess" -WindowStyle Hidden
+                                Start-Sleep 1
+                                $GetProcess = "Number active $ProcessName processes: $((Get-Process -ErrorAction Ignore $ProcessName).Count)"
+                            }
+                        }
+                        ### Use path from Header for Start Process
                         else {
+                            ### Check Path and Extension for Start Process
+                            if ($(Test-Path $PathProcess) -and $($PathProcess -match ".exe$")) {
+                                $Code = 200
+                                Start-Process "$PathProcess" -WindowStyle Hidden
+                                Start-Sleep 1
+                                $GetProcess = "Number active $ProcessName processes: $((Get-Process -ErrorAction Ignore $ProcessName).Count)"
+                            }
+                            else {
+                                $Code = 400
+                                $GetProcess = "Bad Request. Path $PathProcess for start process $ProcessName could not be found."
+                            }
+                        }
+                    }
+                    elseif ($status -eq "stop") {
+                        ### Check Service
+                        $GetProcess = Get-Process -ErrorAction Ignore $ProcessName
+                        if ($null -eq $GetProcess) {
                             $Code = 400
-                            $Data = "Error. Not deleted: $PathFiles ($Type)."
+                            $GetProcess = "Bad Request. Process $ProcessName could not be found."
+                        }
+                        else {
+                            $Code = 200
+                            $GetProcess | Stop-Process
+                            Start-Sleep 1
+                            $GetProcess = "Number active $ProcessName processes: $((Get-Process -ErrorAction Ignore $ProcessName).Count)"
                         }
                     }
                     else {
                         $Code = 400
-                        $Data = "Bad Request. Contains $($File.Count) files in path. Available one file or directory."
+                        $GetProcess = "Bad Request. Invalid status in the header. Available: check, stop, start."
                     }
+                    Send-Response -Data $GetProcess -Code $Code -v2
                 }
-                Send-Response -Data $Data -Code $Code -Body -v2
-            }
-            ### Response to other methods (code 405)
-            elseif ($context.Request.HttpMethod -ne "GET") {
-                $Data = "Method not allowed"
-                Send-Response -Data $Data -Code 405
-            }
-            ### Response to the lack of endpoints (code 404)
-            else {
-                $Data = "Not found endpoint"
-                Send-Response -Data $Data -Code 404
+                ### GET /api/hardware
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/hardware") {
+                    $Data = Get-Hardware
+                    Send-Response -Data $Data -Code 200 -Body -fl
+                }
+                ### GET /api/performance
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/performance") {
+                    $Data = Get-Performance
+                    Send-Response -Data $Data -Code 200 -Body -fl
+                }
+                ### GET /api/cpu
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/cpu") {
+                    $Data = Get-CPUse
+                    Send-Response -Data $Data -Code 200 -Body
+                }
+                ### GET /api/memory
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/memory") {
+                    $Data = Get-MemorySize
+                    Send-Response -Data $Data -Code 200 -Body -fl
+                }
+                ### GET /api/memory/slots
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/memory/slots") {
+                    $Data = Get-MemorySlots
+                    Send-Response -Data $Data -Code 200 -Body
+                }
+                ### GET /api/disk/physical
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/disk/physical") {
+                    $Data = Get-PD
+                    Send-Response -Data $Data -Code 200 -Body
+                }
+                ### GET /api/disk/logical
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/disk/logical") {
+                    $Data = Get-LD
+                    Send-Response -Data $Data -Code 200 -Body
+                }
+                ### GET /api/disk/iops
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/disk/iops") {
+                    $Data = Get-IOps
+                    Send-Response -Data $Data -Code 200 -Body -fl
+                }
+                ### GET /api/video
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/video") {
+                    $Data = Get-VideoCard
+                    Send-Response -Data $Data -Code 200 -Body
+                }
+                ### GET /api/network
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/network") {
+                    $Data = Get-NetAdapter
+                    Send-Response -Data $Data -Code 200 -Body
+                }
+                ### GET /api/files
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/files") {
+                    $PathFiles = $context.Request.Headers["Path"]
+                    if ($null -eq $PathFiles) {
+                        $Code = 400
+                        $Data = "Bad Request. Path header is null."
+                    }
+                    elseif (!(Test-Path $PathFiles)) {
+                        $Code = 400
+                        $Data = "Bad Request. Path $Path could not be found."
+                    }
+                    else {
+                        $Code = 200
+                        $Data = Get-Files -Path $PathFiles
+                    }
+                    Send-Response -Data $Data -Code $Code -Body
+                }
+                ### POST /api/file-delete
+                elseif ($context.Request.HttpMethod -eq "POST" -and $context.Request.RawUrl -match "/api/file-delete") {
+                    $PathFiles = $context.Request.Headers["Path"]
+                    if ($null -eq $PathFiles) {
+                        $Code = 400
+                        $Data = "Bad Request. Path header is null."
+                    }
+                    elseif (!(Test-Path $PathFiles)) {
+                        $Code = 400
+                        $Data = "Bad Request. Path $Path could not be found."
+                    }
+                    else {
+                        $File = Get-Files -Path $PathFiles
+                        if ($File.Count -eq 1) {
+                            $Type = $File.Type
+                            Remove-Item $PathFiles -Force -Recurse
+                            if (!(Test-Path $PathFiles)) {
+                                $Code = 200
+                                $Data = "Deleted successfully: $PathFiles ($Type)."
+                            } 
+                            else {
+                                $Code = 400
+                                $Data = "Error. Not deleted: $PathFiles ($Type)."
+                            }
+                        }
+                        else {
+                            $Code = 400
+                            $Data = "Bad Request. Contains $($File.Count) files in path. Available one file or directory."
+                        }
+                    }
+                    Send-Response -Data $Data -Code $Code -Body -v2
+                }
+                ### Response to other methods (code 405)
+                elseif ($context.Request.HttpMethod -ne "GET") {
+                    $Data = "Method not allowed"
+                    Send-Response -Data $Data -Code 405
+                }
+                ### Response to the lack of endpoints (code 404)
+                else {
+                    $Data = "Not found endpoint"
+                    Send-Response -Data $Data -Code 404
+                }
             }
         }
     }
+    finally {
+        $http.Stop()
+    }
 }
-finally {
-    $http.Stop()
+
+$err = "False"
+while ($true) {
+    try {
+        Write-Host "Running on port $port" -ForegroundColor Green
+        if ($Log_File -eq "True" -and $err -eq "False") {
+            $date = Get-Date -Format "dd.MM.yyyy hh:mm:ss"
+            "$date Start server" | Out-File $Log_Path -Encoding utf8 -Append
+        }
+        $err = "False"
+        Start-Socket
+    }
+    catch {
+        Write-Host "Error and restart server" -ForegroundColor Red
+        if ($Log_File -eq "True") {
+            $date = Get-Date -Format "dd.MM.yyyy hh:mm:ss"
+            "$date Restart server" | Out-File $Log_Path -Encoding utf8 -Append
+        }
+        $err = "True"
+    }
+    finally {
+        if ($Log_File -eq "True" -and $err -eq "False") {
+            $date = Get-Date -Format "dd.MM.yyyy hh:mm:ss"
+            "$date Stop server" | Out-File $Log_Path -Encoding utf8 -Append
+        }
+    }
 }
