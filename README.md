@@ -49,7 +49,7 @@ Simple HTTP server with the ability to stop and start services and process using
 
 Use in **PowerShell Core**. No dependencies.
 
-Save it the **winapi.ini** file configuration at the path `$home/Documents/winapi.ini`
+Save it the **[winapi.ini](https://github.com/Lifailon/WinAPI/blob/rsa/WinAPI/Bin/winapi.ini)** file configuration at the path `$home/Documents/winapi.ini`
 
 The following variables to configure **ip, port, login and password** for connect to the server:
 
@@ -60,7 +60,7 @@ user        = rest
 pass        = api
 ```
 
-If you want output to log requests to a console and/or write file, enable and set the path.
+If you want output to **log** requests to a console and/or write file, enable and set the path.
 
 ```PowerShell
 Log_Console = True
@@ -74,7 +74,7 @@ And open a port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-Two launch options are present (💡 **administrator rights are required to run**):
+Two launch options are present (💡 **Administrator rights are required to run**):
 
 **winapi-console.exe** - process startup in a window with logging output of connections to the server
 
