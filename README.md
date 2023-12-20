@@ -73,13 +73,13 @@ And open a port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-#### Service
+### 1st option
 
-💡 **Administrator rights are required to run** \
+💡 **Administrator rights are required to run**
 
-To install the server part as a service (used NSSM), **download scripts to automatically [deployument](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Service), start, stop and remove**.
+To install the server part as a **service (used NSSM)**, download scripts to **automatically [deployument](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Service), start, stop and remove**.
 
-#### Executable
+### 2nd option
 
 There are two options for launching using an **[executable file](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Bin)**.
 
