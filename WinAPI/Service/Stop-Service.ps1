@@ -1,0 +1,1 @@
+Get-Service $service_name | Stop-Service

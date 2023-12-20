@@ -57,9 +57,18 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Mo
 curl -s -X POST -u $user:$pass -data '' http://192.168.3.99:8443/api/file-delete -H "Path: D:/Movies/The-Flash/4 sezon/The.Flash.S04E23.1080p.rus.LostFilm.TV.mkv"
 #>
 
+###### Creat path and ini file
+$winapi_path = "$home\Documents\winapi"
+$ini_path    = "$winapi_path\winapi.ini"
+if (!(Test-Path $winapi_path)) {
+    New-Item -ItemType Directory -Path $winapi_path
+}
+if (!(Test-Path $ini_path)) {
+    Invoke-RestMethod -Uri "https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Bin/winapi.ini" -OutFile $ini_path
+}
+
 ###### Read ini and write variables
-$ini         = Get-Content "$home\Documents\winapi.ini" | ConvertFrom-StringData
-$ip          = $ini.ip
+$ini         = Get-Content $ini_path | ConvertFrom-StringData
 $port        = $ini.port
 $user        = $ini.user
 $pass        = $ini.pass
@@ -473,13 +482,12 @@ function Get-NetAdapter {
 ### Creat socket
 Add-Type -AssemblyName System.Net.Http
 $http = New-Object System.Net.HttpListener
-$addr = $ip+":"+$port
-$http.Prefixes.Add("http://$addr/")
+$http.Prefixes.Add("http://+:$port/")
 ### Use Basic Authentication
 $http.AuthenticationSchemes = [System.Net.AuthenticationSchemes]::Basic
 ### Start socket
 $http.Start()
-Write-Host Running on $http.Prefixes
+Write-Host "Running on port $port" -ForegroundColor Green
 try {
     while ($http.IsListening) {
         $contextTask = $http.GetContextAsync()
