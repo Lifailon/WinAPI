@@ -57,16 +57,15 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Mo
 curl -s -X POST -u $user:$pass -data '' http://192.168.3.99:8443/api/file-delete -H "Path: D:/Movies/The-Flash/4 sezon/The.Flash.S04E23.1080p.rus.LostFilm.TV.mkv"
 #>
 
-###### Variables
-$ip          = "192.168.3.99"
-$port        = "8443"
-$user        = "rest"
-$pass        = "api"
-$Log_Console = "True"
-$Log_File    = "True"
-$Log_Path    = "$home/documents/WinAPI.log"
-###### End Variables
-
+###### Read ini and write variables
+$ini         = Get-Content "$home\Documents\winapi.ini" | ConvertFrom-StringData
+$ip          = $ini.ip
+$port        = $ini.port
+$user        = $ini.user
+$pass        = $ini.pass
+$Log_Console = $ini.Log_Console
+$Log_File    = $ini.Log_File
+$Log_Path    = $ini.Log_Path
 $cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${user}:${pass}"))
 
 function Get-Log {
@@ -92,7 +91,7 @@ function Get-Log {
     ### Output log to file
     if ($Log_File -eq "True") {
         $date = Get-Date -Format "dd.MM.yyyy hh:mm:ss"
-        "$date $remote_host $client_agent => $method $endpoint => $response_code" >> $Log_Path
+        "$date $remote_host $client_agent => $method $endpoint => $response_code" | Out-File $Log_Path -Encoding utf8 -Append
     }
 }
 

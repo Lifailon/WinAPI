@@ -47,23 +47,25 @@ Simple HTTP server with the ability to stop and start services and process using
 
 ### 🚀 Install
 
-Download the latest [WinAPI-0.3.ps1](https://github.com/Lifailon/WinAPI/blob/rsa/WinAPI/WinAPI-0.3.ps1) script. Use in **PowerShell Core**. No dependencies.
+Use in **PowerShell Core**. No dependencies.
 
-The following variables at the beginning of the script are used to configure the **ip, port, login and password** for connect to the server:
+Save it the **winapi.ini** file configuration at the path `$home/Documents/winapi.ini`
+
+The following variables to configure **ip, port, login and password** for connect to the server:
 
 ```PowerShell
-$ip          = "192.168.3.99"
-$port        = "8443"
-$user        = "rest"
-$pass        = "api"
+ip          = 192.168.3.99
+port        = 8443
+user        = rest
+pass        = api
 ```
 
 If you want output to log requests to a console and/or write file, enable and set the path.
 
 ```PowerShell
-$Log_Console = "True"
-$Log_File    = "True"
-$Log_Path    = "$home/documents/WinAPI.log"
+Log_Console = True
+Log_File    = True
+Log_Path    = C:/Users/lifailon/Documents/winapi.log
 ```
 
 And open a port on your firewall:
@@ -72,7 +74,13 @@ And open a port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-Run script in console with 💡 **administrator privileges**.
+Two launch options are present (💡 **administrator rights are required to run**):
+
+**winapi-console.exe** - process startup in a window with logging output of connections to the server
+
+**winapi-process.exe** - background process startup
+
+To stop the background process, use the command: `Get-Process *winapi* | Stop-Process`
 
 ### 🔒 Authorization
 
