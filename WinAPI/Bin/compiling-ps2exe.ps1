@@ -3,7 +3,7 @@
 # Import-Module ps2exe
 
 $git_path = "C:\Users\lifailon\Documents\Git\WinAPI" 
-$version  = "0.3"
+$version  = "0.3.1"
 
 Invoke-ps2exe -inputFile "$git_path\WinAPI\Source\WinAPI-$version.ps1" `
 -outputFile "$git_path\WinAPI\Bin\winapi-process.exe" `
