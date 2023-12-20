@@ -1,5 +1,5 @@
 $path    = "$home\Documents\WinAPI"
-$version = "0.3"
+$version = "0.3.1"
 
 # Clear and creat directory
 if (Test-Path $path) {

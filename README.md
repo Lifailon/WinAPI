@@ -49,12 +49,11 @@ Simple HTTP server with the ability to stop and start services and process using
 
 Use in **PowerShell Core**. No dependencies.
 
-Save it the **[winapi.ini](https://github.com/Lifailon/WinAPI/blob/rsa/WinAPI/Bin/winapi.ini)** file configuration at the path `$home/Documents/winapi.ini`
+When the server first starts up, a default **configuration file (winapi.ini)** is created at the path: `$home/Documents/WinAPI/winapi.ini`. Configure it yourself.
 
-The following variables to configure **ip, port, login and password** for connect to the server:
+The following variables to configure **port, login and password** for connect to the server:
 
 ```PowerShell
-ip          = 192.168.3.99
 port        = 8443
 user        = rest
 pass        = api
@@ -65,7 +64,7 @@ If you want output to **log** requests to a console and/or write file, enable an
 ```PowerShell
 Log_Console = True
 Log_File    = True
-Log_Path    = C:/Users/lifailon/Documents/winapi.log
+Log_Path    = C:/Users/lifailon/Documents/WinAPI/winapi.log
 ```
 
 And open a port on your firewall:
@@ -74,7 +73,17 @@ And open a port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-Two launch options are present (💡 **Administrator rights are required to run**):
+#### Service
+
+💡 **Administrator rights are required to run** \
+
+To install the server part as a service (used NSSM), **download scripts to automatically [deployument](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Service), start, stop and remove**.
+
+#### Executable
+
+There are two options for launching using an **[executable file](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Bin)**.
+
+💡 **PowerShell 5.1 acts as the default handler (limitations of the ps2exe module)**, which prevents all endpoints from working correctly
 
 **winapi-console.exe** - process startup in a window with logging output of connections to the server
 
