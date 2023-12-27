@@ -6,7 +6,10 @@
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/lifailon/WinAPI)
 ![GitHub License](https://img.shields.io/github/license/lifailon/WinAPI?color=<green>)
 
-[Readme test](https://github.com/Lifailon/WinAPI/Test/blob/rsa/README.md)
+![GitHub Repo stars](https://img.shields.io/github/stars/Lifailon/WinAPI)
+![GitHub downloads](https://img.shields.io/github/downloads/lifailon/WinAPI/total)
+
+[Readme old version](https://github.com/Lifailon/WinAPI/blob/rsa/Test/README.md)
 
 **📝 Publication on [Habr](https://habr.com/ru/articles/783022/)**
 
