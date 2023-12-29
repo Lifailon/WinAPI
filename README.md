@@ -5,8 +5,8 @@
 ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/lifailon/WinAPI)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/lifailon/WinAPI)
 ![GitHub License](https://img.shields.io/github/license/lifailon/WinAPI?color=<green>)
-![GitHub downloads](https://img.shields.io/github/downloads/lifailon/WinAPI/total)
-![GitHub Repo stars](https://img.shields.io/github/stars/Lifailon/WinAPI?color=<green>)
+![GitHub Repo stars](https://img.shields.io/github/stars/Lifailon/WinAPI)
+![GitHub downloads](https://img.shields.io/github/downloads/lifailon/WinAPI/total?color=<green>)
 
 [Readme old version](https://github.com/Lifailon/WinAPI/blob/rsa/Test/README.md)
 
