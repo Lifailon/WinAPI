@@ -5,14 +5,16 @@
 ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/lifailon/WinAPI)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/lifailon/WinAPI)
 ![GitHub License](https://img.shields.io/github/license/lifailon/WinAPI?color=<green>)
-![GitHub Repo stars](https://img.shields.io/github/stars/Lifailon/WinAPI)
-![GitHub downloads](https://img.shields.io/github/downloads/lifailon/WinAPI/total?color=<green>)
+![GitHub downloads](https://img.shields.io/github/downloads/lifailon/WinAPI/total)
+![GitHub Repo stars](https://img.shields.io/github/stars/Lifailon/WinAPI?color=<green>)
 
 [Readme old version](https://github.com/Lifailon/WinAPI/blob/rsa/Test/README.md)
 
 **📝 Publication on [Habr](https://habr.com/ru/articles/783022/)**
 
-Simple REST API and Web server **based on .NET HttpListener**. Using WinAPI, you can quickly set up remote communication with Windows OS without the need to configure WinRM or OpenSSH using APIs and get control from any platform and any REST client, including 🐧 Linux. The goal of the project is to demonstrate the capabilities of PowerShell language and implementation of the functionality in **[Kinozal-Bot](https://github.com/Lifailon/Kinozal-Bot)** due to the lack of a suitable ready-made solution on the market. This implementation is cross-platform, you can try other work for cross-platform managing systemd services in Linux, example **[dotNET-Systemd-API](https://github.com/Lifailon/dotNET-Systemd-API)**.
+Simple REST API and Web server **based on .NET HttpListener**. Using WinAPI, you can quickly set up remote communication with Windows OS without the need to configure WinRM or OpenSSH using APIs and get control from any platform and any REST client, **including Linux**. The goal of the project is to demonstrate the capabilities of PowerShell language and implementation of the functionality in **[Kinozal-Bot](https://github.com/Lifailon/Kinozal-Bot)** due to the lack of a suitable ready-made solution on the market. 
+
+🐧 This implementation is **cross-platform**, you can try service management in Linux: **[dotNET-Systemd-API](https://github.com/Lifailon/dotNET-Systemd-API)**.
 
 ### 📚 Implemented endpoints:
 
