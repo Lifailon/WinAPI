@@ -16,7 +16,7 @@ Simple REST API and Web server **based on .NET HttpListener**. Using WinAPI, you
 
 🐧 This implementation is **cross-platform**, you can try service management in Linux: **[dotNET-Systemd-API](https://github.com/Lifailon/dotNET-Systemd-API)**.
 
-### 📚 Implemented endpoints:
+## 📚 Implemented endpoints:
 
 All GET requests can be output in one of the following formats: **JSON (default), HTML, XML, CSV**. When using a browser for GET requests, by default the response is processed in table format using HTML markup.
 
@@ -51,7 +51,7 @@ Simple HTTP server with the ability to stop and start services and process using
 `/apt/process/process_name` - Check the number of running processes (**Status: Check**), stop a process by name (**Status: Stop**) and start a process (**Status: Start**). To start a process, you can use the function to search for an executable file in the file system by its name, but you can also pass the path to the executable file through the request header (e.g. **Path: C:\Program Files\qBittorrent\qbittorrent.exe**). \
 `/api/file-delete` - Deleting the file or directory specified in the header **Path** one at a time
 
-### 🚀 Install
+## 🚀 Install
 
 Use in **PowerShell Core**. No dependencies.
 
@@ -79,21 +79,21 @@ And open a port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-- 1st option (**stable**, iadded in version 0.3.2)
+### 1st option (**stable**, iadded in version 0.3.2)
 
 💡 **Administrator rights are required to run**
 
 Download the [latest](https://github.com/Lifailon/WinAPI/releases) version and run the script anywhere you like. At startup, **added a function to request Administrator access rights**.
 
-- 2nd option (**service**, added in version 0.3.1)
+### 2nd option (**service**, added in version 0.3.1)
 
-💡 **For reason unknown to me, the service doesn't process all the code on startup (doesn't create an ini file and hangs at POST request to stop the process).**
+> 💡 **For reason unknown to me, the service doesn't process all the code on startup** (doesn't create an ini file and hangs at POST request to stop the process).
 
 To install the server part as a **service (used NSSM)**, download scripts to **automatically [deployument](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Service), start, stop and remove**.
 
-- 3rd option (**bin**, added in version 0.3.0)
+### 3rd option (**bin**, added in version 0.3.0)
 
-💡 **PowerShell 5.1 acts as the default handler (limitations of the ps2exe module)**, which prevents all endpoints from working correctly
+> 💡 **PowerShell 5.1 acts as the default handler (limitations of the ps2exe module)**, which prevents all endpoints from working correctly
 
 There are two options for launching using an **[executable file](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Bin)** ([build script](https://github.com/Lifailon/WinAPI/blob/rsa/WinAPI/Bin/compiling-ps2exe.ps1)).
 
@@ -103,7 +103,7 @@ There are two options for launching using an **[executable file](https://github.
 
 To stop the background process, use the command: `Get-Process *winapi* | Stop-Process`
 
-### 🔒 Authorization
+## 🔒 Authorization
 
 Base authorization has been implemented (based on Base64).
 
@@ -141,7 +141,7 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/process
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/process/torrent
 ```
 
-### 📢 Response code
+## 📢 Response code
 
 **200. Request completed successfully.**
 
@@ -153,7 +153,7 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/process/torrent
 
 **405. Method not allowed.** Response to other methods.
 
-### 🐧 Examples POST request from Linux client
+## 🐧 Examples POST request from Linux client
 
 - Stop and start service **WinRM**:
 
@@ -188,8 +188,8 @@ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qb
 ```Bash
 user="rest"
 pass="api"
-curl -s -X POST -u $user:$pass --data '' http://192.168.3.100:8443/api/process/plex_media_server -H "Status: Stop"
-curl -s -X POST -u $user:$pass --data '' http://192.168.3.100:8443/api/process/plex_media_server -H "Status: Start" -H "Path: C:\Program Files\Plex\Plex Media Server\Plex Media Server.exe"
+curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/plex_media_server -H "Status: Stop"
+curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/plex_media_server -H "Status: Start" -H "Path: C:\Program Files\Plex\Plex Media Server\Plex Media Server.exe"
 ```
 
 - Delete file
@@ -205,7 +205,7 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Mo
 curl -s -X POST -u $user:$pass -data '' http://192.168.3.99:8443/api/file-delete -H "Path: D:/Movies/The-Flash/4 sezon/The.Flash.S04E23.1080p.rus.LostFilm.TV.mkv"
 ```
 
-### 🔌 Windows client
+## 🔌 Windows client
 
 ```PowerShell
 $user = "rest"
@@ -241,7 +241,7 @@ Get-Hardware -ComputerName 192.168.3.99 -Port 8443 -User rest -Pass api
 
 You can add endpoints to the module yourself for fast remote communication via API.
 
-### 🎉 Simple web server
+## 🎉 Simple web server
 
 There are buttons for switching between all web pages.
 
@@ -263,7 +263,7 @@ There are buttons for switching between all web pages.
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Metrics.jpg)
 
-### 📊 GET data examples
+## 📊 GET data examples
 
 ```Bash
 lifailon@hv-devops-01:~$ user="rest"
@@ -574,7 +574,7 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
   }
 ]
 ```
-### 📑 Server log
+## 📑 Server log
 
 Example of logging different clients (Google chrome, powershell and curl).
 

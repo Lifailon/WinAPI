@@ -34,8 +34,8 @@ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/service/wi
 curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Check"
 curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Stop"
 curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Start"
-curl -s -X POST -u $user:$pass --data '' http://192.168.3.100:8443/api/process/plex_media_server -H "Status: Stop"
-curl -s -X POST -u $user:$pass --data '' http://192.168.3.100:8443/api/process/plex_media_server -H "Status: Start" -H "Path: C:\Program Files\Plex\Plex Media Server\Plex Media Server.exe"
+curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/plex_media_server -H "Status: Stop"
+curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/plex_media_server -H "Status: Start" -H "Path: C:\Program Files\Plex\Plex Media Server\Plex Media Server.exe"
 # GET Hardware
 Get-Hardware -ComputerName 192.168.3.99 -Port 8443 -User rest -Pass api
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/hardware
