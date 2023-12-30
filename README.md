@@ -79,19 +79,19 @@ And open a port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-### 1st option (**stable**, iadded in version 0.3.2)
+### 1st option (stable)
 
-💡 **Administrator rights are required to run**
+> 💡 **Administrator rights are required to run**
 
 Download the [latest](https://github.com/Lifailon/WinAPI/releases) version and run the script anywhere you like. At startup, **added a function to request Administrator access rights**.
 
-### 2nd option (**service**, added in version 0.3.1)
+### 2nd option (service, added in version 0.3.1)
 
 > 💡 **For reason unknown to me, the service doesn't process all the code on startup** (doesn't create an ini file and hangs at POST request to stop the process).
 
 To install the server part as a **service (used NSSM)**, download scripts to **automatically [deployument](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Service), start, stop and remove**.
 
-### 3rd option (**bin**, added in version 0.3.0)
+### 3rd option (executable, added in version 0.3.0)
 
 > 💡 **PowerShell 5.1 acts as the default handler (limitations of the ps2exe module)**, which prevents all endpoints from working correctly
 
