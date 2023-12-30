@@ -8,7 +8,7 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/Lifailon/WinAPI)
 ![GitHub downloads](https://img.shields.io/github/downloads/lifailon/WinAPI/total?color=<green>)
 
-[README first test version](https://github.com/Lifailon/WinAPI/blob/rsa/Test/README.md)
+[README](https://github.com/Lifailon/WinAPI/blob/rsa/Test/README.md) first test version
 
 **📝 Publication on [Habr](https://habr.com/ru/articles/783022/)**
 
@@ -83,9 +83,15 @@ New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Actio
 
 💡 **Administrator rights are required to run**
 
-To install the server part as a **service (used NSSM)**, download scripts to **automatically [deployument](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Service), start, stop and remove**.
+Download the [latest](https://github.com/Lifailon/WinAPI/releases) version and run the script anywhere you like. At startup, **added a function to request Administrator access rights**.
 
 - 2nd option
+
+💡 **For some reason unknown to me, the service doesn't process all the code on startup, doesn't create an ini file and hangs at POST request to stop the process.**
+
+To install the server part as a **service (used NSSM)**, download scripts to **automatically [deployument](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Service), start, stop and remove**.
+
+- 3rd option
 
 There are two options for launching using an **[executable file](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Bin)**.
 
