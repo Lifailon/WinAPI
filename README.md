@@ -8,7 +8,7 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/Lifailon/WinAPI)
 ![GitHub downloads](https://img.shields.io/github/downloads/lifailon/WinAPI/total?color=<green>)
 
-[Readme old version](https://github.com/Lifailon/WinAPI/blob/rsa/Test/README.md)
+[README first test version](https://github.com/Lifailon/WinAPI/blob/rsa/Test/README.md)
 
 **📝 Publication on [Habr](https://habr.com/ru/articles/783022/)**
 
