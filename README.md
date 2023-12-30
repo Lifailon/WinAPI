@@ -79,23 +79,23 @@ And open a port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-- 1st option
+- 1st option (**stable**, iadded in version 0.3.2)
 
 💡 **Administrator rights are required to run**
 
 Download the [latest](https://github.com/Lifailon/WinAPI/releases) version and run the script anywhere you like. At startup, **added a function to request Administrator access rights**.
 
-- 2nd option
+- 2nd option (**service**, added in version 0.3.1)
 
 💡 **For reason unknown to me, the service doesn't process all the code on startup (doesn't create an ini file and hangs at POST request to stop the process).**
 
 To install the server part as a **service (used NSSM)**, download scripts to **automatically [deployument](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Service), start, stop and remove**.
 
-- 3rd option
-
-There are two options for launching using an **[executable file](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Bin)**.
+- 3rd option (**bin**, added in version 0.3.0)
 
 💡 **PowerShell 5.1 acts as the default handler (limitations of the ps2exe module)**, which prevents all endpoints from working correctly
+
+There are two options for launching using an **[executable file](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Bin)** ([build script](https://github.com/Lifailon/WinAPI/blob/rsa/WinAPI/Bin/compiling-ps2exe.ps1)).
 
 **winapi-console.exe** - process startup in a window with logging output of connections to the server
 
@@ -155,8 +155,6 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/process/torrent
 
 ### 🐧 Examples POST request from Linux client
 
-> If the service in the name contains spaces, pass the name in the url request using the **underscore (_) delimiter**.
-
 - Stop and start service **WinRM**:
 
 First find the service to pass its full name to the to url for POST request (example, using part of the name in GET request).
@@ -170,7 +168,7 @@ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/service/wi
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/service/winrm | jq -r .Status
 ```
 
-- Stop and start process **qbittorrent**:
+- Stop and start process **qBittorrent**:
 
 First find the process by its name in wilcard format using a GET request. Using **Check** in the **Status** header, we display the number of running processes. To stop the process, use header **Status: Stop**. To run the process, two examples are given using the name to find the executable and the second option, specify the full path to the executable.
 
@@ -181,7 +179,17 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/process/torrent
 curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Check"
 curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Stop"
 curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Start"
-curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Start" -H "Path: C:\Program Files\qBittorrent\qbittorrent.exe"
+```
+
+- Stop and start process **Plex Media Server**:
+
+> If the service in the **name contains spaces**, pass the name in the url request using the **underscore (_) delimiter**.
+
+```Bash
+user="rest"
+pass="api"
+curl -s -X POST -u $user:$pass --data '' http://192.168.3.100:8443/api/process/plex_media_server -H "Status: Stop"
+curl -s -X POST -u $user:$pass --data '' http://192.168.3.100:8443/api/process/plex_media_server -H "Status: Start" -H "Path: C:\Program Files\Plex\Plex Media Server\Plex Media Server.exe"
 ```
 
 - Delete file
