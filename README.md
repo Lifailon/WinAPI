@@ -87,7 +87,7 @@ Download the [latest](https://github.com/Lifailon/WinAPI/releases) version and r
 
 - 2nd option
 
-💡 **For some reason unknown to me, the service doesn't process all the code on startup, doesn't create an ini file and hangs at POST request to stop the process.**
+💡 **For reason unknown to me, the service doesn't process all the code on startup (doesn't create an ini file and hangs at POST request to stop the process).**
 
 To install the server part as a **service (used NSSM)**, download scripts to **automatically [deployument](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Service), start, stop and remove**.
 
@@ -154,6 +154,8 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/process/torrent
 **405. Method not allowed.** Response to other methods.
 
 ### 🐧 Examples POST request from Linux client
+
+> If the service in the name contains spaces, pass the name in the url request using the **underscore (_) delimiter**.
 
 - Stop and start service **WinRM**:
 
