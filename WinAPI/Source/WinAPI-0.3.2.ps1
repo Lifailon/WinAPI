@@ -614,6 +614,8 @@ function Start-Socket {
                 ### GET /api/service/*ServiceName* (windcard format)
                 elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -match "/api/service/.") {
                     $ServiceName = ($context.Request.RawUrl) -replace ".+/"
+                    ### 0.3.2: To transfer a service containing spaces
+                    $ServiceName = $ServiceName -replace "_"," "
                     $GetService = Get-ServiceDescription *$ServiceName*
                     ### Response on not fount service (code 400)
                     if ($null -eq $GetService) {
@@ -629,7 +631,7 @@ function Start-Socket {
                 elseif ($context.Request.HttpMethod -eq "POST" -and $context.Request.RawUrl -match "/api/service/.") {
                     ### Get Service Name from endpoint
                     $ServiceName = ($context.Request.RawUrl) -replace ".+/"
-                    ### To transfer a service containing spaces
+                    ### 0.3.2: To transfer a service containing spaces
                     $ServiceName = $ServiceName -replace "_"," "
                     ### Get Status from Headers Request (stop/start/restart)
                     $Status = $context.Request.Headers["Status"]
@@ -739,7 +741,7 @@ function Start-Socket {
                 ### GET /api/process/*ProcessName* (windcard format)
                 elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -match "/api/process/.") {
                     $ProcessName = ($context.Request.RawUrl) -replace ".+/"
-                    ### To transfer a process containing spaces
+                    ### 0.3.2: To transfer a process containing spaces
                     $ProcessName = $ProcessName -replace "_"," "
                     $GetProcess = Get-ProcessDescription *$ProcessName*
                     ### Response on not fount service (code 400)
@@ -755,7 +757,7 @@ function Start-Socket {
                 ### POST /api/process/ProcessName (not windcard format)
                 elseif ($context.Request.HttpMethod -eq "POST" -and $context.Request.RawUrl -match "/api/process/.") {
                     $ProcessName = ($context.Request.RawUrl) -replace ".+/"
-                    ### To transfer a process containing spaces
+                    ### 0.3.2: To transfer a process containing spaces
                     $ProcessName = $ProcessName -replace "_"," "
                     ### Get Status (check/stop/start) and Path from Headers Request
                     $Status      = $context.Request.Headers["Status"]
