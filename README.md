@@ -55,6 +55,10 @@ Simple HTTP server with the ability to stop and start services and process using
 
 Use in **PowerShell Core**. No dependencies.
 
+To install or update the process scripts and latest server side (path default: ), run the command in your console:
+```PowerShell
+Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Process/Deploy-WinAPI-Script.ps1")
+```
 When the server first starts up, a default **configuration file (winapi.ini)** is created at the path: `$home/Documents/WinAPI/winapi.ini`. Configure it yourself.
 
 The following variables to configure **port, login and password** for connect to the server:
@@ -83,7 +87,11 @@ New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Actio
 
 > 💡 **Administrator rights are required to run**
 
-Download the [latest](https://github.com/Lifailon/WinAPI/releases) version and run the script anywhere you like. At startup, **added a function to request Administrator access rights**.
+Use a script to **run the server part in background process mode**: `winapi-process-start.ps1`
+
+**Stop**: `winapi-process-stop.ps1`
+
+To check the status of a port: `Test-Port.ps1`
 
 ### 2nd option (service, added in version 0.3.1)
 
