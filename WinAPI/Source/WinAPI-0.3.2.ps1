@@ -329,7 +329,7 @@ function Get-Hardware {
         $VideoCard = Get-CimInstance Win32_VideoController | Select-Object @{
         Label="VideoCard"; Expression={$_.Name}}, @{Label="Display"; Expression={
         [string]$_.CurrentHorizontalResolution+"x"+[string]$_.CurrentVerticalResolution}}, 
-        @{Label="vRAM"; Expression={($_.AdapterRAM/1Gb)}}
+        @{Label="vRAM"; Expression={([int]$($_.AdapterRAM/1Gb))}}
         $VCs = $VideoCard.vRAM | Measure-Object -Sum
         $NetworkAdapter = Get-CimInstance -Class Win32_NetworkAdapterConfiguration -Filter IPEnabled=$true
         $NAs = $NetworkAdapter | Measure-Object
@@ -487,7 +487,7 @@ function Get-VideoCard {
         $CollectionVC.Add([PSCustomObject]@{
             Model    = $_.VideoCard
             Display  = $_.Display
-            VideoRAM = [string]$_.vRAM+" Gb"
+            VideoRAM = [string]$([int]$($_.vRAM))+" Gb"
         })
     }
     $CollectionVC
@@ -739,6 +739,8 @@ function Start-Socket {
                 ### GET /api/process/*ProcessName* (windcard format)
                 elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -match "/api/process/.") {
                     $ProcessName = ($context.Request.RawUrl) -replace ".+/"
+                    ### To transfer a process containing spaces
+                    $ProcessName = $ProcessName -replace "_"," "
                     $GetProcess = Get-ProcessDescription *$ProcessName*
                     ### Response on not fount service (code 400)
                     if ($null -eq $GetProcess) {
