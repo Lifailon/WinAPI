@@ -26,17 +26,40 @@ All GET requests can be output in one of the following formats: **JSON (default)
 `/apt/service/service_name` - Get list service by the specified name passed in URL (using **wildcard** format) \
 `/apt/process` - Get a list **all running processes** in an easy-to-read format \
 `/apt/process/process_name` - Get list running processes by the specified name passed in URL (using **wildcard** format) \
-`/api/hardware` - Output of summary statistics of metrics close to Task Manager from **CIM** \
+`/api/files` - Get a list of files and directories at the specified path in the **Path header** with the size, number of child files and directories, date of creation, access and modification
+
+- **GET metrics from WMI/CIMv2 (Common Information Model)**
+
+`/api/hardware` - Output of summary statistics of metrics close to **Task Manager** \
 `/api/performance` - Output metrics from **Counter** \
 `/api/cpu` - CPU use to procent \
 `/api/memory` - Memory use to GB and procent \
 `/api/memory/slots` - Number of memory slots and their frequency \
 `/api/disk/physical` - List of all physical disks, their model and siz \
 `/api/disk/logical` - List of all logical disks, their model and siz \
-`/api/disk/iops` - Input and Output operations per second for all physical disks \
+`/api/disk/iops` - Metrics for all physical disks (time, bytes speed, queue, Input and Output operations per second) \
+`/api/disk/iops/total` - Summary statistics for all physical disks \
 `/api/video` - List of all video adapters, video memory size and resolution \
 `/api/network` - List of all network adapters and their settings \
-`/api/files` - Get a list of files and directories at the specified path in the **Path header** with the size, number of child files and directories, date of creation, access and modification
+`api/network/ipconfig` - Settings for all network interfaces \
+`api/network/stat` - Network connection statistics (ports) \
+`api/network/interface/stat/current` - Current statistics of the active network interface (formatted dat) \
+`api/network/interface/stat/all` - General statistics of the active network interface since system boot (raw data)
+
+- **GET metrics from Open Hardware Monitor**
+
+⚠️ This requires downloading the portable version of the [OpenHardwareMonit](https://openhardwaremonitor.org/downloads/) program. A health check and startup in case the process stops is present.
+
+For convenience, place in one of the following deristory, which are used in the process search function to start the process:
+
+```PowerShell
+"C:\Program Files",
+"C:\Program Files (x86)",
+"C:\Users\<UserName>\AppData\Roaming",
+"C:\Users\<UserName>\Documents"
+```
+
+`/api/sensor` - Summary table of all sensors
 
 - **Web**
 
@@ -55,7 +78,7 @@ Simple HTTP server with the ability to stop and start services and process using
 
 Use in **PowerShell Core**. No dependencies.
 
-To install or update the process scripts and latest server side (path default: ), run the command in your console:
+To install or update the process scripts and latest server side (path default: `$home/Documents`), run the command in your console:
 ```PowerShell
 Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Process/Deploy-WinAPI-Script.ps1")
 ```
@@ -64,9 +87,9 @@ When the server first starts up, a default **configuration file (winapi.ini)** i
 The following variables to configure **port, login and password** for connect to the server:
 
 ```PowerShell
-port        = 8443
-user        = rest
-pass        = api
+port = 8443
+user = rest
+pass = api
 ```
 
 If you want output to **log** requests to a console and/or write file, enable and set the path.
@@ -263,7 +286,7 @@ There are buttons for switching between all web pages.
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Service.jpg)
 
-- Hardware statistics from CIM (Common Information Model):
+- Hardware statistics from Common Information Model:
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Hardware.jpg)
 

@@ -50,8 +50,8 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/iops/total
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/video
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/ipconfig
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/stat
-curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/interface/stat/all
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/interface/stat/current
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/interface/stat/all
 # GET OpenHardwareMonitor
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/sensor
 # GET Files
