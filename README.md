@@ -56,10 +56,10 @@ All GET requests can be output in one of the following formats: **JSON (default)
 
 ⚠️ This requires downloading the portable version of the [OpenHardwareMonit](https://openhardwaremonitor.org/downloads/) program. A health check and startup in case the process stops is present when accessing the endpoint.
 
-For a quick installation, use this command in your terminal (to run the Deploy-OpenHardwareMonitor.ps1 script on your system):
+For a quick installation, use this command in your terminal (to run the `Deploy-OpenHardwareMonitor.ps1` script on your system):
 
 ```PowerShell
-Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Process/Deploy-OpenHardwareMonitor.ps1")
+Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Deploy/Deploy-OpenHardwareMonitor.ps1")
 ```
 
 When accessing the endpoint, there is a health check and a startup in case the process stops. For this purpose, the program must be located in one of the following paths (used in the `Find-Process` function to find the process executable by name):
@@ -90,7 +90,7 @@ Use in **PowerShell Core**. No dependencies.
 
 To install or update the process scripts and latest server side (path default: `$home/Documents`), run the command in your console:
 ```PowerShell
-Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Process/Deploy-WinAPI-Script.ps1")
+Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Deploy/Deploy-WinAPI-Script.ps1")
 ```
 When the server first starts up, a default **configuration file (winapi.ini)** is created at the path: `$home/Documents/WinAPI/winapi.ini`. Configure it yourself.
 
@@ -116,23 +116,25 @@ And open a port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-### 1st option (stable, process, added in version 0.3.2)
+- 1st option (stable, process, added in version 0.3.2)
 
 > 💡 **Administrator rights are required to run**
+
+The scripts are already included in the files when using server part [deployment](https://github.com/Lifailon/WinAPI#-install).
 
 Use a script to **run the server part in background process mode**: `winapi-process-start.ps1`
 
 **Stop**: `winapi-process-stop.ps1`
 
-To check the status of a port: `Test-Port.ps1`
+To check the status server (port): `Test-Port.ps1`
 
-### 2nd option (service, added in version 0.3.1)
+- 2nd option (service, added in version 0.3.1)
 
 > 💡 **For reason unknown to me, the service doesn't process all the code on startup** (doesn't create an ini file and hangs at POST request to stop the process).
 
 To install the server part as a **service (used NSSM)**, download scripts to **automatically [deployument](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Service), start, stop and remove**.
 
-### 3rd option (executable, added in version 0.3.0)
+- 3rd option (executable, added in version 0.3.0)
 
 > 💡 **PowerShell 5.1 acts as the default handler (limitations of the ps2exe module)**, which prevents all endpoints from working correctly
 
