@@ -865,7 +865,7 @@ function Start-Socket {
                     $GetProcess += "<th>Name</th><th>Action</th><th>Total Process Time</th>"
                     $GetProcess += "<th>User Process Time</th><th>Privileged Process Time</th>"
                     $GetProcess += "<th>Working Set</th><th>Peak Working Set</th><th>Page Memory</th>"
-                    $GetProcess += "<th>Virtual Memory</th><th>Private Memory</th><th>Running Time</th>"
+                    $GetProcess += "<th>Virtual Memory</th><th>Running Time</th>"
                     $GetProcess += "<th>Threads</th><th>Handles</th>"
                     $GetProcess += "</tr>"
                     foreach ($Proces in $Process) {
