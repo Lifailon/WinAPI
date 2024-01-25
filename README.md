@@ -16,6 +16,8 @@ REST API and simple Web server **based on .NET HttpListener** and only **one Pow
 
 💡 Authentication, error and stop handling, conversion to 4 data types and more than 20 endpoints are implemented.
 
+⚠️ Multithreading for each request is not implemented. If the previous request has not been processed yet and a new request arrives, the server terminates, to handle this event a server restart is implemented as a temporary solution.
+
 🍿 The server functionality is implemented in the [Kinozal-Bot](https://github.com/Lifailon/Kinozal-Bot) project.
 
 🐧 Since the server is built on .NET, this implementation is **cross-platform**, you can try managing Linux services from a Windows system: **[dotNET-Systemd-API](https://github.com/Lifailon/dotNET-Systemd-API)**.
