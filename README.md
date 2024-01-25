@@ -8,11 +8,13 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/Lifailon/WinAPI)
 ![GitHub downloads](https://img.shields.io/github/downloads/lifailon/WinAPI/total?color=<green>)
 
-[README](https://github.com/Lifailon/WinAPI/blob/rsa/Test/README.md) first test version
-
 **📝 Publication on [Habr](https://habr.com/ru/articles/783022/)**
 
-Simple REST API and Web server **based on .NET HttpListener**. Using WinAPI, you can quickly set up remote communication with Windows OS without the need to configure WinRM or OpenSSH using APIs and get control from any platform (**including Linux**) via browser or any REST client.
+[README](https://github.com/Lifailon/WinAPI/blob/rsa/Test/README.md) first test version
+
+REST API and simple Web server **based on .NET HttpListener** and only **one PowerShell** language. Using WinAPI, you can quickly set up remote communication with Windows OS without the need to configure WinRM or OpenSSH using APIs and get control from any platform (**including Linux**) via browser or any REST client.
+
+💡 Authentication, error and stop handling, conversion to 4 data types and more than 20 endpoints are implemented.
 
 🍿 The server functionality is implemented in the [Kinozal-Bot](https://github.com/Lifailon/Kinozal-Bot) project.
 
