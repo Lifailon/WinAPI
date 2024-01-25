@@ -14,9 +14,9 @@
 
 REST API and simple Web server **based on .NET HttpListener** and only **one PowerShell** language. Using WinAPI, you can quickly set up remote communication with Windows OS without the need to configure WinRM or OpenSSH using APIs and get control from any platform (**including Linux**) via browser or any REST client.
 
-➕ Authentication, error and stop handling, conversion to 4 data types and more than 20 endpoints are implemented.
+✅ Authentication, error and stop handling, conversion to 4 data types and more than 20 endpoints are implemented.
 
-➖ Multithreading for each request is not implemented. If the previous request has not been processed yet and a new request arrives, the server terminates, to handle this event a server restart is implemented as a temporary solution.
+❎ Multithreading for each request is not implemented. If the previous request has not been processed yet and a new request arrives, the server terminates, to handle this event a server restart is implemented as a temporary solution.
 
 🍿 The server functionality is implemented in the [Kinozal-Bot](https://github.com/Lifailon/Kinozal-Bot) project.
 
