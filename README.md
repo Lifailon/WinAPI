@@ -12,9 +12,11 @@
 
 **📝 Publication on [Habr](https://habr.com/ru/articles/783022/)**
 
-Simple REST API and Web server **based on .NET HttpListener**. Using WinAPI, you can quickly set up remote communication with Windows OS without the need to configure WinRM or OpenSSH using APIs and get control from any platform and any REST client, **including Linux**. The goal of the project is to demonstrate the capabilities of PowerShell language and implementation of the functionality in **[Kinozal-Bot](https://github.com/Lifailon/Kinozal-Bot)** due to the lack of a suitable ready-made solution on the market. 
+Simple REST API and Web server **based on .NET HttpListener**. Using WinAPI, you can quickly set up remote communication with Windows OS without the need to configure WinRM or OpenSSH using APIs and get control from any platform (**including Linux**) via browser or any REST client.
 
-🐧 This implementation is **cross-platform**, you can try service management in Linux: **[dotNET-Systemd-API](https://github.com/Lifailon/dotNET-Systemd-API)**.
+🍿 The server functionality is implemented in the [Kinozal-Bot](https://github.com/Lifailon/Kinozal-Bot) project.
+
+🐧 Since the server is built on .NET, this implementation is **cross-platform**, you can try managing Linux services from a Windows system: **[dotNET-Systemd-API](https://github.com/Lifailon/dotNET-Systemd-API)**.
 
 ## 📚 Implemented endpoints:
 
@@ -46,13 +48,19 @@ All GET requests can be output in one of the following formats: **JSON (default)
 `api/network/interface/stat/current` - Current statistics of the active network interface (formatted dat) \
 `api/network/interface/stat/all` - General statistics of the active network interface since system boot (raw data)
 
-- **GET metrics from Open Hardware Monitor**
+- **GET metrics from Open Hardware Monitor via CIM**
 
 `/api/sensor` - Summary table of all sensors
 
-⚠️ This requires downloading the portable version of the [OpenHardwareMonit](https://openhardwaremonitor.org/downloads/) program. A health check and startup in case the process stops is present.
+⚠️ This requires downloading the portable version of the [OpenHardwareMonit](https://openhardwaremonitor.org/downloads/) program. A health check and startup in case the process stops is present when accessing the endpoint.
 
-For convenience, place in one of the following deristory, which are used in the process search function to start the process:
+For a quick installation, use this command in your terminal (to run the Deploy-OpenHardwareMonitor.ps1 script on your system):
+
+```PowerShell
+Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Process/Deploy-OpenHardwareMonitor.ps1")
+```
+
+When accessing the endpoint, there is a health check and a startup in case the process stops. For this purpose, the program must be located in one of the following paths (used in the `Find-Process` function to find the process executable by name):
 
 ```PowerShell
 "C:\Program Files",
