@@ -48,6 +48,8 @@ All GET requests can be output in one of the following formats: **JSON (default)
 
 - **GET metrics from Open Hardware Monitor**
 
+`/api/sensor` - Summary table of all sensors
+
 ⚠️ This requires downloading the portable version of the [OpenHardwareMonit](https://openhardwaremonitor.org/downloads/) program. A health check and startup in case the process stops is present.
 
 For convenience, place in one of the following deristory, which are used in the process search function to start the process:
@@ -59,9 +61,7 @@ For convenience, place in one of the following deristory, which are used in the 
 "C:\Users\<UserName>\Documents"
 ```
 
-`/api/sensor` - Summary table of all sensors
-
-- **Web**
+- **Web only**
 
 Simple HTTP server with the ability to stop and start services and process using buttons (using JavaScript functions). **Only for Web Browser**.
 
@@ -106,7 +106,7 @@ And open a port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-### 1st option (stable)
+### 1st option (stable, process, added in version 0.3.2)
 
 > 💡 **Administrator rights are required to run**
 
