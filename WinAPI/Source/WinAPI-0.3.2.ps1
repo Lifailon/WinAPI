@@ -46,8 +46,14 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/memory/slots
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/physical
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/logical
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/iops
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/iops/total
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/video
-curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/ipconfig
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/stat
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/interface/stat/all
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/interface/stat/current
+# GET OpenHardwareMonitor
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/sensor
 # GET Files
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/"
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies"
@@ -99,7 +105,7 @@ $Log_Path    = $ini.Log_Path
 $cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${user}:${pass}"))
 #endregion
 
-#region region main-functions
+#region main-functions
 function Get-Log {
     ### Debug (Get all Request, Headers and Response parameters):
     # $context.Request | Out-Default
@@ -213,17 +219,23 @@ function Find-Process {
     param (
         $ProcessName
     )
-    $ProcessPath = (Get-ChildItem "C:\Program Files" | Where-Object Name -match $ProcessName).FullName
-    if ($null -eq $ProcessPath) {
-        $ProcessPath = (Get-ChildItem "C:\Program Files (x86)" | Where-Object Name -match $ProcessName).FullName
+    $PathSearchArray = @(
+        "$env:SystemDrive\Program Files",
+        "$env:SystemDrive\Program Files (x86)",
+        "$env:HOMEPATH\AppData\Roaming",
+        "$env:HOMEPATH\Documents"
+    )
+    foreach ($PathSearch in $PathSearchArray) {
+        $ProcessPath = (Get-ChildItem $PathSearch | Where-Object Name -match $ProcessName).FullName
+        if ($null -ne $ProcessPath) {
+            break
+        }
     }
-    if ($null -eq $ProcessPath) {
-        $ProcessPath = (Get-ChildItem "C:\Users\lifailon\AppData\Roaming" | Where-Object Name -match $ProcessName).FullName
-    }
-    $ProcessNameExec = "$ProcessName"+".exe"
+    $ProcessNameExec = "$($ProcessName).exe"
     (Get-ChildItem $ProcessPath -Recurse | Where-Object Name -eq $ProcessNameExec).FullName
 }
 
+# Find-Process OpenHardwareMonitor # C:\Users\lifailon\Documents\OpenHardwareMonitor-0.9.6\OpenHardwareMonitor-0.9.6\OpenHardwareMonitor.exe
 # Find-Process qbittorrent # C:\Program Files\qBittorrent\qbittorrent.exe
 # Find-Process nmap # C:\Program Files (x86)\Nmap\nmap.exe
 # Find-Process telegram # C:\Users\lifailon\AppData\Roaming\Telegram Desktop\Telegram.exe
@@ -268,18 +280,26 @@ function Get-Files {
 # Get-Files -Path "D:/Movies/"
 #endregion
 
-#region hardware-functions
+#region html-buttons
 $BodyButtons  = "<button onclick='location.href=""/service""'>Service</button> "
 $BodyButtons += "<button onclick='location.href=""/process""'>Process</button> "
 $BodyButtons += "<button onclick='location.href=""/api/hardware""'>Hardware</button> "
+$BodyButtons += "<button onclick='location.href=""/api/sensor""'>Sensors</button> "
 $BodyButtons += "<button onclick='location.href=""/api/performance""'>Performance</button> "
 $BodyButtons += "<button onclick='location.href=""/api/cpu""'>CPU</button> "
 $BodyButtons += "<button onclick='location.href=""/api/memory""'>Memory</button> "
 $BodyButtons += "<button onclick='location.href=""/api/disk/physical""'>Physical Disk</button> "
 $BodyButtons += "<button onclick='location.href=""/api/disk/logical""'>Logical Disk</button> "
 $BodyButtons += "<button onclick='location.href=""/api/disk/iops""'>IOps</button> "
+$BodyButtons += "<button onclick='location.href=""/api/disk/iops/total""'>IOps Total</button> "
 $BodyButtons += "<button onclick='location.href=""/api/video""'>Video</button> "
-$BodyButtons += "<button onclick='location.href=""/api/network""'>Network</button><br><br>"
+$BodyButtons += "<button onclick='location.href=""/api/network/ipconfig""'>IPConfig</button> "
+$BodyButtons += "<button onclick='location.href=""/api/network/stat""'>Netstat</button> "
+$BodyButtons += "<button onclick='location.href=""/api/network/interface/stat/current""'>Interfaces Stats Current</button> "
+$BodyButtons += "<button onclick='location.href=""/api/network/interface/stat/all""'>Interfaces Stats All</button><br><br>"
+#endregion
+
+#region hardware-functions
 function Get-Hardware {
     param (
         $ComputerName,
@@ -290,13 +310,16 @@ function Get-Hardware {
     if ($null -eq $ComputerName) {
         $Collection = New-Object System.Collections.Generic.List[System.Object]
         $SYS = Get-CimInstance Win32_ComputerSystem
-        $BootTime = Get-CimInstance -ComputerName $srv Win32_OperatingSystem | Select-Object LocalDateTime,LastBootUpTime
+        $BootTime = Get-CimInstance -ComputerName $srv Win32_OperatingSystem |
+        Select-Object LocalDateTime,
+        LastBootUpTime
         $Uptime = ([string]($BootTime.LocalDateTime - $BootTime.LastBootUpTime) -split ":")[0,1] -join ":"
         $BootDate = Get-Date -Date $BootTime.LastBootUpTime -Format "dd/MM/yyyy hh:mm:ss"
         $OS = Get-CimInstance Win32_OperatingSystem
         $BB = Get-CimInstance Win32_BaseBoard
         $BBv = $BB.Manufacturer+" "+$BB.Product+" "+$BB.Version
-        $CPU = Get-CimInstance Win32_Processor | Select-Object Name,
+        $CPU = Get-CimInstance Win32_Processor |
+        Select-Object Name,
         @{Label="Core"; Expression={$_.NumberOfCores}},
         @{Label="Thread"; Expression={$_.NumberOfLogicalProcessors}}
         $CPU_Use_Proc = [string]((Get-CimInstance Win32_PerfFormattedData_PerfOS_Processor -ErrorAction Ignore | 
@@ -310,29 +333,47 @@ function Get-Hardware {
         $Memory = Get-CimInstance Win32_OperatingSystem
         $MemUse = $Memory.TotalVisibleMemorySize - $Memory.FreePhysicalMemory
         $MemUserProc = ($MemUse / $Memory.TotalVisibleMemorySize) * 100
-        $MEM = Get-CimInstance Win32_PhysicalMemory | Select-Object Manufacturer,PartNumber,
+        $MEM = Get-CimInstance Win32_PhysicalMemory |
+        Select-Object Manufacturer,
+        PartNumber,
         ConfiguredClockSpeed,@{Label="Memory"; Expression={[string]($_.Capacity/1Mb)}}
         $MEMs = $MEM.Memory | Measure-Object -Sum
-        $PhysicalDisk = Get-CimInstance Win32_DiskDrive | Select-Object Model,
+        $PhysicalDisk = Get-CimInstance Win32_DiskDrive |
+        Select-Object Model,
         @{Label="Size"; Expression={[int]($_.Size/1Gb)}}
         $PDs = $PhysicalDisk.Size | Measure-Object -Sum
-        $LogicalDisk = Get-CimInstance Win32_logicalDisk | Where-Object {$null -ne $_.Size} | Select-Object @{
-        Label="Value"; Expression={$_.DeviceID}}, @{Label="AllSize"; Expression={
-        ([int]($_.Size/1Gb))}},@{Label="FreeSize"; Expression={
-        ([int]($_.FreeSpace/1Gb))}}, @{Label="Free%"; Expression={
-        [string]([int]($_.FreeSpace/$_.Size*100))+" %"}}
+        $LogicalDisk = Get-CimInstance Win32_logicalDisk | Where-Object {$null -ne $_.Size} |
+        Select-Object @{Label="Value"; Expression={$_.DeviceID}},
+        @{Label="AllSize"; Expression={([int]($_.Size/1Gb))}},
+        @{Label="FreeSize"; Expression={([int]($_.FreeSpace/1Gb))}},
+        @{Label="Free%"; Expression={[string]([int]($_.FreeSpace/$_.Size*100))+" %"}}
         $LDs = $LogicalDisk.AllSize | Measure-Object -Sum
         $IOps = Get-CimInstance Win32_PerfFormattedData_PerfDisk_PhysicalDisk -ErrorAction Ignore | 
-        Where-Object { $_.Name -eq "_Total" } | Select-Object Name,PercentDiskTime,PercentIdleTime,
-        PercentDiskWriteTime,PercentDiskReadTime,CurrentDiskQueueLength,DiskBytesPersec,DiskReadBytesPersec,
-        DiskReadsPersec,DiskTransfersPersec,DiskWriteBytesPersec,DiskWritesPersec
-        $VideoCard = Get-CimInstance Win32_VideoController | Select-Object @{
-        Label="VideoCard"; Expression={$_.Name}}, @{Label="Display"; Expression={
-        [string]$_.CurrentHorizontalResolution+"x"+[string]$_.CurrentVerticalResolution}}, 
+        Where-Object { $_.Name -eq "_Total" } | 
+        Select-Object Name,
+        @{name="TotalTime";expression={"$($_.PercentDiskTime) %"}},
+        @{name="IOps";expression={$_.DiskTransfersPersec}},
+        @{name="ReadBytesPersec";expression={$($_.DiskReadBytesPersec/1mb).ToString("0.000 MByte/Sec")}},
+        @{name="WriteBytesPersec";expression={$($_.DiskWriteBytesPersec/1mb).ToString("0.000 MByte/Sec")}}
+        $VideoCard = Get-CimInstance Win32_VideoController | 
+        Select-Object @{Label="VideoCard"; Expression={$_.Name}},
+        @{Label="Display"; Expression={[string]$_.CurrentHorizontalResolution+"x"+[string]$_.CurrentVerticalResolution}}, 
         @{Label="vRAM"; Expression={([int]$($_.AdapterRAM/1Gb))}}
         $VCs = $VideoCard.vRAM | Measure-Object -Sum
         $NetworkAdapter = Get-CimInstance -Class Win32_NetworkAdapterConfiguration -Filter IPEnabled=$true
         $NAs = $NetworkAdapter | Measure-Object
+        $InterfaceStatCurrent = Get-CimInstance -ClassName Win32_PerfFormattedData_Tcpip_NetworkInterface |
+        Select-Object Name,
+        @{name="Total";expression={$($_.BytesTotalPersec/1mb).ToString("0.000 MByte/Sec")}},
+        @{name="Received";expression={$($_.BytesReceivedPersec/1mb).ToString("0.000 MByte/Sec")}},
+        @{name="Sent";expression={$($_.BytesSentPersec/1mb).ToString("0.000 MByte/Sec")}}
+        $InterfaceStatAll = Get-CimInstance -ClassName Win32_PerfRawData_Tcpip_NetworkInterface |
+        Select-Object Name,
+        @{name="Total";expression={$($_.BytesTotalPersec/1gb).ToString("0.00 GByte")}},
+        @{name="Received";expression={$($_.BytesReceivedPersec/1gb).ToString("0.00 GByte")}},
+        @{name="Sent";expression={$($_.BytesSentPersec/1gb).ToString("0.00 GByte")}}
+        $PortListenCount = $(Get-NetTCPConnection -State Listen).Count
+        $PortEstablishedCount = $(Get-NetTCPConnection -State Established).Count
         $Collection.Add([PSCustomObject]@{
             Host                      = $SYS.Name
             Uptime                    = $uptime
@@ -357,10 +398,19 @@ function Get-Hardware {
             PhysicalDiskAllSize       = [string]$PDs.Sum+" Gb"
             LogicalDiskCount          = $LDs.Count
             LogicalDiskAllSize        = [string]$LDs.Sum+" Gb"
-            DiskTotalTime             = [string]$IOps.PercentDiskTime+" %"
+            DiskTotalTime             = $IOps.TotalTime
+            DiskTotalIOps             = $IOps.IOps
+            DiskTotalRead             = $IOps.ReadBytesPersec
+            DiskTotalWrite            = $IOps.WriteBytesPersec
             VideoCardCount            = $VCs.Count
             VideoCardAllSize          = [string]$VCs.Sum+" Gb"
             NetworkAdapterEnableCount = $NAs.Count
+            NetworkReceivedCurrent    = $InterfaceStatCurrent.Received
+            NetworkSentCurrent        = $InterfaceStatCurrent.Sent
+            NetworkReceivedTotal      = $InterfaceStatAll.Received
+            NetworkSentTotal          = $InterfaceStatAll.Sent
+            PortListenCount           = $PortListenCount
+            PortEstablishedCount      = $PortEstablishedCount
         })
         $Collection
     }
@@ -404,24 +454,43 @@ function Get-MemorySize {
     $Memory           = Get-CimInstance Win32_OperatingSystem
     $MemUse           = $Memory.TotalVisibleMemorySize - $Memory.FreePhysicalMemory
     $MemUserProc      = ($MemUse / $Memory.TotalVisibleMemorySize) * 100
+    $PageSize         = $Memory.TotalVirtualMemorySize - $Memory.TotalVisibleMemorySize
+    $PageFree         = $Memory.FreeVirtualMemory - $Memory.FreePhysicalMemory
+    $PageUse          = $PageSize - $PageFree
+    $PageUseProc      = ($PageUse / $PageSize) * 100
+    $PageFile         = Get-CimInstance Win32_PageFileUsage
+    $PagePath         = [string]$($PageFile).Description
+    $MemVirtUse       = $Memory.TotalVirtualMemorySize - $Memory.FreeVirtualMemory
+    $MemVirtUseProc   = ($MemVirtUse / $Memory.TotalVirtualMemorySize) * 100
     $GetProcess       = Get-Process
     $ws               = ((($GetProcess).WorkingSet | Measure-Object -Sum).Sum/1gb).ToString("0.00 GB")
     $pm               = ((($GetProcess).PM | Measure-Object -Sum).Sum/1gb).ToString("0.00 GB")
     $CollectionMemory = New-Object System.Collections.Generic.List[System.Object]
     $CollectionMemory.Add([PSCustomObject]@{
-        MemoryAll     = ($memory.TotalVisibleMemorySize/1mb).ToString("0.00 GB")
-        MemoryUse     = ($MemUse/1mb).ToString("0.00 GB")
-        MemoryUseProc = [string]([int]$MemUserProc)+" %"
-        WorkingSet    = $ws
-        PageMemory    = $pm
+        MemoryAll         = ($memory.TotalVisibleMemorySize/1mb).ToString("0.00 GB")
+        MemoryUse         = ($MemUse/1mb).ToString("0.00 GB")
+        MemoryUseProc     = [string]([int]$MemUserProc)+" %"
+        PageSize          = ($PageSize/1mb).ToString("0.00 GB")
+        PageUse           = ($PageUse/1mb).ToString("0.00 GB")
+        PageUseProc       = [string]([int]$PageUseProc)+" %"
+        PagePath          = $PagePath
+        MemoryVirtAll     = ($memory.TotalVirtualMemorySize/1mb).ToString("0.00 GB")
+        MemoryVirtUse     = ($MemVirtUse/1mb).ToString("0.00 GB")
+        MemoryVirtUseProc = [string]([int]$MemVirtUseProc)+" %"
+        ProcWorkingSet    = $ws
+        ProcPageMemory    = $pm
     })
     $CollectionMemory
 }
 
 function Get-MemorySlots {
-    $Memory = Get-CimInstance Win32_PhysicalMemory | Select-Object Manufacturer,PartNumber,
-    ConfiguredClockSpeed,@{Label="Memory"; Expression={[string]($_.Capacity/1Mb)}},
-    Tag,DeviceLocator,BankLabel
+    $Memory = Get-CimInstance Win32_PhysicalMemory |
+    Select-Object Manufacturer,
+    PartNumber,
+    ConfiguredClockSpeed,
+    @{Label="Memory"; Expression={[string]($_.Capacity/1Mb)}},
+    Tag,DeviceLocator,
+    BankLabel
     $CollectionMemory = New-Object System.Collections.Generic.List[System.Object]
     $Memory | ForEach-Object {
         $CollectionMemory.Add([PSCustomObject]@{
@@ -436,8 +505,11 @@ function Get-MemorySlots {
 }
 
 function Get-PD {
-    $PhysicalDisk = Get-CimInstance Win32_DiskDrive | Select-Object Model,
-    @{Label="Size"; Expression={[int]($_.Size/1Gb)}},Partitions,InterfaceType
+    $PhysicalDisk = Get-CimInstance Win32_DiskDrive | 
+    Select-Object Model,
+    @{Label="Size"; Expression={[int]($_.Size/1Gb)}},
+    Partitions,
+    InterfaceType
     $CollectionPD = New-Object System.Collections.Generic.List[System.Object]
     $PhysicalDisk | ForEach-Object {
         $CollectionPD.Add([PSCustomObject]@{
@@ -451,11 +523,14 @@ function Get-PD {
 }
 
 function Get-LD {
-    $LogicalDisk = Get-CimInstance Win32_logicalDisk | Where-Object {$null -ne $_.Size} | Select-Object @{
-    Label="Value"; Expression={$_.DeviceID}}, @{Label="AllSize"; Expression={
-    ([int]($_.Size/1Gb))}},@{Label="FreeSize"; Expression={
-    ([int]($_.FreeSpace/1Gb))}}, @{Label="Free%"; Expression={
-    [string]([int]($_.FreeSpace/$_.Size*100))+" %"}},FileSystem,VolumeName
+    $LogicalDisk = Get-CimInstance Win32_logicalDisk | Where-Object {$null -ne $_.Size} |
+    Select-Object @{Label="Value"; Expression={$_.DeviceID}},
+    @{Label="AllSize"; Expression={([int]($_.Size/1Gb))}},
+    @{Label="FreeSize"; Expression={([int]($_.FreeSpace/1Gb))}},
+    @{Label="Free%"; Expression={
+    [string]([int]($_.FreeSpace/$_.Size*100))+" %"}},
+    FileSystem,
+    VolumeName
     $CollectionLD = New-Object System.Collections.Generic.List[System.Object]
     $LogicalDisk | ForEach-Object {
         $CollectionLD.Add([PSCustomObject]@{
@@ -471,11 +546,32 @@ function Get-LD {
 }
 
 function Get-IOps {
-    Get-CimInstance Win32_PerfFormattedData_PerfDisk_PhysicalDisk -ErrorAction Ignore | 
-    Where-Object { $_.Name -ne "_Total" } | Select-Object Name,PercentDiskTime,PercentIdleTime,
-    PercentDiskWriteTime,PercentDiskReadTime,CurrentDiskQueueLength,DiskBytesPersec,DiskReadBytesPersec,
-    DiskReadsPersec,DiskTransfersPersec,DiskWriteBytesPersec,DiskWritesPersec
+    param (
+        [switch]$Total
+    )
+    $IO = Get-CimInstance Win32_PerfFormattedData_PerfDisk_PhysicalDisk
+    if ($Total) {
+        $IO = $IO | Where-Object { $_.Name -eq "_Total" }
+    }
+    else {
+        $IO = $IO | Where-Object { $_.Name -ne "_Total" }
+    }
+    $IO | Select-Object Name,
+    @{name="TotalTime";expression={"$($_.PercentDiskTime) %"}}, # Процент времени, в течение которого физический диск занят обработкой запросов ввода-вывода
+    @{name="ReadTime";expression={"$($_.PercentDiskReadTime) %"}}, # Процент времени, в течение которого физический диск занят чтением данных
+    @{name="WriteTime";expression={"$($_.PercentDiskWriteTime) %"}}, # Процент времени, в течение которого физический диск занят записью данных
+    @{name="IdleTime";expression={"$($_.PercentIdleTime) %"}}, #  Процент времени, в течение которого физический диск не занят (находится в режиме простоя)
+    @{name="QueueLength";expression={$_.CurrentDiskQueueLength}}, # Текущая длина очереди диска (количество запросов, которые ожидают обработки диском)
+    @{name="BytesPersec";expression={$($_.DiskBytesPersec/1mb).ToString("0.000 MByte/Sec")}}, # Скорость передачи данных через диск в байтах в секунду (объединенное значение для чтения и записи)
+    @{name="ReadBytesPersec";expression={$($_.DiskReadBytesPersec/1mb).ToString("0.000 MByte/Sec")}}, # Скорость чтения данных с диска в байтах в секунду
+    @{name="WriteBytesPersec";expression={$($_.DiskWriteBytesPersec/1mb).ToString("0.000 MByte/Sec")}}, # Скорость записи данных на диск в байтах в секунду
+    @{name="IOps";expression={$_.DiskTransfersPersec}}, # Общее количество операций ввода-вывода (чтение и запись) с диска в секунду
+    @{name="ReadsIOps";expression={$_.DiskReadsPersec}}, # Количество операций чтения с диска в секунду
+    @{name="WriteIOps";expression={$_.DiskWritesPersec}} # Количество операций записи на диск в секунду
 }
+
+# Get-IOps -Total
+# Get-IOps
 
 function Get-VideoCard {
     $VideoCard = Get-CimInstance Win32_VideoController | Select-Object @{
@@ -493,13 +589,97 @@ function Get-VideoCard {
     $CollectionVC
 }
 
-function Get-NetAdapter {
-    Get-CimInstance -Class Win32_NetworkAdapterConfiguration -Filter IPEnabled=$true | Select-Object Description,
-    DHCPEnabled,DHCPLeaseObtained,DHCPLeaseExpires,DHCPServer,
+function Get-NetIpConfig {
+    Get-CimInstance -Class Win32_NetworkAdapterConfiguration -Filter IPEnabled=$true |
+    Select-Object Description,
     @{Label="IPAddress"; Expression={[string]($_.IPAddress)}},
-    @{Label="DefaultIPGateway"; Expression={[string]($_.DefaultIPGateway)}},
-    @{Label="IPSubnet"; Expression={[string]($_.IPSubnet)}},
-    MACAddress
+    @{Label="GatewayDefault"; Expression={[string]($_.DefaultIPGateway)}},
+    @{Label="Subnet"; Expression={[string]($_.IPSubnet)}},
+    @{Label="DNSServer"; Expression={[string]($_.DNSServerSearchOrder)}},
+    MACAddress,
+    DHCPEnabled,
+    DHCPServer,
+    DHCPLeaseObtained,
+    DHCPLeaseExpires
+}
+
+function Get-NetInterfaceStat {
+    param (
+        [switch]$Current
+    )
+    if ($Current) {
+        Get-CimInstance -ClassName Win32_PerfFormattedData_Tcpip_NetworkInterface |
+        Select-Object Name,
+        @{name="Total";expression={$($_.BytesTotalPersec/1mb).ToString("0.000 MByte/Sec")}}, # Сумма полученных и отправленных байт за секунду
+        @{name="Received";expression={$($_.BytesReceivedPersec/1mb).ToString("0.000 MByte/Sec")}}, # Количество байт, полученных за секунду
+        @{name="Sent";expression={$($_.BytesSentPersec/1mb).ToString("0.000 MByte/Sec")}}, # Количество байт, отправленных за секунду
+        PacketsPersec, # Общее количество пакетов в секунду (включает все виды пакетов)
+        PacketsReceivedPersec, # Количество пакетов, полученных за секунду
+        PacketsReceivedUnicastPersec, # Количество уникальных (unicast) пакетов, полученных за секунду, включает в себя широковещательные (broadcast) и групповые (multicast) пакеты
+        PacketsReceivedNonUnicastPersec, # Количество не уникальных (non-unicast) пакетов, полученных за секунду
+        PacketsReceivedDiscarded, # Количество отброшенных пакетов при получении
+        PacketsReceivedErrors, # Количество пакетов с ошибками при получении
+        PacketsSentPersec, # Количество пакетов, отправленных за секунду
+        PacketsSentUnicastPersec, # Количество уникальных (unicast) пакетов, отправленных за секунду
+        PacketsSentNonUnicastPersec # Количество не уникальных (non-unicast) пакетов, отправленных за секунду
+    }
+    else {
+        Get-CimInstance -ClassName Win32_PerfRawData_Tcpip_NetworkInterface |
+        Select-Object Name,
+        @{name="Total";expression={$($_.BytesTotalPersec/1gb).ToString("0.00 GByte")}},
+        @{name="Received";expression={$($_.BytesReceivedPersec/1gb).ToString("0.00 GByte")}},
+        @{name="Sent";expression={$($_.BytesSentPersec/1gb).ToString("0.00 GByte")}}, 
+        PacketsPersec,
+        PacketsReceivedPersec,
+        PacketsReceivedUnicastPersec,
+        PacketsReceivedNonUnicastPersec,
+        PacketsReceivedDiscarded,
+        PacketsReceivedErrors,
+        PacketsSentPersec,
+        PacketsSentUnicastPersec,
+        PacketsSentNonUnicastPersec
+    }
+}
+
+# Get-NetInterfaceStat -Current
+# Get-NetInterfaceStat
+
+function Get-NetStat {
+    Get-NetTCPConnection -State Established,Listen | Sort-Object -Descending State |
+    Select-Object @{name="ProcessName";expression={(Get-Process -Id $_.OwningProcess).ProcessName}},
+    LocalAddress,
+    LocalPort,
+    RemotePort,
+    @{name="RemoteHostName";expression={((nslookup $_.RemoteAddress)[3]) -replace ".+:\s+"}},
+    RemoteAddress,
+    State,
+    CreationTime,
+    @{Name="RunTime"; Expression={((Get-Date) - $_.CreationTime) -replace "\.\d+$"}},
+    @{name="ProcessPath";expression={(Get-Process -Id $_.OwningProcess).Path}}
+}
+
+function Get-OpenHardwareMonitor {
+    $OHM_Proc = $(Get-Process OpenHardwareMonitor -ErrorAction Ignore)
+    if ($null -eq $OHM_Proc) {
+        $Process_Path = Find-Process OpenHardwareMonitor
+        Start-Process $Process_Path
+    }
+    $Hardware = Get-CimInstance -Namespace "root/OpenHardwareMonitor" -ClassName Hardware |
+    Select-Object Name,
+    HardwareType,
+    Identifier
+    Get-CimInstance -Namespace "root/OpenHardwareMonitor" -ClassName Sensor | Select-Object @{
+        name = "HardwareName"
+        expression = {
+            $Parent = $_.Parent
+            $Hardware | Where-Object Identifier -match $Parent | Select-Object -ExpandProperty Name
+        }
+    },
+    @{name = "SensorName";expression = { $_.Name }},
+    @{name = "SensorType";expression = { "$($_.SensorType) $($_.Index)" }},
+    Value,
+    Min,
+    Max | Sort-Object HardwareName,SensorType,SensorName
 }
 #endregion
 
@@ -545,14 +725,19 @@ function Start-Socket {
                         <button class='navButton' onclick='location.href=""/service""'>Service</button>
                         <button class='navButton' onclick='location.href=""/process""'>Process</button>
                         <button class='navButton' onclick='location.href=""/api/hardware""'>Hardware</button>
+                        <button class='navButton' onclick='location.href=""/api/sensor""'>Sensor</button>
                         <button class='navButton' onclick='location.href=""/api/performance""'>Performance</button>
                         <button class='navButton' onclick='location.href=""/api/cpu""'>CPU</button>
                         <button class='navButton' onclick='location.href=""/api/memory""'>Memory</button>
                         <button class='navButton' onclick='location.href=""/api/disk/physical""'>Physical Disk</button>
                         <button class='navButton' onclick='location.href=""/api/disk/logical""'>Logical Disk</button>
                         <button class='navButton' onclick='location.href=""/api/disk/iops""'>IOps</button>
+                        <button class='navButton' onclick='location.href=""/api/disk/iops/total""'>IOps Total</button>
                         <button class='navButton' onclick='location.href=""/api/video""'>Video</button>
-                        <button class='navButton' onclick='location.href=""/api/network""'>Network</button>
+                        <button class='navButton' onclick='location.href=""/api/network/ipconfig""'>IPConfig</button> 
+                        <button class='navButton' onclick='location.href=""/api/network/stat""'>Netstat</button> 
+                        <button class='navButton' onclick='location.href=""/api/network/interface/stat/current""'>Interfaces Stats Current</button> 
+                        <button class='navButton' onclick='location.href=""/api/network/interface/stat/all""'>Interfaces Stats All</button>
                     </body>
                     </html>
                     "
@@ -692,7 +877,6 @@ function Start-Socket {
                         $PeakWorkingSet     = "<b>$($Proces.PeakWorkingSet)</b>"
                         $PageMemory         = "<b>$($Proces.PageMemory)</b>"
                         $VirtualMemory      = "<b>$($Proces.VirtualMemory)</b>"
-                        $PrivateMemory      = "<b>$($Proces.PrivateMemory)</b>"
                         $RunTime            = "<b>$($Proces.RunTime)</b>"
                         $Threads            = "<b>$($Proces.Threads)</b>"
                         $Handles            = "<b>$($Proces.Handles)</b>"
@@ -701,8 +885,7 @@ function Start-Socket {
                         $GetProcess         += "<td><button onclick='stopProcess(""$($Proces.ProcessName)"")'>Stop</button></td>"
                         $GetProcess         += "<td>$TotalProcTime</td><td>$UserProcTime</td><td>$PrivilegedProcTime</td>"
                         $GetProcess         += "<td>$WorkingSet</td><td>$PeakWorkingSet</td><td>$PageMemory</td>"
-                        $GetProcess         += "<td>$VirtualMemory</td><td>$PrivateMemory</td><td>$RunTime</td>"
-                        $GetProcess         += "<td>$Threads</td><td>$Handles</td>"
+                        $GetProcess         += "<td>$VirtualMemory</td><td>$RunTime</td><td>$Threads</td><td>$Handles</td>"
                         $GetProcess         += "</tr>"
                     }
                     $GetProcess += "</table>"
@@ -857,14 +1040,39 @@ function Start-Socket {
                     $Data = Get-IOps
                     Send-Response -Data $Data -Code 200 -Body -fl
                 }
+                ### GET /api/disk/iops/total
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/disk/iops/total") {
+                    $Data = Get-IOps -Total
+                    Send-Response -Data $Data -Code 200 -Body -fl
+                }
                 ### GET /api/video
                 elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/video") {
                     $Data = Get-VideoCard
                     Send-Response -Data $Data -Code 200 -Body
                 }
-                ### GET /api/network
-                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/network") {
-                    $Data = Get-NetAdapter
+                ### GET /api/network/ipconfig
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/network/ipconfig") {
+                    $Data = Get-NetIpConfig
+                    Send-Response -Data $Data -Code 200 -Body
+                }
+                ### GET /api/network/stat
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/network/stat") {
+                    $Data = Get-NetStat
+                    Send-Response -Data $Data -Code 200 -Body
+                }
+                ### GET /api/network/interface/stat/all
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/network/interface/stat/all") {
+                    $Data = Get-NetInterfaceStat
+                    Send-Response -Data $Data -Code 200 -Body -fl
+                }
+                ### GET /api/network/interface/stat/current
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/network/interface/stat/current") {
+                    $Data = Get-NetInterfaceStat -Current
+                    Send-Response -Data $Data -Code 200 -Body -fl
+                }
+                ### GET /api/sensor
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/sensor") {
+                    $Data = Get-OpenHardwareMonitor
                     Send-Response -Data $Data -Code 200 -Body
                 }
                 ### GET /api/files

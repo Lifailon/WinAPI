@@ -1,6 +1,9 @@
 function Get-PD {
-    $PhysicalDisk = Get-CimInstance Win32_DiskDrive | Select-Object Model,
-    @{Label="Size"; Expression={[int]($_.Size/1Gb)}},Partitions,InterfaceType
+    $PhysicalDisk = Get-CimInstance Win32_DiskDrive | 
+    Select-Object Model,
+    @{Label="Size"; Expression={[int]($_.Size/1Gb)}},
+    Partitions,
+    InterfaceType
     $CollectionPD = New-Object System.Collections.Generic.List[System.Object]
     $PhysicalDisk | ForEach-Object {
         $CollectionPD.Add([PSCustomObject]@{
