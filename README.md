@@ -14,13 +14,13 @@
 
 REST API and simple Web server **based on .NET HttpListener** and only **one PowerShell** language. Using WinAPI, you can quickly set up remote communication with Windows OS without the need to configure WinRM or OpenSSH using APIs and get control from any platform (**including Linux**) via browser or any REST client.
 
-Implemented:
+**Implemented**:
 
-✅ Authentication \
-✅ Response codes handling \
-✅ Converting to 4 data types \
 ✅ More than 20 endpoints \
-✅ Automatic restart of the server in case of termination with an error
+✅ Authentication \
+✅ Converting to 4 data types \
+✅ Response codes handling \
+✅ Error handling
 
 🍿 The server functionality is implemented in the [Kinozal-Bot](https://github.com/Lifailon/Kinozal-Bot) project.
 
@@ -30,7 +30,7 @@ Implemented:
 
 Processing of simultaneous requests from several clients (managed to test three simultaneous connections).
 
-If the previous request has not been processed yet and a new request from the same client arrives, the server terminates with an error, this behavior was detected in the browser when quickly refreshing pages, to handle this event is implemented automatic restart of the server. For Web-client such restart is processed without error and in the process of page refresh the response of the last request is returned.
+If the previous request has not been processed yet and a new request from the same client arrives, the server terminates with an error, this behavior was detected in the browser when quickly refreshing pages, to handle this event is implemented **automatic restart of the server**. For Web-client such restart is processed without error and in the process of page refresh the response of the last request is returned.
 
 In Invoke-RestMethod and curl, interrupting the previous request and sending a new one to another endpoint works without error and the response of the last request is returned (taking into account the processing time of the previous one).
 
@@ -68,7 +68,7 @@ All GET requests can be output in one of the following formats: **JSON (default)
 
 `/api/sensor` - Summary table of all sensors
 
-⚠️ This requires downloading the portable version of the [OpenHardwareMonit](https://openhardwaremonitor.org/downloads/) program. A health check and startup in case the process stops is present when accessing the endpoint.
+💡 This requires downloading the portable version of the [OpenHardwareMonit](https://openhardwaremonitor.org/downloads/) program. A health check and startup in case the process stops is present when accessing the endpoint.
 
 For a quick installation, use this command in your terminal (to run the `Deploy-OpenHardwareMonitor.ps1` script on your system):
 
@@ -102,7 +102,7 @@ Simple HTTP server with the ability to stop and start services and process using
 
 Use in **PowerShell Core**.
 
-To install or update the process scripts and latest server side (path default: `$home/Documents`), run the command in your console:
+To install or update the process scripts and latest server side (path default: `$home/Documents/WinAPI`), run the command in your console:
 ```PowerShell
 Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Deploy/Deploy-WinAPI-Script.ps1")
 ```
