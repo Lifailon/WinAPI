@@ -14,13 +14,25 @@
 
 REST API and simple Web server **based on .NET HttpListener** and only **one PowerShell** language. Using WinAPI, you can quickly set up remote communication with Windows OS without the need to configure WinRM or OpenSSH using APIs and get control from any platform (**including Linux**) via browser or any REST client.
 
-✅ Authentication, error handling, conversion to 4 data types and more than 20 endpoints are implemented.
+Implemented:
 
-❎ Multithreading for each request is not implemented. If the previous request has not been processed yet and a new request arrives, the server terminates, to handle this event a automatic server restart is implemented as a temporary solution.
+✅ Authentication \
+✅ Response codes handling \
+✅ Converting to 4 data types \
+✅ More than 20 endpoints \
+✅ Automatic restart of the server in case of termination with an error
 
 🍿 The server functionality is implemented in the [Kinozal-Bot](https://github.com/Lifailon/Kinozal-Bot) project.
 
 🐧 Since the server is built on .NET, this implementation is **cross-platform**, you can try managing Linux services from a Windows system: **[dotNET-Systemd-API](https://github.com/Lifailon/dotNET-Systemd-API)**.
+
+## ⚠️ Stability of operation
+
+Processing of simultaneous requests from several clients (managed to test three simultaneous connections).
+
+If the previous request has not been processed yet and a new request from the same client arrives, the server terminates with an error, this behavior was detected in the browser when quickly refreshing pages, to handle this event is implemented automatic restart of the server. For Web-client such restart is processed without error and in the process of page refresh the response of the last request is returned.
+
+In Invoke-RestMethod and curl, interrupting the previous request and sending a new one to another endpoint works without error and the response of the last request is returned (taking into account the processing time of the previous one).
 
 ## 📚 Implemented endpoints:
 
@@ -88,7 +100,7 @@ Simple HTTP server with the ability to stop and start services and process using
 
 ## 🚀 Install
 
-Use in **PowerShell Core**. No dependencies.
+Use in **PowerShell Core**.
 
 To install or update the process scripts and latest server side (path default: `$home/Documents`), run the command in your console:
 ```PowerShell
@@ -274,14 +286,16 @@ $Headers += @{"Status" = "Start"}
 Invoke-RestMethod -Headers $Headers -Method Post -Uri http://192.168.3.99:8443/api/service/winrm
 ```
 
-- Module **Get-Hardware**
+### 🔌 Module Get-Hardware
 
-For an example, import the **[Get-Hardware](https://github.com/Lifailon/WinAPI/blob/rsa/WinAPI/Modules/Get-Hardware)** module (or copy it to your modules directory). For local retrieval of information, use the command without parameters, for remote launch via API, use the parameter **-ComputerName**.
+> 💡 The Get-Hardware function uses the ThreadJob module, the script provides automatic installation in case of its absence. This is the only function which execution time was reduced by half due to threads.
+
+For an example, import the **[Get-Hardware](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Modules/Get-Hardware)** module from the script directory or copy it to your modules directory. For local retrieval of information, use the command without parameters, for remote launch via API, use the parameter **ComputerName**.
 
 ```PowerShell
-Import-Modules .\Get-Hardware.psm1
+Import-Module $home\Documents\WinAPI\Modules\Get-Hardware\Get-Hardware.psm1
 Get-Hardware
-Get-Hardware -ComputerName 192.168.3.99 -Port 8443 -User rest -Pass api
+Get-Hardware -ComputerName 192.168.3.100 -Port 8443 -User rest -Pass api
 ```
 
 You can add endpoints to the module yourself for fast remote communication via API.

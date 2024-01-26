@@ -1,51 +1,52 @@
-Import-Module ThreadJob -ErrorAction Ignore
-if (!(Get-Module ThreadJob)) {
-   Install-Module ThreadJob -Scope CurrentUser -Force
+Import-Module PoshRSJob -ErrorAction Ignore
+if (!(Get-Module PoshRSJob)) {
+   Install-Module PoshRSJob -Scope CurrentUser -Force
 }
 
-function Get-HardwareThreadJob {
+function Get-HardwareRSJob {
     param (
         $ComputerName,
         $Port = 8443,
         $User = "rest",
         $Pass = "api"
     )
-    if ($null -eq $ComputerName) {
+    i
+    f ($null -eq $ComputerName) {
         # Creat jobs
-        Start-ThreadJob -Name SYS -ScriptBlock {Get-CimInstance Win32_ComputerSystem} | Out-Null
-        Start-ThreadJob -Name OS -ScriptBlock {Get-CimInstance Win32_OperatingSystem} | Out-Null
-        Start-ThreadJob -Name BB -ScriptBlock {Get-CimInstance Win32_BaseBoard} | Out-Null
-        Start-ThreadJob -Name CPU -ScriptBlock {Get-CimInstance Win32_Processor} | Out-Null
-        Start-ThreadJob -Name CPU_Use -ScriptBlock {Get-CimInstance Win32_PerfFormattedData_PerfOS_Processor} | Out-Null
-        Start-ThreadJob -Name GetProcess -ScriptBlock {Get-Process} | Out-Null
-        Start-ThreadJob -Name MEM -ScriptBlock {Get-CimInstance Win32_PhysicalMemory} | Out-Null
-        Start-ThreadJob -Name PhysicalDisk -ScriptBlock {Get-CimInstance Win32_DiskDrive} | Out-Null
-        Start-ThreadJob -Name LogicalDisk -ScriptBlock {Get-CimInstance Win32_logicalDisk} | Out-Null
-        Start-ThreadJob -Name IOps -ScriptBlock {Get-CimInstance Win32_PerfFormattedData_PerfDisk_PhysicalDisk} | Out-Null
-        Start-ThreadJob -Name VideoCard -ScriptBlock {Get-CimInstance Win32_VideoController} | Out-Null
-        Start-ThreadJob -Name NetworkAdapter -ScriptBlock {Get-CimInstance -Class Win32_NetworkAdapterConfiguration -Filter IPEnabled=$true} | Out-Null
-        Start-ThreadJob -Name InterfaceStatCurrent -ScriptBlock {Get-CimInstance -ClassName Win32_PerfFormattedData_Tcpip_NetworkInterface} | Out-Null
-        Start-ThreadJob -Name InterfaceStatAll -ScriptBlock {Get-CimInstance -ClassName Win32_PerfRawData_Tcpip_NetworkInterface} | Out-Null
+        Start-RSJob -Name SYS -ScriptBlock {Get-CimInstance Win32_ComputerSystem} | Out-Null
+        Start-RSJob -Name OS -ScriptBlock {Get-CimInstance Win32_OperatingSystem} | Out-Null
+        Start-RSJob -Name BB -ScriptBlock {Get-CimInstance Win32_BaseBoard} | Out-Null
+        Start-RSJob -Name CPU -ScriptBlock {Get-CimInstance Win32_Processor} | Out-Null
+        Start-RSJob -Name CPU_Use -ScriptBlock {Get-CimInstance Win32_PerfFormattedData_PerfOS_Processor} | Out-Null
+        Start-RSJob -Name GetProcess -ScriptBlock {Get-Process} | Out-Null
+        Start-RSJob -Name MEM -ScriptBlock {Get-CimInstance Win32_PhysicalMemory} | Out-Null
+        Start-RSJob -Name PhysicalDisk -ScriptBlock {Get-CimInstance Win32_DiskDrive} | Out-Null
+        Start-RSJob -Name LogicalDisk -ScriptBlock {Get-CimInstance Win32_logicalDisk} | Out-Null
+        Start-RSJob -Name IOps -ScriptBlock {Get-CimInstance Win32_PerfFormattedData_PerfDisk_PhysicalDisk} | Out-Null
+        Start-RSJob -Name VideoCard -ScriptBlock {Get-CimInstance Win32_VideoController} | Out-Null
+        Start-RSJob -Name NetworkAdapter -ScriptBlock {Get-CimInstance -Class Win32_NetworkAdapterConfiguration -Filter IPEnabled=$true} | Out-Null
+        Start-RSJob -Name InterfaceStatCurrent -ScriptBlock {Get-CimInstance -ClassName Win32_PerfFormattedData_Tcpip_NetworkInterface} | Out-Null
+        Start-RSJob -Name InterfaceStatAll -ScriptBlock {Get-CimInstance -ClassName Win32_PerfRawData_Tcpip_NetworkInterface} | Out-Null
         # Get data from jobs
         Start-Sleep -Milliseconds 100
-        while ($(Get-Job).State -contains "Running") {
+        while ($(Get-RSJob).State -contains "Running") {
             Start-Sleep -Milliseconds 100
         }
-        $SYS = Get-Job -Name SYS | Receive-Job
-        $OS = Get-Job -Name OS | Receive-Job
-        $BB = Get-Job -Name BB | Receive-Job
-        $CPU = Get-Job -Name CPU | Receive-Job
-        $CPU_Use = Get-Job -Name CPU_Use | Receive-Job
-        $GetProcess = Get-Job -Name GetProcess | Receive-Job
-        $MEM = Get-Job -Name MEM | Receive-Job
-        $PhysicalDisk = Get-Job -Name PhysicalDisk | Receive-Job
-        $LogicalDisk = Get-Job -Name LogicalDisk | Receive-Job
-        $IOps = Get-Job -Name IOps | Receive-Job
-        $VideoCard = Get-Job -Name VideoCard | Receive-Job
-        $NetworkAdapter = Get-Job -Name NetworkAdapter | Receive-Job
-        $InterfaceStatCurrent = Get-Job -Name InterfaceStatCurrent | Receive-Job
-        $InterfaceStatAll = Get-Job -Name InterfaceStatAll | Receive-Job
-        Get-Job | Remove-Job -Force
+        $SYS = Get-RSJob -Name SYS | Receive-RSJob
+        $OS = Get-RSJob -Name OS | Receive-RSJob
+        $BB = Get-RSJob -Name BB | Receive-RSJob
+        $CPU = Get-RSJob -Name CPU | Receive-RSJob
+        $CPU_Use = Get-RSJob -Name CPU_Use | Receive-RSJob
+        $GetProcess = Get-RSJob -Name GetProcess | Receive-RSJob
+        $MEM = Get-RSJob -Name MEM | Receive-RSJob
+        $PhysicalDisk = Get-RSJob -Name PhysicalDisk | Receive-RSJob
+        $LogicalDisk = Get-RSJob -Name LogicalDisk | Receive-RSJob
+        $IOps = Get-RSJob -Name IOps | Receive-RSJob
+        $VideoCard = Get-RSJob -Name VideoCard | Receive-RSJob
+        $NetworkAdapter = Get-RSJob -Name NetworkAdapter | Receive-RSJob
+        $InterfaceStatCurrent = Get-RSJob -Name InterfaceStatCurrent | Receive-RSJob
+        $InterfaceStatAll = Get-RSJob -Name InterfaceStatAll | Receive-RSJob
+        Get-RSJob | Remove-RSJob -Force
         # Select data
         $Uptime = ([string]($OS.LocalDateTime - $OS.LastBootUpTime) -split ":")[0,1] -join ":"
         $BootDate = Get-Date -Date $($OS).LastBootUpTime -Format "dd/MM/yyyy hh:mm:ss"
