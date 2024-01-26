@@ -326,9 +326,13 @@ Comparison of module operation with and without threads (on average 3.3 seconds 
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Sensors.jpg)
 
-- Metrics memory, performance, physical and logical disk:
+- Metrics **memory, performance, physical and logical disk**:
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Metrics.jpg)
+
+- Metrics total **IOps** disk and current network interface state (for example, on a remote machine file was process downloaded from the Internet):
+
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-IOps-and-InterfaceStat.jpg)
 
 ## 📊 GET data examples (version 0.3.1)
 
