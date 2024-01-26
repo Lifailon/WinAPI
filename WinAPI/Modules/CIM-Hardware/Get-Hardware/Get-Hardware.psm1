@@ -3,7 +3,7 @@ if (!(Get-Module ThreadJob)) {
    Install-Module ThreadJob -Scope CurrentUser -Force
 }
 
-function Get-HardwareThreadJob {
+function Get-Hardware {
     param (
         $ComputerName,
         $Port = 8443,
