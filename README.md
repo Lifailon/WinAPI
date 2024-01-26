@@ -68,7 +68,7 @@ All GET requests can be output in one of the following formats: **JSON (default)
 
 `/api/sensor` - Summary table of all sensors
 
-💡 This requires downloading the portable version of the [OpenHardwareMonit](https://openhardwaremonitor.org/downloads/) program. A health check and startup in case the process stops is present when accessing the endpoint.
+💡 This requires downloading the portable version of the [OpenHardwareMonitor](https://openhardwaremonitor.org/downloads/) program. A health check and startup in case the process stops is present when accessing the endpoint.
 
 For a quick installation, use this command in your terminal (to run the `Deploy-OpenHardwareMonitor.ps1` script on your system):
 
@@ -322,11 +322,11 @@ Comparison of module operation with and without threads (on average 3.3 seconds 
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Hardware.jpg)
 
-- Sensors:
+- Sensors from **OpenHardwareMonitor**:
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Sensors.jpg)
 
-- Metrics performance, memory, physical and logical disk:
+- Metrics memory, performance, physical and logical disk:
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Metrics.jpg)
 
