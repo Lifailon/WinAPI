@@ -330,7 +330,7 @@ Comparison of module operation with and without threads (on average 3.3 seconds 
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Metrics.jpg)
 
-- Metrics total **IOps** disk and current network interface state (for example, on a remote machine file was process downloaded from the Internet):
+- Metrics total **IOps disk** and current network **interface state** (for example, on a remote machine file was process downloaded from the Internet):
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-IOps-and-InterfaceStat.jpg)
 
