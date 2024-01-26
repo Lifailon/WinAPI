@@ -643,7 +643,7 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
 ```
 ## 📑 Server log
 
-Example of logging different clients (Google chrome, powershell and curl).
+Example of logging different clients: `Google Chrome`, `PowerShell (Invoke-RestMethod)` and `curl`.
 
 ```PowerShell
 PS C:\Users\lifailon\Documents\Git\WinAPI> . 'C:\Users\lifailon\Documents\Git\WinAPI\WinAPI\WinAPI-0.3.ps1'
