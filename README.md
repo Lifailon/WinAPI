@@ -76,7 +76,7 @@ For a quick installation, use this command in your terminal (to run the `Deploy-
 Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Deploy/Deploy-OpenHardwareMonitor.ps1")
 ```
 
-When accessing the endpoint, there is a health check and a startup in case the process stops. For this purpose, the program must be located in one of the following paths (used in the `Find-Process` function to find the process executable by name):
+When accessing the endpoint, there is a health check and a startup in case the process stops. For this purpose, the program must be located in one of the following paths (used the `Find-Process` function to find the process executable by name):
 
 ```PowerShell
 "C:\Program Files",

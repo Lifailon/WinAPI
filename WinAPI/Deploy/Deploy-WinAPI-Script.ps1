@@ -24,7 +24,7 @@ foreach ($Process_File in $Process_Files) {
 
 ### Install modules
 New-Item -Path "$path\Modules\Get-Hardware" -ItemType Directory
-$url_modules = "https://api.github.com/repos/Lifailon/WinAPI/contents/WinAPI/Modules/Get-Hardware"
+$url_modules = "https://api.github.com/repos/Lifailon/WinAPI/contents/WinAPI/Modules/CIM-Hardware/Get-Hardware"
 $Modules_Files = Invoke-RestMethod -Uri $url_modules
 $url_modules_download = $($Modules_Files | Where-Object Name -eq "Get-Hardware.psm1").download_url
 Invoke-RestMethod -Uri $url_modules_download -OutFile "$path\Modules\Get-Hardware\Get-Hardware.psm1"
