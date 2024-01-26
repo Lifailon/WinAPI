@@ -298,11 +298,11 @@ Get-Hardware
 Get-Hardware -ComputerName 192.168.3.99 -Port 8443 -User rest -Pass api
 ```
 
-Comparison of module operation with and without threads:
+> You can add endpoints to the module yourself for fast remote communication via API.
+
+Comparison of module operation with and without threads (on average 3.3 seconds versus 1.4) :
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Console/Get-Hardware-Threads-Diff.jpg)
-
-> You can add endpoints to the module yourself for fast remote communication via API.
 
 ## 🎉 Web server
 

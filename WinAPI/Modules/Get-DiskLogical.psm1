@@ -1,4 +1,4 @@
-function Get-LD {
+function Get-DiskLogical {
     $LogicalDisk = Get-CimInstance Win32_logicalDisk | Where-Object {$null -ne $_.Size} |
     Select-Object @{Label="Value"; Expression={$_.DeviceID}},
     @{Label="AllSize"; Expression={([int]($_.Size/1Gb))}},

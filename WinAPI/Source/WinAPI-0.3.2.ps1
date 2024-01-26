@@ -527,7 +527,7 @@ function Get-MemorySlots {
     $CollectionMemory
 }
 
-function Get-PD {
+function Get-DiskPhysical {
     $PhysicalDisk = Get-CimInstance Win32_DiskDrive | 
     Select-Object Model,
     @{Label="Size"; Expression={[int]($_.Size/1Gb)}},
@@ -545,7 +545,7 @@ function Get-PD {
     $CollectionPD
 }
 
-function Get-LD {
+function Get-DiskLogical {
     $LogicalDisk = Get-CimInstance Win32_logicalDisk | Where-Object {$null -ne $_.Size} |
     Select-Object @{Label="Value"; Expression={$_.DeviceID}},
     @{Label="AllSize"; Expression={([int]($_.Size/1Gb))}},
@@ -1050,12 +1050,12 @@ function Start-Socket {
                 }
                 ### GET /api/disk/physical
                 elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/disk/physical") {
-                    $Data = Get-PD
+                    $Data = Get-DiskPhysical
                     Send-Response -Data $Data -Code 200 -Body
                 }
                 ### GET /api/disk/logical
                 elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/disk/logical") {
-                    $Data = Get-LD
+                    $Data = Get-DiskLogical
                     Send-Response -Data $Data -Code 200 -Body
                 }
                 ### GET /api/disk/iops

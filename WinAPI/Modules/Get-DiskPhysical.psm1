@@ -1,4 +1,4 @@
-function Get-PD {
+function Get-DiskPhysical {
     $PhysicalDisk = Get-CimInstance Win32_DiskDrive | 
     Select-Object Model,
     @{Label="Size"; Expression={[int]($_.Size/1Gb)}},
