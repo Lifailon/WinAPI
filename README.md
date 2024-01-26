@@ -295,34 +295,42 @@ For an example, import the **[Get-Hardware](https://github.com/Lifailon/WinAPI/t
 ```PowerShell
 Import-Module $home\Documents\WinAPI\Modules\Get-Hardware\Get-Hardware.psm1
 Get-Hardware
-Get-Hardware -ComputerName 192.168.3.100 -Port 8443 -User rest -Pass api
+Get-Hardware -ComputerName 192.168.3.99 -Port 8443 -User rest -Pass api
 ```
 
-You can add endpoints to the module yourself for fast remote communication via API.
+Comparison of module operation with and without threads:
 
-## 🎉 Simple web server
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Console/Get-Hardware-Threads-Diff.jpg)
 
-There are buttons for switching between all web pages.
+> You can add endpoints to the module yourself for fast remote communication via API.
 
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Example.gif)
+## 🎉 Web server
+
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Example.gif)
 
 - Process management:
 
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Process.jpg)
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Process.jpg)
 
 - Service management:
 
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Service.jpg)
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Service.jpg)
 
-- Hardware statistics from Common Information Model:
+## 🎊 Latest version
 
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Hardware.jpg)
+- Hardware statistics:
+
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Hardware.jpg)
+
+- Sensors:
+
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Sensors.jpg)
 
 - Metrics performance, memory, physical and logical disk:
 
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web-Metrics.jpg)
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Metrics.jpg)
 
-## 📊 GET data examples
+## 📊 GET data examples (version 0.3.1)
 
 ```Bash
 lifailon@hv-devops-01:~$ user="rest"
