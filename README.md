@@ -131,19 +131,19 @@ And open a port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-## 1st option (stable, process, added in version 0.3.2/0.4.0)
+## 1st option (stable, process, added in version 0.3.2)
 
 > 💡 **Administrator rights are required to run**
 
 The scripts are already included in the files when using server part [deployment](https://github.com/Lifailon/WinAPI#-install).
 
-Use a script to **run the server part in background process mode**: 
+**Run the server part in background process mode**:
 
 ```PowerShell
 PS C:\Users\Lifailon\Documents\WinAPI> .\winapi-process-start.ps1
 ```
 
-**Stop**:
+**Stop process**:
 
 ```PowerShell
 PS C:\Users\Lifailon\Documents\WinAPI> .\winapi-process-stop.ps1
