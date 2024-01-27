@@ -115,7 +115,7 @@ $BodyButtons += "<button onclick='location.href=""/api/cpu""'>CPU</button> "
 $BodyButtons += "<button onclick='location.href=""/api/memory""'>Memory</button> "
 $BodyButtons += "<button onclick='location.href=""/api/disk/physical""'>Physical Disk</button> "
 $BodyButtons += "<button onclick='location.href=""/api/disk/logical""'>Logical Disk</button> "
-$BodyButtons += "<button onclick='location.href=""/api/disk/partition""'>Disk partitions</button> "
+$BodyButtons += "<button onclick='location.href=""/api/disk/partition""'>Disk Partitions</button> "
 $BodyButtons += "<button onclick='location.href=""/api/disk/iops""'>IOps</button> "
 $BodyButtons += "<button onclick='location.href=""/api/disk/iops/total""'>IOps Total</button> "
 $BodyButtons += "<button onclick='location.href=""/api/video""'>Video</button> "
@@ -778,7 +778,7 @@ function Start-Socket {
                         <button class='navButton' onclick='location.href=""/api/memory""'>Memory</button>
                         <button class='navButton' onclick='location.href=""/api/disk/physical""'>Physical Disk</button>
                         <button class='navButton' onclick='location.href=""/api/disk/logical""'>Logical Disk</button>
-                        <button class='navButton' onclick='location.href=""/api/disk/partition""'>Disk partitions</button>
+                        <button class='navButton' onclick='location.href=""/api/disk/partition""'>Disk Partitions</button>
                         <button class='navButton' onclick='location.href=""/api/disk/iops""'>IOps</button>
                         <button class='navButton' onclick='location.href=""/api/disk/iops/total""'>IOps Total</button>
                         <button class='navButton' onclick='location.href=""/api/video""'>Video</button>
