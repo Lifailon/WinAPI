@@ -10,11 +10,11 @@
 
 **📝 Publication on [Habr](https://habr.com/ru/articles/783022/)**
 
-[README](https://github.com/Lifailon/WinAPI/blob/rsa/Test/README.md) first test version
+**🔎 Test version: [README](https://github.com/Lifailon/WinAPI/blob/rsa/Test/README.md)**
 
 REST API and simple Web server **based on .NET HttpListener** and only **one PowerShell** language. Using WinAPI, you can quickly set up remote communication with Windows OS without the need to configure WinRM or OpenSSH using APIs and get control from any platform (**including Linux**) via browser or any REST client.
 
-**Implemented**:
+**🔗 Implemented**:
 
 ✅ More than 20 endpoints \
 ✅ Authentication \
