@@ -76,7 +76,7 @@ if (!(Get-RunAs)) {
     Start-Process pwsh -Verb RunAs -ArgumentList $arguments
     Exit
 }
-#endregion
+#endregion runas-admin
 
 #region config
 ###### Creat path and ini file
@@ -103,9 +103,28 @@ $Log_Console = $ini.Log_Console
 $Log_File    = $ini.Log_File
 $Log_Path    = $ini.Log_Path
 $cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${user}:${pass}"))
-#endregion
+#endregion config
 
-#region main-functions
+#region html-buttons
+$BodyButtons  = "<button onclick='location.href=""/service""'>Service</button> "
+$BodyButtons += "<button onclick='location.href=""/process""'>Process</button> "
+$BodyButtons += "<button onclick='location.href=""/api/hardware""'>Hardware</button> "
+$BodyButtons += "<button onclick='location.href=""/api/sensor""'>Sensors</button> "
+$BodyButtons += "<button onclick='location.href=""/api/performance""'>Performance</button> "
+$BodyButtons += "<button onclick='location.href=""/api/cpu""'>CPU</button> "
+$BodyButtons += "<button onclick='location.href=""/api/memory""'>Memory</button> "
+$BodyButtons += "<button onclick='location.href=""/api/disk/physical""'>Physical Disk</button> "
+$BodyButtons += "<button onclick='location.href=""/api/disk/logical""'>Logical Disk</button> "
+$BodyButtons += "<button onclick='location.href=""/api/disk/iops""'>IOps</button> "
+$BodyButtons += "<button onclick='location.href=""/api/disk/iops/total""'>IOps Total</button> "
+$BodyButtons += "<button onclick='location.href=""/api/video""'>Video</button> "
+$BodyButtons += "<button onclick='location.href=""/api/network/ipconfig""'>IPConfig</button> "
+$BodyButtons += "<button onclick='location.href=""/api/network/stat""'>Netstat</button> "
+$BodyButtons += "<button onclick='location.href=""/api/network/interface/stat/current""'>Interfaces Stats Current</button> "
+$BodyButtons += "<button onclick='location.href=""/api/network/interface/stat/all""'>Interfaces Stats All</button><br><br>"
+#endregion html-buttons
+
+#region main-functions (log/response/service/process/fs)
 function Get-Log {
     ### Debug (Get all Request, Headers and Response parameters):
     # $context.Request | Out-Default
@@ -278,28 +297,9 @@ function Get-Files {
 # Get-Files -Path "C:/Program Files/"
 # Get-Files -Path "D:/"
 # Get-Files -Path "D:/Movies/"
-#endregion
+#endregion main-functions
 
-#region html-buttons
-$BodyButtons  = "<button onclick='location.href=""/service""'>Service</button> "
-$BodyButtons += "<button onclick='location.href=""/process""'>Process</button> "
-$BodyButtons += "<button onclick='location.href=""/api/hardware""'>Hardware</button> "
-$BodyButtons += "<button onclick='location.href=""/api/sensor""'>Sensors</button> "
-$BodyButtons += "<button onclick='location.href=""/api/performance""'>Performance</button> "
-$BodyButtons += "<button onclick='location.href=""/api/cpu""'>CPU</button> "
-$BodyButtons += "<button onclick='location.href=""/api/memory""'>Memory</button> "
-$BodyButtons += "<button onclick='location.href=""/api/disk/physical""'>Physical Disk</button> "
-$BodyButtons += "<button onclick='location.href=""/api/disk/logical""'>Logical Disk</button> "
-$BodyButtons += "<button onclick='location.href=""/api/disk/iops""'>IOps</button> "
-$BodyButtons += "<button onclick='location.href=""/api/disk/iops/total""'>IOps Total</button> "
-$BodyButtons += "<button onclick='location.href=""/api/video""'>Video</button> "
-$BodyButtons += "<button onclick='location.href=""/api/network/ipconfig""'>IPConfig</button> "
-$BodyButtons += "<button onclick='location.href=""/api/network/stat""'>Netstat</button> "
-$BodyButtons += "<button onclick='location.href=""/api/network/interface/stat/current""'>Interfaces Stats Current</button> "
-$BodyButtons += "<button onclick='location.href=""/api/network/interface/stat/all""'>Interfaces Stats All</button><br><br>"
-#endregion
-
-#region hardware-functions
+#region cim-functions
 ### Dependency install
 Import-Module ThreadJob -ErrorAction Ignore
 if (!(Get-Module ThreadJob)) {
@@ -532,14 +532,20 @@ function Get-DiskPhysical {
     Select-Object Model,
     @{Label="Size"; Expression={[int]($_.Size/1Gb)}},
     Partitions,
-    InterfaceType
+    InterfaceType,
+    Status,
+    ConfigManagerErrorCode,
+    LastErrorCode
     $CollectionPD = New-Object System.Collections.Generic.List[System.Object]
     $PhysicalDisk | ForEach-Object {
         $CollectionPD.Add([PSCustomObject]@{
-            Model          = $_.Model
-            Size           = [string]$_.Size+" Gb"
-            PartitionCount = $_.Partitions
-            Interface      = $_.InterfaceType
+            Model                  = $_.Model
+            Size                   = [string]$_.Size+" Gb"
+            PartitionCount         = $_.Partitions
+            Interface              = $_.InterfaceType
+            Status                 = $_.Status
+            ConfigManagerErrorCode = $_.ConfigManagerErrorCode
+            LastErrorCode          = $_.LastErrorCode
         })
     }
     $CollectionPD
@@ -566,6 +572,20 @@ function Get-DiskLogical {
         })
     }
     $CollectionLD
+}
+
+function Get-DiskPartition {
+    $PhysicalDisk = Get-CimInstance -Namespace root/Microsoft/Windows/Storage -ClassName MSFT_PhysicalDisk
+    $Partition = Get-CimInstance -Namespace root/Microsoft/Windows/Storage -ClassName MSFT_Partition | 
+    Select-Object @{Label="Disk"; Expression={$PhysicalDisk | Where-Object DeviceId -eq $_.DiskNumber | Select-Object -ExpandProperty FriendlyName}},
+    IsBoot,
+    IsSystem,
+    IsHidden,
+    IsReadOnly,
+    IsShadowCopy,
+    @{Label="OffSet"; Expression={($_.OffSet/1Gb).ToString("0.00 Gb")}},
+    @{Label="Size"; Expression={($_.Size/1Gb).ToString("0.00 Gb")}}
+    $Partition | Sort-Object Disk,OffSet
 }
 
 function Get-IOps {
@@ -680,7 +700,9 @@ function Get-NetStat {
     @{Name="RunTime"; Expression={((Get-Date) - $_.CreationTime) -replace "\.\d+$"}},
     @{name="ProcessPath";expression={(Get-Process -Id $_.OwningProcess).Path}}
 }
+#endregion cim-functions
 
+#region software-functions
 function Get-OpenHardwareMonitor {
     $OHM_Proc = $(Get-Process OpenHardwareMonitor -ErrorAction Ignore)
     if ($null -eq $OHM_Proc) {
@@ -691,7 +713,7 @@ function Get-OpenHardwareMonitor {
     Select-Object Name,
     HardwareType,
     Identifier
-    Get-CimInstance -Namespace "root/OpenHardwareMonitor" -ClassName Sensor | Select-Object @{
+    $Sensors = Get-CimInstance -Namespace "root/OpenHardwareMonitor" -ClassName Sensor | Select-Object @{
         name = "HardwareName"
         expression = {
             $Parent = $_.Parent
@@ -700,13 +722,14 @@ function Get-OpenHardwareMonitor {
     },
     @{name = "SensorName";expression = { $_.Name }},
     @{name = "SensorType";expression = { "$($_.SensorType) $($_.Index)" }},
-    Value,
-    Min,
-    Max | Sort-Object HardwareName,SensorType,SensorName
+    @{name = "Value";expression = { [int]$_.Value }},
+    @{name = "Min";expression = { [int]$_.Min }},
+    @{name = "Max";expression = { [int]$_.Max }}
+    $Sensors | Sort-Object HardwareName,SensorType,SensorName
 }
-#endregion
+#endregion software-functions
 
-#region socket
+#region function creat and start-socket
 function Start-Socket {
     Add-Type -AssemblyName System.Net.Http
     $http = New-Object System.Net.HttpListener
@@ -1058,6 +1081,11 @@ function Start-Socket {
                     $Data = Get-DiskLogical
                     Send-Response -Data $Data -Code 200 -Body
                 }
+                ### GET /api/disk/partition
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/disk/partition") {
+                    $Data = Get-DiskPartition
+                    Send-Response -Data $Data -Code 200 -Body
+                }
                 ### GET /api/disk/iops
                 elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/disk/iops") {
                     $Data = Get-IOps
@@ -1164,9 +1192,9 @@ function Start-Socket {
         $http.Stop()
     }
 }
-#endregion
+#endregion function creat and start-socket
 
-#region start socket
+#region start-socket
 $err = "False"
 while ($true) {
     try {
@@ -1193,4 +1221,4 @@ while ($true) {
         }
     }
 }
-#endregion
+#endregion start-socket

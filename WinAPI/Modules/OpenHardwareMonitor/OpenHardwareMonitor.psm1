@@ -8,7 +8,7 @@ function Get-OpenHardwareMonitor {
     Select-Object Name,
     HardwareType,
     Identifier
-    Get-CimInstance -Namespace "root/OpenHardwareMonitor" -ClassName Sensor | Select-Object @{
+    $Sensors = Get-CimInstance -Namespace "root/OpenHardwareMonitor" -ClassName Sensor | Select-Object @{
         name = "HardwareName"
         expression = {
             $Parent = $_.Parent
@@ -17,7 +17,8 @@ function Get-OpenHardwareMonitor {
     },
     @{name = "SensorName";expression = { $_.Name }},
     @{name = "SensorType";expression = { "$($_.SensorType) $($_.Index)" }},
-    Value,
-    Min,
-    Max | Sort-Object HardwareName,SensorType,SensorName
+    @{name = "Value";expression = { [int]$_.Value }},
+    @{name = "Min";expression = { [int]$_.Min }},
+    @{name = "Max";expression = { [int]$_.Max }}
+    $Sensors | Sort-Object HardwareName,SensorType,SensorName
 }

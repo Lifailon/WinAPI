@@ -130,7 +130,7 @@ And open a port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-## 1st option (stable, process, added in version 0.3.2)
+## 1st option (stable, process, added in version 0.3.2/0.4.0)
 
 > 💡 **Administrator rights are required to run**
 
@@ -300,7 +300,7 @@ Get-Hardware -ComputerName 192.168.3.99 -Port 8443 -User rest -Pass api
 
 > You can add endpoints to the module yourself for fast remote communication via API.
 
-Comparison of module operation with and without threads (on average 3.3 seconds versus 1.4) :
+Comparison of module operation with and without threads (on average 3.3 seconds versus 1.4 seconds):
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Console/Get-Hardware-Threads-Diff.jpg)
 
