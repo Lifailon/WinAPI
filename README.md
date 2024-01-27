@@ -53,8 +53,9 @@ All GET requests can be output in one of the following formats: **JSON (default)
 `/api/cpu` - CPU use to procent \
 `/api/memory` - Memory use to GB and procent \
 `/api/memory/slots` - Number of memory slots and their frequency \
-`/api/disk/physical` - List of all physical disks, their model and siz \
-`/api/disk/logical` - List of all logical disks, their model and siz \
+`/api/disk/physical` - List of all physical disks, model, size, operation status and errors \
+`/api/disk/logical` - List of all logical disks, model and size \
+`/api/disk/partition` - List partitions of all physical disks \
 `/api/disk/iops` - Metrics for all physical disks (time, bytes speed, queue, Input and Output operations per second) \
 `/api/disk/iops/total` - Summary statistics for all physical disks \
 `/api/video` - List of all video adapters, video memory size and resolution \
@@ -136,11 +137,23 @@ New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Actio
 
 The scripts are already included in the files when using server part [deployment](https://github.com/Lifailon/WinAPI#-install).
 
-Use a script to **run the server part in background process mode**: `winapi-process-start.ps1`
+Use a script to **run the server part in background process mode**: 
 
-**Stop**: `winapi-process-stop.ps1`
+```PowerShell
+PS C:\Users\Lifailon\Documents\WinAPI> .\winapi-process-start.ps1
+```
 
-To check the status server (port): `Test-Port.ps1`
+**Stop**:
+
+```PowerShell
+PS C:\Users\Lifailon\Documents\WinAPI> .\winapi-process-stop.ps1
+```
+
+To check the status server (port):
+
+```PowerShell
+PS C:\Users\Lifailon\Documents\WinAPI> .\test-port.ps1
+```
 
 ## 2nd option (service, added in version 0.3.1)
 
