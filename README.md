@@ -56,6 +56,7 @@ All GET requests can be output in one of the following formats: **JSON (default)
 `/api/disk/physical` - List of all physical disks, model, size, operation status and errors \
 `/api/disk/logical` - List of all logical disks, model and size \
 `/api/disk/partition` - List partitions of all physical disks \
+`/api/disk/smart` - Status S.M.A.R.T. (temperature, health and operational status, power on hours, start and stop cycle count) \
 `/api/disk/iops` - Metrics for all physical disks (time, bytes speed, queue, Input and Output operations per second) \
 `/api/disk/iops/total` - Summary statistics for all physical disks \
 `/api/video` - List of all video adapters, video memory size and resolution \
@@ -86,12 +87,14 @@ When accessing the endpoint, there is a health check and a startup in case the p
 "C:\Users\<UserName>\Documents"
 ```
 
-- **Web only**
+- **Web**
 
-Simple HTTP server with the ability to stop and start services and process using buttons (using JavaScript functions). **Only for Web Browser**.
+**HTTP server. Endpoints only via Web Browser**.
 
-`/service` \
-`/process`
+`/service` - Checking status, starting and stopping services \
+`/process` - Characteristics as well as starting and stopping processes \
+`/events/list` - List of all Windows event providers \
+`/events/<EventName>` - List of all events of the selected log with the ability to filter by content
 
 - **POST**
 
@@ -105,7 +108,7 @@ Use in **PowerShell Core**.
 
 To install or update the process scripts and latest server side (path default: `$home/Documents/WinAPI`), run the command in your console:
 ```PowerShell
-Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Deploy/Deploy-WinAPI-Script.ps1")
+Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Deploy/Deploy-WinAPI-Server.ps1")
 ```
 When the server first starts up, a default **configuration file (winapi.ini)** is created at the path: `$home/Documents/WinAPI/winapi.ini`. Configure it yourself.
 

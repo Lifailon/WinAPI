@@ -1070,7 +1070,7 @@ function Start-Socket {
                                 name='processName'
                                 id='processName'
                                 onkeyup='filterTable()'
-                                placeholder='Enter text to filter messages'
+                                placeholder='Enter name process'
                                 style='
                                     width: 300px;
                                     font-size: 14px;
