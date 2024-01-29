@@ -56,8 +56,8 @@ All GET requests can be output in one of the following formats: **JSON (default)
 `/api/disk/physical` - List of all physical disks, model, size, operation status and errors \
 `/api/disk/logical` - List of all logical disks, model and size \
 `/api/disk/partition` - List partitions of all physical disks \
-`/api/disk/smart` - Sensors temperature, health and operational status, power on hours, start and stop cycle count \
-`/api/disk/iops` - Read and write time, bytes speed, queue, Input and Output operations per second for all physical disks \
+`/api/disk/smart` - Temperature, health status, power on hours, start and stop cycle count \
+`/api/disk/iops` - Read and write speed, queue, Input and Output operations per second for all physical disks \
 `/api/video` - List of all video adapters, video memory size and resolution \
 `/api/network` - List of all network adapters and their settings \
 `api/network/ipconfig` - Settings for all network interfaces \
