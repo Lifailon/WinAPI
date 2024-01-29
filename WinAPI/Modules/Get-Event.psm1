@@ -15,6 +15,7 @@ function Get-Event {
     else {
         Get-WinEvent -LogName $LogName | Select-Object @{Name="TimeCreated"; Expression={Get-Date -Date $($_.TimeCreated) -UFormat "%d.%m.%Y %T"}},
         LevelDisplayName,
+        Level,
         Message
     }
 }

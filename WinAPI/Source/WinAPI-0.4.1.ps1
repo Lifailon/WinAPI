@@ -249,6 +249,7 @@ function Get-Event {
     else {
         Get-WinEvent -LogName $LogName | Select-Object @{Name="TimeCreated"; Expression={Get-Date -Date $($_.TimeCreated) -UFormat "%d.%m.%Y %T"}},
         LevelDisplayName,
+        Level,
         Message
     }
 }
@@ -925,9 +926,22 @@ function Start-Socket {
                         $GetEvent += "</tr>"
                         ### Filling out the table
                         foreach ($Event in $Events) {
+                            $Level = $Event.Level
+                            if ($Level -eq 2) {
+                                $level_color = "<font color='#FF6666'><b>$($Event.LevelDisplayName)</b></font>"
+                            }
+                            elseif ($Level -eq 3) {
+                                $level_color = "<font color='#FFFF99'><b>$($Event.LevelDisplayName)</b></font>"
+                            }
+                            elseif (($Level -eq 4) -or ($Level -eq 0)) {
+                                $level_color = "<font color='#99FF99'><b>$($Event.LevelDisplayName)</b></font>"
+                            }
+                            else {
+                                $level_color = "$($Event.LevelDisplayName)"
+                            }
                             $GetEvent += "<tr>"
                             $GetEvent += "<td>$($Event.TimeCreated)</td>"
-                            $GetEvent += "<td>$($Event.LevelDisplayName)</td>"
+                            $GetEvent += "<td>$level_color</td>"
                             $GetEvent += "<td>$($Event.Message)</td>"
                             $GetEvent += "</tr>"
                         }
