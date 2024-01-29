@@ -1,6 +1,6 @@
 ### ©2023 Lifailon
 ### Source: https://github.com/Lifailon/WinAPI
-### REST API and simple web server for Kinozal-Bot (https://github.com/Lifailon/Kinozal-Bot)
+### REST API and Web server for [Kinozal-Bot](https://github.com/Lifailon/Kinozal-Bot)
 <# Client
 # Login and password default:
 $user = "rest"
@@ -76,13 +76,13 @@ if (!(Get-RunAs)) {
     Start-Process pwsh -Verb RunAs -ArgumentList $arguments
     Exit
 }
-#endregion runas-admin
+#endregion
 
 #region config-ini
 ###### Creat path and ini file
 $winapi_path     = "$home\Documents\WInAPI"
 $ini_path        = "$winapi_path\winapi.ini"
-$log_path_update = "$home\Documents\WinAPI\winapi.log"
+$log_path_update = "$winapi_path\winapi.log"
 
 if (!(Test-Path $winapi_path)) {
     New-Item -ItemType Directory -Path $winapi_path
@@ -103,7 +103,7 @@ $Log_Console = $ini.Log_Console
 $Log_File    = $ini.Log_File
 $Log_Path    = $ini.Log_Path
 $cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${user}:${pass}"))
-#endregion config
+#endregion
 
 #region html-style-buttons
 #$BodyButtons = "<head><title>WinAPI</title></head>"
@@ -128,8 +128,9 @@ $BodyButtons = "<style>
 </style>"
 $BodyButtons += "<button onclick='location.href=""/service""'>Service</button> "
 $BodyButtons += "<button onclick='location.href=""/process""'>Process</button> "
-$BodyButtons += "<button onclick='location.href=""/api/hardware""'>Hardware</button> "
+$BodyButtons += "<button onclick='location.href=""/events/list""'>Events</button> "
 $BodyButtons += "<button onclick='location.href=""/api/sensor""'>Sensors</button> "
+$BodyButtons += "<button onclick='location.href=""/api/hardware""'>Hardware</button> "
 $BodyButtons += "<button onclick='location.href=""/api/performance""'>Performance</button> "
 $BodyButtons += "<button onclick='location.href=""/api/cpu""'>CPU</button> "
 $BodyButtons += "<button onclick='location.href=""/api/cpu/total""'>CPU Total</button> "
@@ -143,11 +144,11 @@ $BodyButtons += "<button onclick='location.href=""/api/disk/iops/total""'>IOps T
 $BodyButtons += "<button onclick='location.href=""/api/video""'>Video</button> "
 $BodyButtons += "<button onclick='location.href=""/api/network/ipconfig""'>IPConfig</button> "
 $BodyButtons += "<button onclick='location.href=""/api/network/stat""'>Netstat</button> "
-$BodyButtons += "<button onclick='location.href=""/api/network/interface/stat/current""'>Interfaces Stats Current</button> "
-$BodyButtons += "<button onclick='location.href=""/api/network/interface/stat/all""'>Interfaces Stats All</button><br><br>"
-#endregion html-buttons
+$BodyButtons += "<button onclick='location.href=""/api/network/interface/stat/current""'>Interfaces Stat Current</button> "
+$BodyButtons += "<button onclick='location.href=""/api/network/interface/stat/all""'>Interfaces Stat All</button><br><br>"
+#endregion
 
-#region main-functions (log/response/service/process/fs)
+#region main-functions (log/response/event/service/process/fs)
 function Get-Log {
     ### Debug (Get all Request, Headers and Response parameters):
     # $context.Request | Out-Default
@@ -181,7 +182,8 @@ function Send-Response {
         [int]$Code,
         [switch]$v2,
         [switch]$Body,
-        [switch]$fl
+        [switch]$fl,
+        [switch]$EncodingWin1251
     )
     ### Data convertion and set response encoding in UTF-8
     if ($v2 -eq $false) {
@@ -214,12 +216,37 @@ function Send-Response {
         }
     }
     $context.Response.StatusCode = $Code
-    $buffer = [System.Text.Encoding]::UTF8.GetBytes($Data)
-    #$context.Response.ContentLength64 = $buffer.Length
+    if ($EncodingWin1251) {
+        $buffer = [System.Text.Encoding]::GetEncoding("Windows-1251").GetBytes($Data)
+    }
+    else {
+        $buffer = [System.Text.Encoding]::UTF8.GetBytes($Data)
+    }
     Get-Log
     $context.Response.OutputStream.Write($buffer, 0, $buffer.Length)
     $context.Response.OutputStream.Flush()
     $context.Response.OutputStream.Close()
+}
+
+function Get-Event {
+    param (
+        [string]$LogName,
+        [switch]$List
+    )
+    if ($List) {
+        Get-WinEvent -ListLog * | Where-Object RecordCount -gt 0 | 
+        Select-Object RecordCount,
+        @{Name="LastWriteTime"; Expression={Get-Date -Date $($_.LastWriteTime) -UFormat "%d.%m.%Y %T"}},
+        @{Name="FileSize"; Expression={($_.FileSize / 1024kb).ToString("0.00 Mb")}},
+        LogIsolation,
+        LogType,
+        LogName | Sort-Object LogIsolation
+    }
+    else {
+        Get-WinEvent -LogName $LogName | Select-Object @{Name="TimeCreated"; Expression={Get-Date -Date $($_.TimeCreated) -UFormat "%d.%m.%Y %T"}},
+        LevelDisplayName,
+        Message
+    }
 }
 
 function Get-ServiceDescription {
@@ -320,7 +347,7 @@ function Get-Files {
 # Get-Files -Path "C:/Program Files/"
 # Get-Files -Path "D:/"
 # Get-Files -Path "D:/Movies/"
-#endregion main-functions
+#endregion 
 
 #region cim-functions
 ### Dependency install
@@ -756,7 +783,7 @@ function Get-NetStat {
     @{Name="RunTime"; Expression={((Get-Date) - $_.CreationTime) -replace "\.\d+$"}},
     @{name="ProcessPath";expression={(Get-Process -Id $_.OwningProcess).Path}}
 }
-#endregion cim-functions
+#endregion
 
 #region software-functions
 function Get-OpenHardwareMonitor {
@@ -783,9 +810,9 @@ function Get-OpenHardwareMonitor {
     @{name = "Max";expression = { [int]$_.Max }}
     $Sensors | Sort-Object HardwareName,SensorType,SensorName
 }
-#endregion software-functions
+#endregion
 
-#region function creat and start-socket
+#region function start-socket
 function Start-Socket {
     Add-Type -AssemblyName System.Net.Http
     $http = New-Object System.Net.HttpListener
@@ -818,11 +845,118 @@ function Start-Socket {
                     ") | ConvertFrom-StringData
                     Send-Response -Data $Data -Code 200 -Body -fl
                 }
+                ### GET /events/list
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/events/list") {
+                    $Events = Get-Event -List
+                    $GetEvent = "<html><head><title>Events</title></head><body>"
+                    ### Add menu button to page
+                    $GetEvent += $BodyButtons
+                    ### Creat table
+                    $GetEvent += "<table border='1'>"
+                    $GetEvent += "<tr>"
+                    $GetEvent += "<th>Records</th>"
+                    $GetEvent += "<th>Last Write</th>"
+                    $GetEvent += "<th>File Size</th>"
+                    $GetEvent += "<th>Isolation</th>"
+                    $GetEvent += "<th>Type</th>"
+                    $GetEvent += "<th>Name</th>"
+                    $GetEvent += "</tr>"
+                    foreach ($Event in $Events) {
+                        $GetEvent += "<tr>"
+                        $GetEvent += "<td>$($Event.RecordCount)</td>"
+                        $GetEvent += "<td>$($Event.LastWriteTime)</td>"
+                        $GetEvent += "<td>$($Event.FileSize)</td>"
+                        $GetEvent += "<td>$($Event.LogIsolation)</td>"
+                        $GetEvent += "<td>$($Event.LogType)</td>"
+                        $LogName  = $Event.LogName -replace "/","&" -replace "\s","+"
+                        $GetEvent += "<td><button onclick='location.href=""/events/$($LogName)""'>$($Event.LogName)</button></td>"
+                        $GetEvent += "</tr>"
+                    }
+                    $GetEvent += "</table>"
+                    $GetEvent += "</body></html>"
+                    Send-Response -Data $GetEvent -Code 200 -v2
+                }
+                ### GET /events/LogName
+                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -ne "/events/list" -and $context.Request.RawUrl -match "/events/.") {
+                    $LogName = ($context.Request.RawUrl) -replace ".+/"
+                    $LogName = $LogName -replace "&","/" -replace "\+"," "
+                    $Events = Get-Event -LogName $LogName
+                    ### If the array is greater than 3000 elements, send the standard table
+                    if ($Events.Count -gt 3000) {
+                        Send-Response -Data $Events -Code 200 -Body
+                    }
+                    else {
+                        $GetEvent = "<html><head><title>Events</title>"
+                        $GetEvent += "<script>"
+                        ### Function for filtering the content of messages
+                        $GetEvent += "
+                        function filterTable() {
+                            var input, filter, table, tr, td, i, txtValue;
+                            input = document.getElementById('messageText');
+                            filter = input.value.toUpperCase();
+                            table = document.getElementById('eventTable');
+                            tr = table.getElementsByTagName('tr');
+                            for (i = 0; i < tr.length; i++) {
+                                td = tr[i].getElementsByTagName('td')[2]; // Filtering by 3 column (Message)
+                                if (td) {
+                                    txtValue = td.textContent || td.innerText;
+                                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                        tr[i].style.display = '';
+                                    } else {
+                                        tr[i].style.display = 'none';
+                                    }
+                                }
+                            }
+                        }
+                        "
+                        $GetEvent += "</script>"
+                        $GetEvent += "</head><body>"
+                        ### Add menu button to page
+                        $GetEvent += $BodyButtons
+                        ### Add form for input filtering text 
+                        $GetEvent += "
+                        <form>
+                            <input
+                                type='text'
+                                name='messageText'
+                                id='messageText'
+                                onkeyup='filterTable()'
+                                placeholder='Enter text to filter messages'
+                                style='
+                                    width: 300px;
+                                    font-size: 14px;
+                                    border: 2px solid #efefef;
+                                    border-radius: 10px;
+                                    padding: 6px;
+                                '
+                            >
+                        </form>
+                        "
+                        ### Create table and columns
+                        $GetEvent += "<table id='eventTable' border='1'>"
+                        $GetEvent += "<tr>"
+                        $GetEvent += "<th>Time</th>"
+                        $GetEvent += "<th>Level</th>"
+                        $GetEvent += "<th>Message</th>"
+                        $GetEvent += "</tr>"
+                        ### Filling out the table
+                        foreach ($Event in $Events) {
+                            $GetEvent += "<tr>"
+                            $GetEvent += "<td>$($Event.TimeCreated)</td>"
+                            $GetEvent += "<td>$($Event.LevelDisplayName)</td>"
+                            $GetEvent += "<td>$($Event.Message)</td>"
+                            $GetEvent += "</tr>"
+                        }
+                        $GetEvent += "</table>"
+                        $GetEvent += "</body></html>"
+                        # When filling HTML document manually, you should use Windows-1251 encoding
+                        Send-Response -Data $GetEvent -Code 200 -v2 -EncodingWin1251
+                    }
+                }
                 ### GET /service
                 elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/service") {
                     $Services = Get-ServiceDescription *
                     $GetService = "<html><head><title>Service</title></head><body>"
-                    ### Add button to process page
                     $GetService += $BodyButtons
                     $GetService += "<table border='1'>"
                     $GetService += "<tr><th>Name</th><th>Status</th><th>Action</th><th>Start Type</th></tr>"
@@ -930,11 +1064,40 @@ function Start-Socket {
                     $GetProcess += $BodyButtons
                     ### Add form input text
                     $GetProcess += "
-                    <form action='/api/process/' method='post' onsubmit='return startProcess(this);'>
-                        <input type='text' name='processName' id='processName'>
-                        <input type='submit' value='Start'>
-                    </form>
-                    "
+                        <form action='/api/process/' method='post' onsubmit='return startProcess(this);'>
+                            <input
+                                type='text'
+                                name='processName'
+                                id='processName'
+                                onkeyup='filterTable()'
+                                placeholder='Enter text to filter messages'
+                                style='
+                                    width: 300px;
+                                    font-size: 14px;
+                                    border: 2px solid #efefef;
+                                    border-radius: 10px;
+                                    padding: 6px;
+                                '
+                            >
+                            <input 
+                                type='submit'
+                                value='Start'
+                                style='
+                                    margin-bottom: 6px;
+                                    display: inline-block;
+                                    background: #2196f3;
+                                    color: #fff;
+                                    font-size: 18px;
+                                    font-family: Tahoma;
+                                    border: none;
+                                    border-radius: 10px;
+                                    padding: 6px;
+                                    line-height: 1;
+                                    cursor: pointer;
+                                '
+                            >
+                        </form>
+                        "
                     $GetProcess += "<table border='1'>"
                     $GetProcess += "<tr>"
                     $GetProcess += "<th>Name</th><th>Action</th><th>Total Process Time</th>"
@@ -1231,7 +1394,7 @@ function Start-Socket {
         $http.Stop()
     }
 }
-#endregion function creat and start-socket
+#endregion
 
 #region start-socket
 $err = "False"
@@ -1260,4 +1423,4 @@ while ($true) {
         }
     }
 }
-#endregion start-socket
+#endregion
