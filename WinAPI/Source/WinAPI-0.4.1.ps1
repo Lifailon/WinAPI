@@ -45,8 +45,9 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/memory
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/memory/slots
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/physical
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/logical
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/partition
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/smart
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/iops
-curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/iops/total
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/video
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/ipconfig
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/stat
@@ -62,6 +63,10 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Mo
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies/The-Flash/4 sezon/The.Flash.S04E23.1080p.rus.LostFilm.TV.mkv"
 # POST File-Delete
 curl -s -X POST -u $user:$pass -data '' http://192.168.3.99:8443/api/file-delete -H "Path: D:/Movies/The-Flash/4 sezon/The.Flash.S04E23.1080p.rus.LostFilm.TV.mkv"
+# Web
+http://localhost:8443/events/list
+http://localhost:8443/service
+http://localhost:8443/process
 #>
 
 #region runas-admin
@@ -140,7 +145,6 @@ $BodyButtons += "<button onclick='location.href=""/api/disk/logical""'>Logical D
 $BodyButtons += "<button onclick='location.href=""/api/disk/partition""'>Disk Partitions</button> "
 $BodyButtons += "<button onclick='location.href=""/api/disk/smart""'>SMART</button> "
 $BodyButtons += "<button onclick='location.href=""/api/disk/iops""'>IOps</button> "
-$BodyButtons += "<button onclick='location.href=""/api/disk/iops/total""'>IOps Total</button> "
 $BodyButtons += "<button onclick='location.href=""/api/video""'>Video</button> "
 $BodyButtons += "<button onclick='location.href=""/api/network/ipconfig""'>IPConfig</button> "
 $BodyButtons += "<button onclick='location.href=""/api/network/stat""'>Netstat</button> "
@@ -514,23 +518,16 @@ function Get-Performance {
 }
 
 function Get-CPU {
-    param (
-        [switch]$Total
-    )
     $CPU_Perf = Get-CimInstance Win32_PerfFormattedData_PerfOS_Processor
-    if ($Total) {
-        $CPU_Replace = $CPU_Perf | Where-Object name -eq "_Total"
-    }
-    else {
-        $CPU_Replace = $CPU_Perf | Where-Object name -ne "_Total"
-    }
-    $CPU_Replace = $CPU_Replace | Select-Object Name,
+    $CPU_Cores = $CPU_Perf | Where-Object Name -ne "_Total" | Sort-Object {[int]$_.Name}
+    $CPU_Total = $CPU_Perf | Where-Object Name -eq "_Total"
+    $CPU_All = $CPU_Cores + $CPU_Total
+    $CPU_All | Select-Object Name,
     @{Label="ProcessorTime"; Expression={[String]$_.PercentProcessorTime+" %"}},
     @{Label="PrivilegedTime"; Expression={[String]$_.PercentPrivilegedTime+" %"}},
     @{Label="UserTime"; Expression={[String]$_.PercentUserTime+" %"}},
     @{Label="InterruptTime"; Expression={[String]$_.PercentInterruptTime+" %"}},
     @{Label="IdleTime"; Expression={[String]$_.PercentIdleTime+" %"}}
-    $CPU_Replace | Sort-Object {[int]$_.Name}
 }
 
 function Get-MemorySize {
@@ -672,18 +669,8 @@ function Get-Smart {
 }
 
 function Get-IOps {
-    param (
-        [switch]$Total
-    )
-    $IO = Get-CimInstance Win32_PerfFormattedData_PerfDisk_PhysicalDisk
-    if ($Total) {
-        $IO = $IO | Where-Object { $_.Name -eq "_Total" }
-    }
-    else {
-        $IO = $IO | Where-Object { $_.Name -ne "_Total" }
-    }
-    $IO | Select-Object Name,
-    @{name="TotalTime";expression={"$($_.PercentDiskTime) %"}}, # Процент времени, в течение которого физический диск занят обработкой запросов ввода-вывода
+    Get-CimInstance Win32_PerfFormattedData_PerfDisk_PhysicalDisk | Select-Object Name,
+    @{name="ReadWriteTime";expression={"$($_.PercentDiskTime) %"}}, # Процент времени, в течение которого физический диск занят обработкой запросов ввода-вывода
     @{name="ReadTime";expression={"$($_.PercentDiskReadTime) %"}}, # Процент времени, в течение которого физический диск занят чтением данных
     @{name="WriteTime";expression={"$($_.PercentDiskWriteTime) %"}}, # Процент времени, в течение которого физический диск занят записью данных
     @{name="IdleTime";expression={"$($_.PercentIdleTime) %"}}, #  Процент времени, в течение которого физический диск не занят (находится в режиме простоя)
@@ -695,9 +682,6 @@ function Get-IOps {
     @{name="ReadsIOps";expression={$_.DiskReadsPersec}}, # Количество операций чтения с диска в секунду
     @{name="WriteIOps";expression={$_.DiskWritesPersec}} # Количество операций записи на диск в секунду
 }
-
-# Get-IOps -Total
-# Get-IOps
 
 function Get-VideoCard {
     $VideoCard = Get-CimInstance Win32_VideoController | Select-Object @{
@@ -1253,11 +1237,6 @@ function Start-Socket {
                     $Data = Get-CPU
                     Send-Response -Data $Data -Code 200 -Body
                 }
-                ### GET /api/cpu/total
-                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/cpu/total") {
-                    $Data = Get-CPU -Total
-                    Send-Response -Data $Data -Code 200 -Body
-                }
                 ### GET /api/memory
                 elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/memory") {
                     $Data = Get-MemorySize
@@ -1291,12 +1270,7 @@ function Start-Socket {
                 ### GET /api/disk/iops
                 elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/disk/iops") {
                     $Data = Get-IOps
-                    Send-Response -Data $Data -Code 200 -Body -fl
-                }
-                ### GET /api/disk/iops/total
-                elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/disk/iops/total") {
-                    $Data = Get-IOps -Total
-                    Send-Response -Data $Data -Code 200 -Body -fl
+                    Send-Response -Data $Data -Code 200 -Body
                 }
                 ### GET /api/video
                 elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/api/video") {

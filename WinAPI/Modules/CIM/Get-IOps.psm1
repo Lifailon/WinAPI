@@ -1,15 +1,5 @@
 function Get-IOps {
-    param (
-        [switch]$Total
-    )
-    $IO = Get-CimInstance Win32_PerfFormattedData_PerfDisk_PhysicalDisk
-    if ($Total) {
-        $IO = $IO | Where-Object { $_.Name -eq "_Total" }
-    }
-    else {
-        $IO = $IO | Where-Object { $_.Name -ne "_Total" }
-    }
-    $IO | Select-Object Name,
+    Get-CimInstance Win32_PerfFormattedData_PerfDisk_PhysicalDisk | Select-Object Name,
     @{name="ReadWriteTime";expression={"$($_.PercentDiskTime) %"}}, # Процент времени, в течение которого физический диск занят обработкой запросов ввода-вывода
     @{name="ReadTime";expression={"$($_.PercentDiskReadTime) %"}}, # Процент времени, в течение которого физический диск занят чтением данных
     @{name="WriteTime";expression={"$($_.PercentDiskWriteTime) %"}}, # Процент времени, в течение которого физический диск занят записью данных
@@ -22,6 +12,3 @@ function Get-IOps {
     @{name="ReadsIOps";expression={$_.DiskReadsPersec}}, # Количество операций чтения с диска в секунду
     @{name="WriteIOps";expression={$_.DiskWritesPersec}} # Количество операций записи на диск в секунду
 }
-
-# Get-IOps -Total
-# Get-IOps

@@ -12,11 +12,11 @@
 
 **🔎 Test version: [README](https://github.com/Lifailon/WinAPI/blob/rsa/Test/README.md)**
 
-REST API and simple Web server **based on .NET HttpListener** and only **one PowerShell** language. Using WinAPI, you can quickly set up remote communication with Windows OS without the need to configure WinRM or OpenSSH using APIs and get control from any platform (**including Linux**) via browser or any REST client.
+REST API and Web server on base **.NET HttpListener** and backend only **PowerShell Core**. Using WinAPI, you can quickly set up remote communication with Windows OS using API, without the need to configure WinRM or OpenSSH and get control from any platform, including **Linux** via browser or any REST client.
 
 **🔗 Implemented**:
 
-✅ More than 20 endpoints \
+✅ More than 20 unique endpoints \
 ✅ Authentication \
 ✅ Converting to 4 data types \
 ✅ Response codes handling \
@@ -50,7 +50,7 @@ All GET requests can be output in one of the following formats: **JSON (default)
 
 `/api/hardware` - Output of summary statistics of metrics close to **Task Manager** \
 `/api/performance` - Output metrics from **Counter** \
-`/api/cpu` - CPU use to procent \
+`/api/cpu` - CPU use to procent for all core and total \
 `/api/memory` - Memory use to GB and procent \
 `/api/memory/slots` - Number of memory slots and their frequency \
 `/api/disk/physical` - List of all physical disks, model, size, operation status and errors \
@@ -58,7 +58,6 @@ All GET requests can be output in one of the following formats: **JSON (default)
 `/api/disk/partition` - List partitions of all physical disks \
 `/api/disk/smart` - Status S.M.A.R.T. (temperature, health and operational status, power on hours, start and stop cycle count) \
 `/api/disk/iops` - Metrics for all physical disks (time, bytes speed, queue, Input and Output operations per second) \
-`/api/disk/iops/total` - Summary statistics for all physical disks \
 `/api/video` - List of all video adapters, video memory size and resolution \
 `/api/network` - List of all network adapters and their settings \
 `api/network/ipconfig` - Settings for all network interfaces \
@@ -178,7 +177,7 @@ To stop the background process, use the command: `Get-Process *winapi* | Stop-Pr
 
 ## 🔒 Authorization
 
-Base authorization has been implemented (based on Base64).
+Base authorization has been implemented (based on **Base64**).
 
 Default login and password:
 ```PowerShell
@@ -213,6 +212,8 @@ curl -s -X GET -u $user:$pass -H 'Content-Type: application/csv' http://192.168.
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/process
 curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/process/torrent
 ```
+
+> It is possible to configure filtering by IP address or subnet. It is possible to configure other authentication methods to HttpListener.
 
 ## 📢 Response code
 
@@ -332,7 +333,7 @@ Comparison of module operation with and without threads (on average 3.3 seconds 
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Service.jpg)
 
-## 🎊 Latest version
+- Event Viewer:
 
 - Hardware statistics:
 
