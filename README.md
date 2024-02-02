@@ -1,4 +1,4 @@
-# <img src="https://github.com/Lifailon/WinAPI/blob/rsa/Screen/ico/x128.png" width="30" /> WinAPI
+# <img src="https://github.com/Lifailon/WinAPI/blob/rsa/Screen/ico/x128.png" width="25" /> WinAPI
 
 ![GitHub release (with filter)](https://img.shields.io/github/v/release/lifailon/WinAPI?color=<green>)
 ![GitHub top language](https://img.shields.io/github/languages/top/lifailon/WinAPI)
@@ -429,7 +429,9 @@ Comparison of module operation with and without threads (on average 3.3 seconds 
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Console/Get-Hardware-Threads-Diff.jpg)
 
-## 📊 GET data examples (version 0.3.1)
+## 📊 GET data (output examples)
+
+### Service and process management
 
 ```Bash
 lifailon@hv-devops-01:~$ user="rest"
@@ -460,6 +462,8 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "Status": "Stopped",
     "StartType": "Manual"
   }
+]
+
 lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass -H 'Content-Type: application/json' http://192.168.3.99:8443/api/service/winrm
 {
   "Name": "WinRM",
@@ -467,6 +471,7 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass -H 'Content-Type: applica
   "Status": "Stopped",
   "StartType": "Manual"
 }
+
 lifailon@hv-devops-01:~$ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/service/winrm -H "Status: Start"
 {
   "Name": "winrm",
@@ -474,62 +479,225 @@ lifailon@hv-devops-01:~$ curl -s -X POST -u $user:$pass --data '' http://192.168
   "Status": "Running",
   "StartType": "Manual"
 }
+
 lifailon@hv-devops-01:~$ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Check"
 Number active qbittorrent processes: 0
+
 lifailon@hv-devops-01:~$ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Start"
 Number active qbittorrent processes: 1
+
 lifailon@hv-devops-01:~$ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Stop"
 Number active qbittorrent processes: 0
+```
+
+### Hardware metrics (general summary, performance, cpu, memory and video)
+
+```Bash
 lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/hardware
 {
   "Host": "HUAWEI-BOOK",
-  "Uptime": "6.08:37",
-  "BootDate": "12.12.2023 04:16:35",
+  "Uptime": "17:17",
+  "BootDate": "01.02.2024 09:05:04",
   "Owner": "lifailon",
   "OS": "Майкрософт Windows 10 Pro",
   "Motherboard": "HUAWEI MRGF-XX-PCB M1010",
   "Processor": "12th Gen Intel(R) Core(TM) i7-1260P",
   "Core": 12,
   "Thread": 16,
-  "CPU": "13 %",
-  "ProcessCount": 286,
-  "ThreadsCount": 3842,
-  "HandlesCount": 131846,
+  "CPU": "14 %",
+  "ProcessCount": 305,
+  "ThreadsCount": 4641,
+  "HandlesCount": 157065,
   "MemoryAll": "16 GB",
-  "MemoryUse": "10,49 GB",
-  "MemoryUseProc": "67 %",
-  "WorkingSet": "9,54 GB",
-  "PageMemory": "10,49 GB",
+  "MemoryUse": "11,00 GB",
+  "MemoryUseProc": "70 %",
+  "WorkingSet": "11,06 GB",
+  "PageMemory": "12,54 GB",
   "MemorySlots": 8,
   "PhysicalDiskCount": 1,
   "PhysicalDiskAllSize": "954 Gb",
   "LogicalDiskCount": 3,
   "LogicalDiskAllSize": "1053 Gb",
-  "DiskTotalTime": "0 %",
+  "DiskTotalTime": "2 %",
+  "DiskTotalIOps": 3,
+  "DiskTotalRead": "0,015 MByte/Sec",
+  "DiskTotalWrite": "0,000 MByte/Sec",
   "VideoCardCount": 3,
   "VideoCardAllSize": "1 Gb",
-  "NetworkAdapterEnableCount": 3
+  "NetworkAdapterEnableCount": 3,
+  "NetworkReceivedCurrent": "0,154 MByte/Sec",
+  "NetworkSentCurrent": "0,044 MByte/Sec",
+  "NetworkReceivedTotal": "4,13 GByte",
+  "NetworkSentTotal": "0,34 GByte",
+  "PortListenCount": 50,
+  "PortEstablishedCount": 54
 }
+
 lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/performance
 {
-  "CPUTotalTime": "2 %",
-  "MemoryUse": "46 %",
-  "DiskTotalTime": "4 %",
+  "CPUTotalTime": "1 %",
+  "MemoryUse": "30 %",
+  "DiskTotalTime": "12 %",
   "AdapterName": "intel[r] wi-fi 6e ax211 160mhz",
-  "AdapterSpeed": "0,339 MByte/Sec"
+  "AdapterSpeed": "0,093 MByte/Sec"
 }
+
 lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/cpu
-{
-  "CPU": "13 %"
-}
+[
+  {
+    "Name": "0",
+    "ProcessorTime": "8 %",
+    "PrivilegedTime": "6 %",
+    "UserTime": "6 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "79 %"
+  },
+  {
+    "Name": "1",
+    "ProcessorTime": "0 %",
+    "PrivilegedTime": "0 %",
+    "UserTime": "0 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "99 %"
+  },
+  {
+    "Name": "2",
+    "ProcessorTime": "2 %",
+    "PrivilegedTime": "0 %",
+    "UserTime": "6 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "98 %"
+  },
+  {
+    "Name": "3",
+    "ProcessorTime": "8 %",
+    "PrivilegedTime": "18 %",
+    "UserTime": "0 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "76 %"
+  },
+  {
+    "Name": "4",
+    "ProcessorTime": "0 %",
+    "PrivilegedTime": "0 %",
+    "UserTime": "0 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "99 %"
+  },
+  {
+    "Name": "5",
+    "ProcessorTime": "8 %",
+    "PrivilegedTime": "18 %",
+    "UserTime": "0 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "76 %"
+  },
+  {
+    "Name": "6",
+    "ProcessorTime": "0 %",
+    "PrivilegedTime": "0 %",
+    "UserTime": "0 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "100 %"
+  },
+  {
+    "Name": "7",
+    "ProcessorTime": "8 %",
+    "PrivilegedTime": "18 %",
+    "UserTime": "0 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "76 %"
+  },
+  {
+    "Name": "8",
+    "ProcessorTime": "14 %",
+    "PrivilegedTime": "12 %",
+    "UserTime": "6 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "68 %"
+  },
+  {
+    "Name": "9",
+    "ProcessorTime": "33 %",
+    "PrivilegedTime": "18 %",
+    "UserTime": "18 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "60 %"
+  },
+  {
+    "Name": "10",
+    "ProcessorTime": "27 %",
+    "PrivilegedTime": "12 %",
+    "UserTime": "18 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "68 %"
+  },
+  {
+    "Name": "11",
+    "ProcessorTime": "27 %",
+    "PrivilegedTime": "18 %",
+    "UserTime": "12 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "62 %"
+  },
+  {
+    "Name": "12",
+    "ProcessorTime": "27 %",
+    "PrivilegedTime": "6 %",
+    "UserTime": "24 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "71 %"
+  },
+  {
+    "Name": "13",
+    "ProcessorTime": "14 %",
+    "PrivilegedTime": "12 %",
+    "UserTime": "6 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "76 %"
+  },
+  {
+    "Name": "14",
+    "ProcessorTime": "21 %",
+    "PrivilegedTime": "18 %",
+    "UserTime": "6 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "69 %"
+  },
+  {
+    "Name": "15",
+    "ProcessorTime": "0 %",
+    "PrivilegedTime": "0 %",
+    "UserTime": "0 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "94 %"
+  },
+  {
+    "Name": "_Total",
+    "ProcessorTime": "11 %",
+    "PrivilegedTime": "9 %",
+    "UserTime": "6 %",
+    "InterruptTime": "0 %",
+    "IdleTime": "80 %"
+  }
+]
+
 lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/memory
 {
   "MemoryAll": "15,73 GB",
-  "MemoryUse": "10,62 GB",
-  "MemoryUseProc": "67 %",
-  "WorkingSet": "9,81 GB",
-  "PageMemory": "10,44 GB"
+  "MemoryUse": "10,98 GB",
+  "MemoryUseProc": "70 %",
+  "PageSize": "48,00 GB",
+  "PageUse": "7,92 GB",
+  "PageUseProc": "17 %",
+  "PagePath": "D:\\pagefile.sys",
+  "MemoryVirtAll": "63,73 GB",
+  "MemoryVirtUse": "18,90 GB",
+  "MemoryVirtUseProc": "30 %",
+  "ProcWorkingSet": "11,02 GB",
+  "ProcPageMemory": "12,62 GB"
 }
+
 lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/memory/slots
 [
   {
@@ -589,55 +757,7 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "Bank": "BANK 3"
   }
 ]
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/physical
-{
-  "Model": "WD PC SN740 SDDPNQD-1T00-1027",
-  "Size": "954 Gb",
-  "PartitionCount": 4,
-  "Interface": "SCSI"
-}
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/logical
-[
-  {
-    "Logical_Disk": "C:",
-    "FileSystem": "NTFS",
-    "VolumeName": "",
-    "AllSize": "153 Gb",
-    "FreeSize": "66 Gb",
-    "Free": "43 %"
-  },
-  {
-    "Logical_Disk": "D:",
-    "FileSystem": "NTFS",
-    "VolumeName": "",
-    "AllSize": "800 Gb",
-    "FreeSize": "452 Gb",
-    "Free": "57 %"
-  },
-  {
-    "Logical_Disk": "G:",
-    "FileSystem": "FAT32",
-    "VolumeName": "Google Drive",
-    "AllSize": "100 Gb",
-    "FreeSize": "49 Gb",
-    "Free": "49 %"
-  }
-]
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/iops
-{
-  "Name": "0 D: C:",
-  "PercentDiskTime": 1,
-  "PercentIdleTime": 95,
-  "PercentDiskWriteTime": 1,
-  "PercentDiskReadTime": 0,
-  "CurrentDiskQueueLength": 0,
-  "DiskBytesPersec": 1237822,
-  "DiskReadBytesPersec": 32151,
-  "DiskReadsPersec": 3,
-  "DiskTransfersPersec": 149,
-  "DiskWriteBytesPersec": 1205670,
-  "DiskWritesPersec": 145
-}
+
 lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/video
 [
   {
@@ -656,6 +776,98 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "VideoRAM": "0 Gb"
   }
 ]
+```
+
+### Disk metrics (Physical, Logical, SMART and IOps)
+
+```json
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/physical
+{
+  "Model": "WD PC SN740 SDDPNQD-1T00-1027",
+  "Size": "954 Gb",
+  "PartitionCount": 4,
+  "Interface": "SCSI",
+  "Status": "OK",
+  "ConfigManagerErrorCode": 0,
+  "LastErrorCode": null
+}
+
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/logical
+[
+  {
+    "Logical_Disk": "C:",
+    "FileSystem": "NTFS",
+    "VolumeName": "",
+    "AllSize": "153 Gb",
+    "FreeSize": "44 Gb",
+    "Free": "29 %"
+  },
+  {
+    "Logical_Disk": "D:",
+    "FileSystem": "NTFS",
+    "VolumeName": "",
+    "AllSize": "800 Gb",
+    "FreeSize": "413 Gb",
+    "Free": "52 %"
+  },
+  {
+    "Logical_Disk": "G:",
+    "FileSystem": "FAT32",
+    "VolumeName": "Google Drive",
+    "AllSize": "100 Gb",
+    "FreeSize": "42 Gb",
+    "Free": "42 %"
+  }
+]
+
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/iops
+[
+  {
+    "Name": "0 D: C:",
+    "ReadWriteTime": "0 %",
+    "ReadTime": "0 %",
+    "WriteTime": "0 %",
+    "IdleTime": "99 %",
+    "QueueLength": 0,
+    "BytesPersec": "0,000 MByte/Sec",
+    "ReadBytesPersec": "0,000 MByte/Sec",
+    "WriteBytesPersec": "0,000 MByte/Sec",
+    "IOps": 0,
+    "ReadsIOps": 0,
+    "WriteIOps": 0
+  },
+  {
+    "Name": "_Total",
+    "ReadWriteTime": "0 %",
+    "ReadTime": "0 %",
+    "WriteTime": "0 %",
+    "IdleTime": "99 %",
+    "QueueLength": 0,
+    "BytesPersec": "0,000 MByte/Sec",
+    "ReadBytesPersec": "0,000 MByte/Sec",
+    "WriteBytesPersec": "0,000 MByte/Sec",
+    "IOps": 0,
+    "ReadsIOps": 0,
+    "WriteIOps": 0
+  }
+]
+
+lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/smart
+{
+  "DiskName": "WD PC SN740 SDDPNQD-1T00-1027",
+  "Temperature": 61,
+  "HealthStatus": "Healthy",
+  "OperationalStatus": "OK",
+  "MediaType": "SSD",
+  "BusType": "NVMe",
+  "PowerOnHours": null,
+  "StartStopCycleCount": null
+}
+```
+
+## File system
+
+```Bash
 lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies"
 [
   {
