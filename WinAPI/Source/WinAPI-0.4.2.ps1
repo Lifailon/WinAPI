@@ -968,7 +968,7 @@ function Start-Socket {
                 }
                 ### GET /events/list
                 elseif ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/events/list") {
-                    $Events = Get-Event -List
+                    $Events = Get-Event -List | Sort-Object {[DateTime]::ParseExact($_.LastWriteTime, 'dd.MM.yyyy HH:mm:ss', $null)} -Descending
                     $GetEvent = "<html><head>"
                     $GetEvent += "<script>"
                     ### Function for filtering the content of messages by 6 (5) column
@@ -1011,8 +1011,8 @@ function Start-Socket {
                     $LogName = ($context.Request.RawUrl) -replace ".+/"
                     $LogName = $LogName -replace "&","/" -replace "\+"," "
                     $Events = Get-Event -LogName $LogName
-                    ### If the array is greater than 3000 elements, send the standard table
-                    if ($Events.Count -gt 3000) {
+                    ### If the array is greater than 6000 elements, send the standard table
+                    if ($Events.Count -gt 6000) {
                         Send-Response -Data $Events -Code 200 -Body
                     }
                     else {
