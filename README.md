@@ -16,7 +16,7 @@ REST API and Web server on base **.NET HttpListener** and backend only **PowerSh
 
 **🔗 Implemented**:
 
-- [✅ [More than 20 unique endpoints](#-implemented-endpoints)
+- [✅ More than 20 unique endpoints](#-implemented-endpoints)
 - [✅ Authentication](#-authorization)
 - [✅ Converting to 4 data types](#-change-data-type)
 - [✅ Response codes handling](#-response-code)
@@ -36,11 +36,11 @@ REST API and Web server on base **.NET HttpListener** and backend only **PowerSh
 
 - Service management:
 
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Service.gif)
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Service.jpg)
 
 - Viewer and filtering event:
 
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Event.jpg)
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Event.gif)
 
 - Hardware statistics:
 
