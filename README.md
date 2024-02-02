@@ -63,7 +63,7 @@ All GET requests can be output in one of the following formats: **JSON (default)
 `api/network/ipconfig` - Settings for all network interfaces \
 `api/network/stat` - Network connection statistics (ports) \
 `api/network/interface/stat/current` - Current statistics of the active network interface (formatted dat) \
-`api/network/interface/stat/all` - General statistics of the active network interface since system boot (raw data)
+`api/network/interface/stat/total` - General statistics of the active network interface since system boot (raw data)
 
 - **GET metrics from Open Hardware Monitor via CIM**
 
