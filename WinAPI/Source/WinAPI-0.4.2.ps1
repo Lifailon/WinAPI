@@ -961,7 +961,7 @@ function Start-Socket {
                 ### GET /
                 if ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/") {
                     $data = @("
-                        Version = 4.1
+                        Version = 4.2
                         Source = https://github.com/Lifailon/WinAPI
                     ") | ConvertFrom-StringData
                     Send-Response -Data $Data -Code 200 -Body -fl
