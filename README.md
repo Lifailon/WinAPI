@@ -65,25 +65,24 @@ All GET requests can be output in one of the following formats: **JSON (default)
 `api/network/interface/stat/current` - Current statistics of the active network interface (formatted dat) \
 `api/network/interface/stat/total` - General statistics of the active network interface since system boot (raw data)
 
-- **GET metrics from Open Hardware Monitor via CIM**
+- **GET metrics from Open Hardware Monitor via WMI/CIM**
 
 `/api/sensor` - Summary table of all sensors
 
-💡 This requires downloading the portable version of the [OpenHardwareMonitor](https://openhardwaremonitor.org/downloads/) program. A health check and startup in case the process stops is present when accessing the endpoint.
+Source module: [PowerShellHardwareMonitor](https://github.com/Lifailon/PowerShellHardwareMonitor) (module installation is not required)
 
-For a quick installation, use this command in your terminal (to run the `Deploy-OpenHardwareMonitor.ps1` script on your system):
+💡 For the endpoint to work, you must download the portable version of the [LibreHardwareMonitor](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor) (Default) or [OpenHardwareMonitor](https://openhardwaremonitor.org/downloads/) program in path `C:\Users\<UserName>\Documents\LibreHardwareMonitor` and `C:\Users\<UserName>\Documents\OpenHardwareMonitor\OpenHardwareMonitor`.
+
+For a quick installation LibreHardwareMonitor, use this command in your terminal:
 
 ```PowerShell
-Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Deploy/Deploy-OpenHardwareMonitor.ps1")
+Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/PowerShellHardwareMonitor/rsa/Install/Install-LibreHardwareMonitor.ps1")
 ```
 
-When accessing the endpoint, there is a health check and a startup in case the process stops. For this purpose, the program must be located in one of the following paths (used the `Find-Process` function to find the process executable by name):
+Install OpenHardwareMonitor:
 
 ```PowerShell
-"C:\Program Files",
-"C:\Program Files (x86)",
-"C:\Users\<UserName>\AppData\Roaming",
-"C:\Users\<UserName>\Documents"
+Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/PowerShellHardwareMonitor/rsa/Install/Install-OpenHardwareMonitor.ps1")
 ```
 
 - **Web**
@@ -95,11 +94,22 @@ When accessing the endpoint, there is a health check and a startup in case the p
 `/events/list` - List of all Windows event providers \
 `/events/<Event_Name>` - List of all events of the selected log with the ability to filter by content
 
+💡 Use the text entry form to **filter messages** through the browser
+
 - **POST**
 
 `/apt/service/<Service_Name>` - Stop, start and restart services by name (only one at a time, not wildcard format), status is transmitted in the request header (**Status: <Stop/Start/Restart>**). Upon execution, the service status is returned in the format of a GET request. \
 `/apt/process/<Process_Name>` - Check the number of running processes (**Status: Check**), stop a process by name (**Status: Stop**) and start a process (**Status: Start**). To start a process, you can use the function to search for an executable file in the file system by its name, but you can also pass the path to the executable file through the request header (e.g. **Path: C:\Program Files\qBittorrent\qbittorrent.exe**). \
 `/api/file-delete` - Deleting the file or directory specified in the header **Path** one at a time
+
+To find an executable file, the `Find-Process` function is used to scan the following directories:
+
+```PowerShell
+"C:\Program Files",
+"C:\Program Files (x86)",
+"C:\Users\<UserName>\AppData\Roaming",
+"C:\Users\<UserName>\Documents"
+```
 
 ## 🚀 Install
 
@@ -125,6 +135,12 @@ If you want output to **log** requests to a console and/or write file, enable an
 Log_Console = True
 Log_File    = True
 Log_Path    = C:/Users/lifailon/Documents/WinAPI/winapi.log
+```
+
+Specify the data source for the `/api/sensor` endpoint (default: **LibreHardwareMonitor**):
+
+```PowerShell
+SensorSource = OpenHardwareMonitor
 ```
 
 And open a port on your firewall:
