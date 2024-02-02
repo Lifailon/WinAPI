@@ -27,6 +27,7 @@ REST API and Web server on base **.NET HttpListener** and backend only **PowerSh
 🐧 Since the server is built on .NET, this implementation is **cross-platform**, you can try managing Linux services from a Windows system: **[dotNET-Systemd-API](https://github.com/Lifailon/dotNET-Systemd-API)**.
 
 ➡️ [🚀 Install](#-install)
+➡️ [📊 Examples](#-output-data-examples)
 
 ## 🎉 Web server
 
@@ -429,7 +430,7 @@ curl -s -X GET -u $user:$pass -H 'Content-Type: application/html' http://192.168
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <title>HTML TABLE</title> </head><body> <table> <colgroup><col/><col/><col/><col/></colgroup> <tr><th>Name</th><th>DisplayName</th><th>Status</th><th>StartType</th></tr> <tr><td>WinRM</td><td>Служба удаленного управления Windows (WS-Management)</td><td>Stopped</td><td>Manual</td></tr> </table> </body></html>
 ```
 
-## 📊 GET data (output examples)
+## 📊 Output data examples
 
 ### Service and process management
 
@@ -491,14 +492,41 @@ lifailon@hv-devops-01:~$ pass="api"
 }
 ```
 
-```Bash
-lifailon@hv-devops-01:~$ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Check"
+`curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Check"`
+
+```
 Number active qbittorrent processes: 0
+```
 
-lifailon@hv-devops-01:~$ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Start"
+`curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Start"`
+
+```
 Number active qbittorrent processes: 1
+```
 
-lifailon@hv-devops-01:~$ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Stop"
+`curl -s -u $user:$pass http://192.168.3.99:8443/api/process/qbittorrent`
+
+```JSON
+{
+  "ProcessName": "qbittorrent",
+  "TotalProcTime": "00:01:35",
+  "UserProcTime": "00:00:51",
+  "PrivilegedProcTime": "00:00:43",
+  "WorkingSet": "55 MB",
+  "PeakWorkingSet": "573 MB",
+  "PageMemory": "552 MB",
+  "VirtualMemory": "2102047 MB",
+  "PrivateMemory": "552 MB",
+  "RunTime": "01:27:00",
+  "Threads": 16,
+  "Handles": 578,
+  "Path": "C:\\Program Files\\qBittorrent\\qbittorrent.exe"
+}
+```
+
+`curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Stop"`
+
+```
 Number active qbittorrent processes: 0
 ```
 
