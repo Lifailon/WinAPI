@@ -26,6 +26,8 @@ REST API and Web server on base **.NET HttpListener** and backend only **PowerSh
 
 🐧 Since the server is built on .NET, this implementation is **cross-platform**, you can try managing Linux services from a Windows system: **[dotNET-Systemd-API](https://github.com/Lifailon/dotNET-Systemd-API)**.
 
+➡️ [🚀 Install](#-install)
+
 ## 🎉 Web server
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Example-0.4.2.gif)
