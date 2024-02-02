@@ -16,9 +16,7 @@ REST API and Web server on base **.NET HttpListener** and backend only **PowerSh
 
 **🔗 Implemented**:
 
-- [More than 20 unique endpoints]()
-
-- [✅ [More than 20 unique endpoints](#-implemented-endpoints:)
+- [✅ [More than 20 unique endpoints](#-implemented-endpoints)
 - [✅ Authentication](#-authorization)
 - [✅ Converting to 4 data types](#-change-data-type)
 - [✅ Response codes handling](#-response-code)
@@ -38,7 +36,7 @@ REST API and Web server on base **.NET HttpListener** and backend only **PowerSh
 
 - Service management:
 
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Service.jpg)
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Service.gif)
 
 - Viewer and filtering event:
 
@@ -335,16 +333,39 @@ Examples:
 user=rest
 pass=api
 
-curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/service/winrm
-{
-  "Name": "WinRM",
-  "DisplayName": "Служба удаленного управления Windows (WS-Management)",
-  "Status": "Stopped",
-  "StartType": "Manual"
-}
-
-curl -s -X GET -u $user:$pass -H 'Content-Type: application/html' http://192.168.3.99:8443/api/service/winrm
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <title>HTML TABLE</title> </head><body> <table> <colgroup><col/><col/><col/><col/></colgroup> <tr><th>Name</th><th>DisplayName</th><th>Status</th><th>StartType</th></tr> <tr><td>WinRM</td><td>Служба удаленного управления Windows (WS-Management)</td><td>Stopped</td><td>Manual</td></tr> </table> </body></html>
+curl -s -X GET -u $user:$pass -H 'Content-Type: application/json' http://192.168.3.99:8443/api/service/win | jq
+[
+  {
+    "Name": "WinAPI",
+    "DisplayName": "WinAPI",
+    "Status": "Stopped",
+    "StartType": "Manual"
+  },
+  {
+    "Name": "WinDefend",
+    "DisplayName": "Служба антивирусной программы Microsoft Defender",
+    "Status": "Running",
+    "StartType": "Automatic"
+  },
+  {
+    "Name": "WinHttpAutoProxySvc",
+    "DisplayName": "Служба автоматического обнаружения веб-прокси WinHTTP",
+    "Status": "Running",
+    "StartType": "Manual"
+  },
+  {
+    "Name": "Winmgmt",
+    "DisplayName": "Инструментарий управления Windows",
+    "Status": "Running",
+    "StartType": "Automatic"
+  },
+  {
+    "Name": "WinRM",
+    "DisplayName": "Служба удаленного управления Windows (WS-Management)",
+    "Status": "Stopped",
+    "StartType": "Manual"
+  }
+]
 
 curl -s -X GET -u $user:$pass -H 'Content-Type: application/xml' http://192.168.3.99:8443/api/service/winrm | xq
 <?xml version="1.0" encoding="utf-8"?>
@@ -359,6 +380,9 @@ curl -s -X GET -u $user:$pass -H 'Content-Type: application/xml' http://192.168.
 
 curl -s -X GET -u $user:$pass -H 'Content-Type: application/csv' http://192.168.3.99:8443/api/service/winrm
 "Name","DisplayName","Status","StartType" "WinRM","Служба удаленного управления Windows (WS-Management)","Stopped","Manual"
+
+curl -s -X GET -u $user:$pass -H 'Content-Type: application/html' http://192.168.3.99:8443/api/service/winrm
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <title>HTML TABLE</title> </head><body> <table> <colgroup><col/><col/><col/><col/></colgroup> <tr><th>Name</th><th>DisplayName</th><th>Status</th><th>StartType</th></tr> <tr><td>WinRM</td><td>Служба удаленного управления Windows (WS-Management)</td><td>Stopped</td><td>Manual</td></tr> </table> </body></html>
 ```
 
 ## 🔌 Windows client
