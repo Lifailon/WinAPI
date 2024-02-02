@@ -95,20 +95,6 @@ All GET requests can be output in one of the following formats: **JSON (default)
 
 Source module: [PowerShellHardwareMonitor](https://github.com/Lifailon/PowerShellHardwareMonitor) (module installation is not required)
 
-💡 For the endpoint to work, you must download the portable version of the [LibreHardwareMonitor](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor) (Default) or [OpenHardwareMonitor](https://openhardwaremonitor.org/downloads/) program in path `C:\Users\<UserName>\Documents\LibreHardwareMonitor` and `C:\Users\<UserName>\Documents\OpenHardwareMonitor\OpenHardwareMonitor`.
-
-For a quick installation LibreHardwareMonitor, use this command in your terminal:
-
-```PowerShell
-Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/PowerShellHardwareMonitor/rsa/Install/Install-LibreHardwareMonitor.ps1")
-```
-
-Install OpenHardwareMonitor:
-
-```PowerShell
-Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/PowerShellHardwareMonitor/rsa/Install/Install-OpenHardwareMonitor.ps1")
-```
-
 - **Web**
 
 **HTTP server. Endpoints only via Web Browser**.
@@ -153,6 +139,12 @@ user = rest
 pass = api
 ```
 
+And open a port on your firewall:
+
+```PowerShell
+New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
+```
+
 If you want output to **log** requests to a console and/or write file, enable and set the path.
 
 ```PowerShell
@@ -167,10 +159,18 @@ Specify the data source for the `/api/sensor` endpoint (default: **LibreHardware
 SensorSource = OpenHardwareMonitor
 ```
 
-And open a port on your firewall:
+💡 For the endpoint to work, you must download the portable version of the [LibreHardwareMonitor](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor) (Default) or [OpenHardwareMonitor](https://openhardwaremonitor.org/downloads/) program in path `C:\Users\<UserName>\Documents\LibreHardwareMonitor` and `C:\Users\<UserName>\Documents\OpenHardwareMonitor\OpenHardwareMonitor`.
+
+For a quick installation LibreHardwareMonitor, use this command in your terminal:
 
 ```PowerShell
-New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
+Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/PowerShellHardwareMonitor/rsa/Install/Install-LibreHardwareMonitor.ps1")
+```
+
+Install OpenHardwareMonitor:
+
+```PowerShell
+Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/PowerShellHardwareMonitor/rsa/Install/Install-OpenHardwareMonitor.ps1")
 ```
 
 ## Running. The 1st option (stable, process, added in version 0.3.2)
