@@ -16,25 +16,49 @@ REST API and Web server on base **.NET HttpListener** and backend only **PowerSh
 
 **🔗 Implemented**:
 
-✅ More than 20 unique endpoints \
-✅ Authentication \
-✅ Converting to 4 data types \
-✅ Response codes handling \
-✅ Error handling
+- [More than 20 unique endpoints]()
+
+- [✅ [More than 20 unique endpoints](#-implemented-endpoints:)
+- [✅ Authentication](#-authorization)
+- [✅ Converting to 4 data types](#-change-data-type)
+- [✅ Response codes handling](#-response-code)
+- [✅ Error handling](#-operational-stability)
 
 🍿 The server functionality is implemented in the [Kinozal-Bot](https://github.com/Lifailon/Kinozal-Bot) project.
 
 🐧 Since the server is built on .NET, this implementation is **cross-platform**, you can try managing Linux services from a Windows system: **[dotNET-Systemd-API](https://github.com/Lifailon/dotNET-Systemd-API)**.
 
-## ⚠️ Stability of operation
+## 🎉 Web server
 
-Processing of simultaneous requests from several clients (managed to test three simultaneous connections).
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Example-0.4.2.gif)
 
-If the previous request has not been processed yet and a new request from the same client arrives, the server terminates with an error, this behavior was detected in the browser when quickly refreshing pages, to handle this event is implemented **automatic restart of the server**. For Web-client such restart is processed without error and in the process of page refresh the response of the last request is returned.
+- Process management:
 
-In Invoke-RestMethod and curl, interrupting the previous request and sending a new one to another endpoint works without error and the response of the last request is returned (taking into account the processing time of the previous one).
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Process.jpg)
 
-## 📚 Implemented endpoints:
+- Service management:
+
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Service.jpg)
+
+- Viewer and filtering event:
+
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Event.jpg)
+
+- Hardware statistics:
+
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Hardware.jpg)
+
+- Physical and logical disk statistics, metrics **IOps**, **SMART** (via embedded module **Storage 2.0**) and current network stats.
+
+To give you an example, a file download from the Internet was taking place on a remote machine:
+
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Metrics-Disk-Network.jpg)
+
+- Sensors from **LibreHardwareMonitor**:
+
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Sensors.jpg)
+
+## 📚 Implemented endpoints
 
 All GET requests can be output in one of the following formats: **JSON (default), HTML, XML, CSV**. When using a browser for GET requests, by default the response is processed in table format using HTML markup.
 
@@ -243,6 +267,14 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/process/torrent
 
 **405. Method not allowed.** Response to other methods.
 
+## ⚠️ Operational stability
+
+Processing of simultaneous requests from several clients (managed to test three simultaneous connections).
+
+If the previous request has not been processed yet and a new request from the same client arrives, the server terminates with an error, this behavior was detected in the browser when quickly refreshing pages, to handle this event is implemented **automatic restart of the server**. For Web-client such restart is processed without error and in the process of page refresh the response of the last request is returned.
+
+In Invoke-RestMethod and curl, interrupting the previous request and sending a new one to another endpoint works without error and the response of the last request is returned (taking into account the processing time of the previous one).
+
 ## 🐧 Examples POST request from Linux client
 
 - Stop and start service **WinRM**:
@@ -295,6 +327,40 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Mo
 curl -s -X POST -u $user:$pass -data '' http://192.168.3.99:8443/api/file-delete -H "Path: D:/Movies/The-Flash/4 sezon/The.Flash.S04E23.1080p.rus.LostFilm.TV.mkv"
 ```
 
+## 📬 Change data type
+
+Examples:
+
+```bash
+user=rest
+pass=api
+
+curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/service/winrm
+{
+  "Name": "WinRM",
+  "DisplayName": "Служба удаленного управления Windows (WS-Management)",
+  "Status": "Stopped",
+  "StartType": "Manual"
+}
+
+curl -s -X GET -u $user:$pass -H 'Content-Type: application/html' http://192.168.3.99:8443/api/service/winrm
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <title>HTML TABLE</title> </head><body> <table> <colgroup><col/><col/><col/><col/></colgroup> <tr><th>Name</th><th>DisplayName</th><th>Status</th><th>StartType</th></tr> <tr><td>WinRM</td><td>Служба удаленного управления Windows (WS-Management)</td><td>Stopped</td><td>Manual</td></tr> </table> </body></html>
+
+curl -s -X GET -u $user:$pass -H 'Content-Type: application/xml' http://192.168.3.99:8443/api/service/winrm | xq
+<?xml version="1.0" encoding="utf-8"?>
+<Objects>
+  <Object Type="System.Management.Automation.PSCustomObject">
+    <Property Name="Name" Type="System.String">WinRM</Property>
+    <Property Name="DisplayName" Type="System.String">Служба удаленного управления Windows (WS-Management)</Property>
+    <Property Name="Status" Type="System.String">Stopped</Property>
+    <Property Name="StartType" Type="System.String">Manual</Property>
+  </Object>
+</Objects>
+
+curl -s -X GET -u $user:$pass -H 'Content-Type: application/csv' http://192.168.3.99:8443/api/service/winrm
+"Name","DisplayName","Status","StartType" "WinRM","Служба удаленного управления Windows (WS-Management)","Stopped","Manual"
+```
+
 ## 🔌 Windows client
 
 ```PowerShell
@@ -336,36 +402,6 @@ Get-Hardware -ComputerName 192.168.3.99 -Port 8443 -User rest -Pass api
 Comparison of module operation with and without threads (on average 3.3 seconds versus 1.4 seconds):
 
 ![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Console/Get-Hardware-Threads-Diff.jpg)
-
-## 🎉 Web server
-
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Example.gif)
-
-- Process management:
-
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Process.jpg)
-
-- Service management:
-
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Service.jpg)
-
-- Event Viewer:
-
-- Hardware statistics:
-
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Hardware.jpg)
-
-- Sensors from **OpenHardwareMonitor**:
-
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Sensors.jpg)
-
-- Metrics **memory, performance, physical and logical disk**:
-
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-Metrics.jpg)
-
-- Metrics total **IOps disk** and current network **interface state** (for example, on a remote machine file was process downloaded from the Internet):
-
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Web/Web-IOps-and-InterfaceStat.jpg)
 
 ## 📊 GET data examples (version 0.3.1)
 
