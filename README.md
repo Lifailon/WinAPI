@@ -327,6 +327,48 @@ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Mo
 curl -s -X POST -u $user:$pass -data '' http://192.168.3.99:8443/api/file-delete -H "Path: D:/Movies/The-Flash/4 sezon/The.Flash.S04E23.1080p.rus.LostFilm.TV.mkv"
 ```
 
+## 🔌 Windows client
+
+```PowerShell
+$user = "rest"
+$pass = "api"
+$EncodingCred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${user}:${pass}"))
+```
+
+- Stop service **WinRM**:
+
+```PowerShell
+$Headers = @{"Authorization" = "Basic ${EncodingCred}"}
+$Headers += @{"Status" = "Stop"}
+Invoke-RestMethod -Headers $Headers -Uri http://192.168.3.99:8443/api/service/winrm
+Invoke-RestMethod -Headers $Headers -Method Post -Uri http://192.168.3.99:8443/api/service/winrm
+```
+- Start service **WinRM**:
+
+```PowerShell
+$Headers = @{"Authorization" = "Basic ${EncodingCred}"}
+$Headers += @{"Status" = "Start"}
+Invoke-RestMethod -Headers $Headers -Method Post -Uri http://192.168.3.99:8443/api/service/winrm
+```
+
+### 🔌 Module Get-Hardware
+
+> 💡 The Get-Hardware function uses the ThreadJob module, the script provides automatic installation in case of its absence. This is the only function which execution time was reduced by half due to threads.
+
+For an example, import the **[Get-Hardware](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Modules/Get-Hardware)** module from the script directory or copy it to your modules directory. For local retrieval of information, use the command without parameters, for remote launch via API, use the parameter **ComputerName**.
+
+```PowerShell
+Import-Module $home\Documents\WinAPI\Modules\Get-Hardware\Get-Hardware.psm1
+Get-Hardware
+Get-Hardware -ComputerName 192.168.3.99 -Port 8443 -User rest -Pass api
+```
+
+> You can add endpoints to the module yourself for fast remote communication via API.
+
+Comparison of module operation with and without threads (on average 3.3 seconds versus 1.4 seconds):
+
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Console/Get-Hardware-Threads-Diff.jpg)
+
 ## 📬 Change data type
 
 Examples:
@@ -387,48 +429,6 @@ curl -s -X GET -u $user:$pass -H 'Content-Type: application/html' http://192.168
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <title>HTML TABLE</title> </head><body> <table> <colgroup><col/><col/><col/><col/></colgroup> <tr><th>Name</th><th>DisplayName</th><th>Status</th><th>StartType</th></tr> <tr><td>WinRM</td><td>Служба удаленного управления Windows (WS-Management)</td><td>Stopped</td><td>Manual</td></tr> </table> </body></html>
 ```
 
-## 🔌 Windows client
-
-```PowerShell
-$user = "rest"
-$pass = "api"
-$EncodingCred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${user}:${pass}"))
-```
-
-- Stop service **WinRM**:
-
-```PowerShell
-$Headers = @{"Authorization" = "Basic ${EncodingCred}"}
-$Headers += @{"Status" = "Stop"}
-Invoke-RestMethod -Headers $Headers -Uri http://192.168.3.99:8443/api/service/winrm
-Invoke-RestMethod -Headers $Headers -Method Post -Uri http://192.168.3.99:8443/api/service/winrm
-```
-- Start service **WinRM**:
-
-```PowerShell
-$Headers = @{"Authorization" = "Basic ${EncodingCred}"}
-$Headers += @{"Status" = "Start"}
-Invoke-RestMethod -Headers $Headers -Method Post -Uri http://192.168.3.99:8443/api/service/winrm
-```
-
-### 🔌 Module Get-Hardware
-
-> 💡 The Get-Hardware function uses the ThreadJob module, the script provides automatic installation in case of its absence. This is the only function which execution time was reduced by half due to threads.
-
-For an example, import the **[Get-Hardware](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Modules/Get-Hardware)** module from the script directory or copy it to your modules directory. For local retrieval of information, use the command without parameters, for remote launch via API, use the parameter **ComputerName**.
-
-```PowerShell
-Import-Module $home\Documents\WinAPI\Modules\Get-Hardware\Get-Hardware.psm1
-Get-Hardware
-Get-Hardware -ComputerName 192.168.3.99 -Port 8443 -User rest -Pass api
-```
-
-> You can add endpoints to the module yourself for fast remote communication via API.
-
-Comparison of module operation with and without threads (on average 3.3 seconds versus 1.4 seconds):
-
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Console/Get-Hardware-Threads-Diff.jpg)
-
 ## 📊 GET data (output examples)
 
 ### Service and process management
@@ -436,7 +436,11 @@ Comparison of module operation with and without threads (on average 3.3 seconds 
 ```Bash
 lifailon@hv-devops-01:~$ user="rest"
 lifailon@hv-devops-01:~$ pass="api"
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/service/win
+```
+
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/service/win`
+
+```JSON
 [
   {
     "Name": "WinDefend",
@@ -463,23 +467,31 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "StartType": "Manual"
   }
 ]
+```
 
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass -H 'Content-Type: application/json' http://192.168.3.99:8443/api/service/winrm
+`curl -s -X GET -u $user:$pass -H 'Content-Type: application/json' http://192.168.3.99:8443/api/service/winrm`
+
+```JSON
 {
   "Name": "WinRM",
   "DisplayName": "Служба удаленного управления Windows (WS-Management)",
   "Status": "Stopped",
   "StartType": "Manual"
 }
+```
 
-lifailon@hv-devops-01:~$ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/service/winrm -H "Status: Start"
+`curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/service/winrm -H "Status: Start"`
+
+```JSON
 {
   "Name": "winrm",
   "DisplayName": "Служба удаленного управления Windows (WS-Management)",
   "Status": "Running",
   "StartType": "Manual"
 }
+```
 
+```Bash
 lifailon@hv-devops-01:~$ curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Check"
 Number active qbittorrent processes: 0
 
@@ -492,8 +504,9 @@ Number active qbittorrent processes: 0
 
 ### Hardware metrics (general summary, performance, cpu, memory and video)
 
-```Bash
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/hardware
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/hardware`
+
+```JSON
 {
   "Host": "HUAWEI-BOOK",
   "Uptime": "17:17",
@@ -532,8 +545,11 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
   "PortListenCount": 50,
   "PortEstablishedCount": 54
 }
+```
 
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/performance
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/performance`
+
+```JSON
 {
   "CPUTotalTime": "1 %",
   "MemoryUse": "30 %",
@@ -541,8 +557,11 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
   "AdapterName": "intel[r] wi-fi 6e ax211 160mhz",
   "AdapterSpeed": "0,093 MByte/Sec"
 }
+```
 
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/cpu
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/cpu`
+
+```JSON
 [
   {
     "Name": "0",
@@ -681,8 +700,11 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "IdleTime": "80 %"
   }
 ]
+```
 
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/memory
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/memory`
+
+```JSON
 {
   "MemoryAll": "15,73 GB",
   "MemoryUse": "10,98 GB",
@@ -697,8 +719,11 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
   "ProcWorkingSet": "11,02 GB",
   "ProcPageMemory": "12,62 GB"
 }
+```
 
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/memory/slots
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/memory/slots`
+
+```JSON
 [
   {
     "Tag": "Physical Memory 0",
@@ -757,8 +782,11 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "Bank": "BANK 3"
   }
 ]
+```
 
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/video
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/video`
+
+```JSON
 [
   {
     "Model": "Intel(R) Iris(R) Xe Graphics",
@@ -780,8 +808,9 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
 
 ### Disk metrics (Physical, Logical, SMART and IOps)
 
-```json
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/physical
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/physical`
+
+```JSON
 {
   "Model": "WD PC SN740 SDDPNQD-1T00-1027",
   "Size": "954 Gb",
@@ -791,8 +820,11 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
   "ConfigManagerErrorCode": 0,
   "LastErrorCode": null
 }
+```
 
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/logical
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/logical`
+
+```JSON
 [
   {
     "Logical_Disk": "C:",
@@ -819,8 +851,11 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "Free": "42 %"
   }
 ]
+```
 
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/iops
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/iops`
+
+```JSON
 [
   {
     "Name": "0 D: C:",
@@ -851,8 +886,10 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "WriteIOps": 0
   }
 ]
+```
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/smart`
 
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/disk/smart
+```JSON
 {
   "DiskName": "WD PC SN740 SDDPNQD-1T00-1027",
   "Temperature": 61,
@@ -865,11 +902,65 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
 }
 ```
 
+## Network interface stats
+
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/interface/stat/current`
+
+```JSON
+{
+  "Name": "Intel[R] Wi-Fi 6E AX211 160MHz",
+  "Total": "0,087 MByte/Sec",
+  "Received": "0,063 MByte/Sec",
+  "Sent": "0,024 MByte/Sec",
+  "PacketsPersec": 416,
+  "PacketsReceivedPersec": 189,
+  "PacketsReceivedUnicastPersec": 189,
+  "PacketsReceivedNonUnicastPersec": 0,
+  "PacketsReceivedDiscarded": 0,
+  "PacketsReceivedErrors": 0,
+  "PacketsSentPersec": 226,
+  "PacketsSentUnicastPersec": 226,
+  "PacketsSentNonUnicastPersec": 0
+}
+```
+
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/interface/stat/total`
+
+```JSON
+{
+  "Name": "Intel[R] Wi-Fi 6E AX211 160MHz",
+  "Total": "4,73 GByte",
+  "Received": "4,36 GByte",
+  "Sent": "0,37 GByte",
+  "PacketsPersec": 9163133,
+  "PacketsReceivedPersec": 5580358,
+  "PacketsReceivedUnicastPersec": 5540535,
+  "PacketsReceivedNonUnicastPersec": 39823,
+  "PacketsReceivedDiscarded": 0,
+  "PacketsReceivedErrors": 0,
+  "PacketsSentPersec": 3582775,
+  "PacketsSentUnicastPersec": 3572843,
+  "PacketsSentNonUnicastPersec": 9932
+}
+```
+
 ## File system
 
-```Bash
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies"
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies"`
+
+```JSON
 [
+  {
+    "Name": "МДЖ-03",
+    "FullName": "D:\\Movies\\МДЖ-03",
+    "Type": "Directory",
+    "Size": "14.243 GB",
+    "Files": 9,
+    "Directory": 0,
+    "CreationTime": "25.10.2023 03:58:41",
+    "LastAccessTime": "02.02.2024 02:45:19",
+    "LastWriteTime": "25.10.2023 04:05:22"
+  },
   {
     "Name": "Adventure-Time",
     "FullName": "D:\\Movies\\Adventure-Time",
@@ -878,19 +969,19 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "Files": 292,
     "Directory": 11,
     "CreationTime": "04.05.2023 10:05:23",
-    "LastAccessTime": "19.12.2023 12:12:24",
+    "LastAccessTime": "02.02.2024 02:45:19",
     "LastWriteTime": "04.05.2023 10:06:22"
   },
   {
-    "Name": "Lupin-S03-1080",
-    "FullName": "D:\\Movies\\Lupin-S03-1080",
+    "Name": "Prikluchenie-Dsheki-Chana",
+    "FullName": "D:\\Movies\\Prikluchenie-Dsheki-Chana",
     "Type": "Directory",
-    "Size": "13.401 GB",
-    "Files": 7,
+    "Size": "22.862 GB",
+    "Files": 95,
     "Directory": 0,
-    "CreationTime": "25.10.2023 03:51:41",
-    "LastAccessTime": "19.12.2023 12:12:24",
-    "LastWriteTime": "25.10.2023 03:57:34"
+    "CreationTime": "10.07.2023 10:00:55",
+    "LastAccessTime": "02.02.2024 02:45:19",
+    "LastWriteTime": "10.07.2023 10:03:28"
   },
   {
     "Name": "Shaman-King",
@@ -900,7 +991,7 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "Files": 64,
     "Directory": 0,
     "CreationTime": "10.07.2023 10:03:10",
-    "LastAccessTime": "19.12.2023 12:12:24",
+    "LastAccessTime": "02.02.2024 02:45:19",
     "LastWriteTime": "10.07.2023 10:07:01"
   },
   {
@@ -911,7 +1002,7 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "Files": 6,
     "Directory": 0,
     "CreationTime": "25.10.2023 03:47:32",
-    "LastAccessTime": "19.12.2023 12:12:24",
+    "LastAccessTime": "02.02.2024 02:45:19",
     "LastWriteTime": "25.10.2023 03:51:10"
   },
   {
@@ -922,11 +1013,17 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "Files": 43,
     "Directory": 2,
     "CreationTime": "30.07.2023 01:13:20",
-    "LastAccessTime": "19.12.2023 12:12:24",
+    "LastAccessTime": "02.02.2024 02:45:06",
     "LastWriteTime": "30.07.2023 03:22:09"
   }
 ]
-lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies/The-Flash"
+```
+
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies/The-Flash"`
+
+There are 20 files in the season 4 directory:
+
+```JSON
 [
   {
     "Name": "3 sezon",
@@ -936,7 +1033,7 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "Files": 23,
     "Directory": 0,
     "CreationTime": "30.07.2023 01:13:20",
-    "LastAccessTime": "19.12.2023 12:12:24",
+    "LastAccessTime": "02.02.2024 02:08:32",
     "LastWriteTime": "30.07.2023 01:14:37"
   },
   {
@@ -944,14 +1041,76 @@ lifailon@hv-devops-01:~$ curl -s -X GET -u $user:$pass http://192.168.3.99:8443/
     "FullName": "D:\\Movies\\The-Flash\\4 sezon",
     "Type": "Directory",
     "Size": "35.559 GB",
-    "Files": 22,
+    "Files": 20,
     "Directory": 0,
     "CreationTime": "30.07.2023 01:22:15",
-    "LastAccessTime": "19.12.2023 12:12:24",
+    "LastAccessTime": "02.02.2024 02:08:32",
     "LastWriteTime": "18.12.2023 12:00:37"
   }
 ]
 ```
+
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies/The-Flash/4 sezon/The.Flash.S04E20.1080p.rus.LostFilm.TV.mkv"`
+
+```JSON
+{
+  "Name": "The.Flash.S04E20.1080p.rus.LostFilm.TV.mkv",
+  "FullName": "D:\\Movies\\The-Flash\\4 sezon\\The.Flash.S04E20.1080p.rus.LostFilm.TV.mkv",
+  "Type": "File",
+  "Size": "1.786 GB",
+  "Files": 0,
+  "Directory": 0,
+  "CreationTime": "30.07.2023 03:06:02",
+  "LastAccessTime": "17.12.2023 11:45:02",
+  "LastWriteTime": "30.07.2023 03:07:19"
+}
+```
+
+❌ We're deleting episode 20 of the serial:
+
+`curl -s -X POST -u $user:$pass -data '' http://192.168.3.99:8443/api/file-delete -H "Path: D:/Movies/The-Flash/4 sezon/The.Flash.S04E20.1080p.rus.LostFilm.TV.mkv"`
+
+```
+Deleted successfully: D:/Movies/The-Flash/4 sezon/The.Flash.S04E20.1080p.rus.LostFilm.TV.mkv (File).
+```
+
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies/The-Flash/4 sezon/The.Flash.S04E20.1080p.rus.LostFilm.TV.mkv"`
+
+```
+Bad Request. Path  could not be found.
+```
+
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies/The-Flash"`
+
+There are now 19 files in the Season 4 catalog:
+
+```JSON
+[
+  {
+    "Name": "3 sezon",
+    "FullName": "D:\\Movies\\The-Flash\\3 sezon",
+    "Type": "Directory",
+    "Size": "41.01 GB",
+    "Files": 23,
+    "Directory": 0,
+    "CreationTime": "30.07.2023 01:13:20",
+    "LastAccessTime": "02.02.2024 02:45:06",
+    "LastWriteTime": "30.07.2023 01:14:37"
+  },
+  {
+    "Name": "4 sezon",
+    "FullName": "D:\\Movies\\The-Flash\\4 sezon",
+    "Type": "Directory",
+    "Size": "33.773 GB",
+    "Files": 19,
+    "Directory": 0,
+    "CreationTime": "30.07.2023 01:22:15",
+    "LastAccessTime": "02.02.2024 02:45:06",
+    "LastWriteTime": "18.12.2023 12:00:37"
+  }
+]
+```
+
 ## 📑 Server log
 
 Example of logging different clients: `Google Chrome`, `PowerShell (Invoke-RestMethod)` and `curl`.
