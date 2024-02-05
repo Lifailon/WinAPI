@@ -1,8 +1,3 @@
-Import-Module ThreadJob -ErrorAction Ignore
-if (!(Get-Module ThreadJob)) {
-   Install-Module ThreadJob -Scope CurrentUser -Force
-}
-
 function Get-Hardware {
     param (
         $ComputerName,
@@ -11,6 +6,10 @@ function Get-Hardware {
         $Pass = "api"
     )
     if ($null -eq $ComputerName) {
+        Import-Module ThreadJob -ErrorAction Ignore
+        if (!(Get-Module ThreadJob)) {
+           Install-Module ThreadJob -Scope CurrentUser -Force
+        }
         # Creat jobs
         Start-ThreadJob -Name SYS -ScriptBlock {Get-CimInstance Win32_ComputerSystem} | Out-Null
         Start-ThreadJob -Name OS -ScriptBlock {Get-CimInstance Win32_OperatingSystem} | Out-Null
