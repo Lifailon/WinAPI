@@ -13,9 +13,15 @@ New-Item -Path $path -ItemType Directory | Out-Null
 New-Item -Path "$path\Functions" -ItemType Directory | Out-Null
 
 ### Download main server script
-$url = "https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Server/WinAPI-$Version.ps1"
+$url_server = "https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Server/WinAPI-$Version.ps1"
 Start-Job {
-    Invoke-RestMethod -Uri $using:url -OutFile "$using:path\WinAPI.ps1"
+    Invoke-RestMethod -Uri $using:url_server -OutFile "$using:path\WinAPI.ps1"
+} | Out-Null
+
+### Download ini
+$url_ini = "https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Server/winapi.ini"
+Start-Job {
+    Invoke-RestMethod -Uri $using:url_ini -OutFile "$using:path\WinAPI.ini"
 } | Out-Null
 
 ### Download module

@@ -86,20 +86,12 @@ if (!(Get-RunAs)) {
 
 #region Config (ini)
 ###### Creat path and ini file
+$GitHub_Tag      = (Invoke-RestMethod "https://api.github.com/repos/Lifailon/WinAPI/releases/latest").tag_name
+$Version         = $GitHub_Tag -replace ".+-"
 $Version         = "0.4.3"
 $winapi_path     = "$(($env:PSModulePath -split ";")[0])\WInAPI\$Version\"
-$ini_path        = "$winapi_path\winapi.ini"
-$log_path_update = "$winapi_path\winapi.log"
-
-if (!(Test-Path $winapi_path)) {
-    New-Item -ItemType Directory -Path $winapi_path
-}
-
-if (!(Test-Path $ini_path)) {
-    Invoke-RestMethod -Uri "https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Source/winapi.ini" -OutFile $ini_path
-    $log_path_update = "Log_Path     = $($log_path_update -replace "\\","/")"
-    $($(Get-Content $ini_path) -replace "Log_Path.+","$Log_Path_Update") | Out-File $ini_path
-}
+$ini_path        = "$winapi_path\WinAPI.ini"
+$Log_Path        = "$winapi_path\WinAPI.log"
 
 ###### Read ini and write variables
 $ini          = Get-Content $ini_path | ConvertFrom-StringData
@@ -108,7 +100,6 @@ $user         = $ini.user
 $pass         = $ini.pass
 $Log_Console  = $ini.Log_Console
 $Log_File     = $ini.Log_File
-$Log_Path     = $ini.Log_Path
 $SensorSource = $ini.SensorSource
 $cred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${user}:${pass}"))
 #endregion

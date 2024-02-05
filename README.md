@@ -129,7 +129,7 @@ Use in **PowerShell Core**.
 
 To install or update the process scripts and latest server side (path default: `$home/Documents/WinAPI`), run the command in your console:
 ```PowerShell
-Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Deploy/Deploy-WinAPI-Server.ps1")
+Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Deploy/Deploy-WinAPI.ps1")
 ```
 When the server first starts up, a default **configuration file (winapi.ini)** is created at the path: `$home/Documents/WinAPI/winapi.ini`. Configure it yourself.
 
