@@ -3,7 +3,6 @@ function Start-WinAPI {
     $Version = $GitHub_Tag -replace ".+-"
     $Version     = "0.4.3"
     $winapi_path = "$(($env:PSModulePath -split ";")[0])\WInAPI\$Version\"
-    $winapi_path = "$home\Documents\WInAPI"
     $ini_path    = "$winapi_path\winapi.ini"
     $Log_Path    = "$winapi_path\winapi.log"
     $ini         = Get-Content $ini_path
