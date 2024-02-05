@@ -1,6 +1,5 @@
 ### ©2023 Lifailon
 ### Source: https://github.com/Lifailon/WinAPI
-### NuGet: https://www.nuget.org/packages/WinAPI-2
 ### REST API and Web server for [Kinozal-Bot](https://github.com/Lifailon/Kinozal-Bot)
 <# Client
 # Login and password default:
@@ -87,7 +86,8 @@ if (!(Get-RunAs)) {
 
 #region Config (ini)
 ###### Creat path and ini file
-$winapi_path     = "$home\Documents\WInAPI"
+$Version         = "0.4.3"
+$winapi_path     = "$(($env:PSModulePath -split ";")[0])\WInAPI\$Version\"
 $ini_path        = "$winapi_path\winapi.ini"
 $log_path_update = "$winapi_path\winapi.log"
 

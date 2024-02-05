@@ -1,4 +1,6 @@
 function Start-WinAPI {
+    $GitHub_Tag = (Invoke-RestMethod "https://api.github.com/repos/Lifailon/WinAPI/releases/latest").tag_name
+    $Version = $GitHub_Tag -replace ".+-"
     $Version     = "0.4.3"
     $winapi_path = "$(($env:PSModulePath -split ";")[0])\WInAPI\$Version\"
     $winapi_path = "$home\Documents\WInAPI"
@@ -18,6 +20,8 @@ function Start-WinAPI {
 }
 
 function Stop-WinAPI {
+    $GitHub_Tag = (Invoke-RestMethod "https://api.github.com/repos/Lifailon/WinAPI/releases/latest").tag_name
+    $Version = $GitHub_Tag -replace ".+-"
     $Version = "0.4.3"
     $path    = "$(($env:PSModulePath -split ";")[0])\WInAPI\$Version\"
     $proc_id = Get-Content "$path\process_id.txt"
@@ -25,6 +29,8 @@ function Stop-WinAPI {
 }
 
 function Get-WinAPI {
+    $GitHub_Tag = (Invoke-RestMethod "https://api.github.com/repos/Lifailon/WinAPI/releases/latest").tag_name
+    $Version = $GitHub_Tag -replace ".+-"
     $Version = "0.4.3"
     $path    = "$(($env:PSModulePath -split ";")[0])\WInAPI\$Version\"
     $ini     = Get-Content "$path\winapi.ini"

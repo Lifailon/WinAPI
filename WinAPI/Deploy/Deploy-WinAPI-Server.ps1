@@ -9,27 +9,42 @@ $path = "$(($env:PSModulePath -split ";")[0])\WInAPI\$Version"
 if (Test-Path $path_root) {
     Remove-Item "$path_root\*" -Recurse -Force
 }
-New-Item -Path $path -ItemType Directory
-New-Item -Path "$path\Functions" -ItemType Directory
+New-Item -Path $path -ItemType Directory | Out-Null
+New-Item -Path "$path\Functions" -ItemType Directory | Out-Null
 
 ### Download main server script
-$url_raw = "https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Server/WinAPI-$Version.ps1"
-Invoke-RestMethod -Uri $url_raw -OutFile "$path\WinAPI.ps1"
+$url = "https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Server/WinAPI-$Version.ps1"
+Start-Job {
+    Invoke-RestMethod -Uri $using:url -OutFile "$using:path\WinAPI.ps1"
+} | Out-Null
 
 ### Download module
-$url_process = "https://api.github.com/repos/Lifailon/WinAPI/WinAPI/Module/WniAPI/$version"
-$Process_Files = Invoke-RestMethod -Uri $url_process
-foreach ($Process_File in $Process_Files) {
-    $File_Name = $Process_File.name
-    $Url_Download = $Process_File.download_url
-    Invoke-RestMethod -Uri $Url_Download -OutFile "$path\$File_Name"
+$url_modules = "https://api.github.com/repos/Lifailon/WinAPI/contents/WinAPI/Module/WniAPI/$Version"
+$Module_Files = Invoke-RestMethod -Uri $url_modules
+foreach ($Module_File in $Module_Files) {
+    $File_Name = $Module_File.name
+    $Url_Download = $Module_File.download_url
+    Start-Job {
+        Invoke-RestMethod -Uri $using:Url_Download -OutFile "$using:path\$using:File_Name"
+    } | Out-Null
 }
 
 ### Download functions
-$url_process = "https://api.github.com/repos/Lifailon/WinAPI/WinAPI/Module/WniAPI/$version/Functions"
-$Process_Files = Invoke-RestMethod -Uri $url_process
+$url_modules = "https://api.github.com/repos/Lifailon/WinAPI/contents/WinAPI/Module/WniAPI/$Version/Functions"
+$Process_Files = Invoke-RestMethod -Uri $url_modules
 foreach ($Process_File in $Process_Files) {
     $File_Name = $Process_File.name
     $Url_Download = $Process_File.download_url
-    Invoke-RestMethod -Uri $Url_Download -OutFile "$path\Functions\$File_Name"
+    Start-Job {
+        Invoke-RestMethod -Uri $using:Url_Download -OutFile "$using:path\Functions\$using:File_Name"
+    } | Out-Null
+}
+
+while ($True) {
+    $status_job = (Get-Job).State[-1]
+    if ($status_job -like "Completed") {
+        Get-Job | Remove-Job -Force
+        Write-Host "Completed"
+        break
+    }
 }
