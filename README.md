@@ -151,10 +151,26 @@ Open the specified port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-Use the following commands to `start, check the operation status and stop the server`:
+Use the following commands to start, check the operation status server:
 
 ```PowerShell
+> Start-WinAPI
+> Test-WinAPI
 
+Port Status
+---- ------
+8443 Open
+```
+
+To stop the server:
+
+```PowerShell
+> Stop-WinAPI
+> Test-WinAPI
+
+Port Status
+---- ------
+8443 Closed
 ```
 
 Each call to the endpoint is logged to the `WinAPI.log` file. You can disable logging:
@@ -167,7 +183,13 @@ Log_File    = True
 Or output the current log in the console (`tail` mode):
 
 ```PowerShell
-Read-WinAPI
+> Read-WinAPI
+06.02.2024 04:41:58 Start server
+06.02.2024 04:41:58 192.168.3.99:18447 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 => GET / => 200
+06.02.2024 04:43:45 Start server
+06.02.2024 04:43:55 192.168.3.99:19107 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 => GET /process => 200
+06.02.2024 04:43:56 192.168.3.99:19107 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 => GET /service => 200
+...
 ```
 
 Specify the data source for the `/api/sensor` endpoint (default: **LibreHardwareMonitor**):
@@ -218,8 +240,59 @@ Module for server management (starting and stopping background process) and inte
 > Import-Module WinAPI
 > Get-command -Module WinAPI
 
-
+CommandType     Name                             Version    Source
+-----------     ----                             -------    ------
+Function        Find-Process                     0.4.3      WinAPI
+Function        Get-CPU                          0.4.3      WinAPI
+Function        Get-DiskLogical                  0.4.3      WinAPI
+Function        Get-DiskPartition                0.4.3      WinAPI
+Function        Get-DiskPhysical                 0.4.3      WinAPI
+Function        Get-Driver                       0.4.3      WinAPI
+Function        Get-Event                        0.4.3      WinAPI
+Function        Get-Files                        0.4.3      WinAPI
+Function        Get-Hardware                     0.4.3      WinAPI
+Function        Get-HardwareNoJob                0.4.3      WinAPI
+Function        Get-IOps                         0.4.3      WinAPI
+Function        Get-MemorySize                   0.4.3      WinAPI
+Function        Get-MemorySlots                  0.4.3      WinAPI
+Function        Get-NetInterfaceStat             0.4.3      WinAPI
+Function        Get-NetIpConfig                  0.4.3      WinAPI
+Function        Get-NetStat                      0.4.3      WinAPI
+Function        Get-Performance                  0.4.3      WinAPI
+Function        Get-ProcessPerformance           0.4.3      WinAPI
+Function        Get-Smart                        0.4.3      WinAPI
+Function        Get-Software                     0.4.3      WinAPI
+Function        Get-VideoCard                    0.4.3      WinAPI
+Function        Get-WinUpdate                    0.4.3      WinAPI
+Function        Read-WinAPI                      0.4.3      WinAPI
+Function        Start-WinAPI                     0.4.3      WinAPI
+Function        Stop-WinAPI                      0.4.3      WinAPI
+Function        Test-WinAPI                      0.4.3      WinAPI
 ```
+
+The format is always the same, if you don't use the ComputerName parameter, the function runs locally on your computer. If you use the ComputerName parameter, we access the desired endpoint and get a response from the WinAPI server.
+
+Example:
+
+```PowerShell
+> Get-DiskPhysical | Format-Table
+
+Model                         Size   PartitionCount Interface Status ConfigManagerErrorCode LastErrorCode
+-----                         ----   -------------- --------- ------ ---------------------- -------------
+WD PC SN740 SDDPNQD-1T00-1027 954 Gb              4 SCSI      OK                          0
+
+> Get-DiskPhysical -ComputerName 192.168.3.100 -Port 8443 -User rest -Pass api | Format-Table
+
+Model                  Size    PartitionCount Interface Status ConfigManagerErrorCode LastErrorCode
+-----                  ----    -------------- --------- ------ ---------------------- -------------
+ST1000DM003-1CH162     932 Gb               1 IDE       OK                          0
+WDC WD2005FBYZ-01YCBB2 1863 Gb              1 IDE       OK                          0
+MSI M390 250GB         233 Gb               3 SCSI      OK                          0
+```
+
+> 💡 The Get-Hardware function uses the ThreadJob module, the script provides automatic installation in case of its absence. This is the only function which execution time was reduced by half due to threads (on average 3.3 seconds versus 1.4 seconds).
+
+![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Console/Get-Hardware-Threads-Diff.jpg)
 
 ## 🔒 Authorization
 
@@ -357,24 +430,6 @@ $Headers += @{"Status" = "Start"}
 Invoke-RestMethod -Headers $Headers -Method Post -Uri http://192.168.3.99:8443/api/service/winrm
 ```
 
-### 🔌 Module Get-Hardware
-
-> 💡 The Get-Hardware function uses the ThreadJob module, the script provides automatic installation in case of its absence. This is the only function which execution time was reduced by half due to threads.
-
-For an example, import the **[Get-Hardware](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Modules/Get-Hardware)** module from the script directory or copy it to your modules directory. For local retrieval of information, use the command without parameters, for remote launch via API, use the parameter **ComputerName**.
-
-```PowerShell
-Import-Module $home\Documents\WinAPI\Modules\Get-Hardware\Get-Hardware.psm1
-Get-Hardware
-Get-Hardware -ComputerName 192.168.3.99 -Port 8443 -User rest -Pass api
-```
-
-> You can add endpoints to the module yourself for fast remote communication via API.
-
-Comparison of module operation with and without threads (on average 3.3 seconds versus 1.4 seconds):
-
-![Image alt](https://github.com/Lifailon/WinAPI/blob/rsa/Screen/Console/Get-Hardware-Threads-Diff.jpg)
-
 ## 📬 Change data type
 
 Examples:
@@ -437,7 +492,7 @@ curl -s -X GET -u $user:$pass -H 'Content-Type: application/html' http://192.168
 
 ## 📊 Output data examples
 
-### Service and process management
+### Service management
 
 ```Bash
 lifailon@hv-devops-01:~$ user="rest"
@@ -497,6 +552,8 @@ lifailon@hv-devops-01:~$ pass="api"
 }
 ```
 
+### Process management
+
 `curl -s -X POST -u $user:$pass --data '' http://192.168.3.99:8443/api/process/qbittorrent -H "Status: Check"`
 
 ```
@@ -513,19 +570,20 @@ Number active qbittorrent processes: 1
 
 ```JSON
 {
-  "ProcessName": "qbittorrent",
-  "TotalProcTime": "00:01:35",
-  "UserProcTime": "00:00:51",
-  "PrivilegedProcTime": "00:00:43",
-  "WorkingSet": "55 MB",
-  "PeakWorkingSet": "573 MB",
-  "PageMemory": "552 MB",
-  "VirtualMemory": "2102047 MB",
-  "PrivateMemory": "552 MB",
-  "RunTime": "01:27:00",
-  "Threads": 16,
-  "Handles": 578,
-  "Path": "C:\\Program Files\\qBittorrent\\qbittorrent.exe"
+  "Name": "qbittorrent",
+  "ProcTime": "0 %",
+  "IOps": 0,
+  "IObsRead": "0,00 Mb",
+  "IObsWrite": "0,00 Mb",
+  "RunTime": "06:02:20",
+  "TotalTime": "00:01:28",
+  "UserTime": "00:01:00",
+  "PrivTime": "00:00:28",
+  "WorkingSet": "61,96 Mb",
+  "PeakWorkingSet": "237,48 Mb",
+  "PageMemory": "946,23 Mb",
+  "Threads": 20,
+  "Handles": 633
 }
 ```
 

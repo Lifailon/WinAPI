@@ -297,10 +297,9 @@ function Get-ProcessPerformance {
                 PageMemory     = $($Process.PagedMemorySize / 1mb).ToString("0.00 Mb")
                 Threads        = $Process.Threads.Count
                 Handles        = $Process.Handles
-                #Path           = $Process.Path
-                #Company        = $Process.Company
-                #FileVersion    = $Process.FileVersion
-                #CommandLine    = $Process.CommandLine
+                Path           = $Process.Path
+                Company        = $Process.Company
+                Version        = $Process.FileVersion
             })
         }
         $Collections | Sort-Object -Descending ProcTime,IOps,TotalTime
