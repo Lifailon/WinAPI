@@ -134,14 +134,14 @@ function Get-Hardware {
         $Collection
     }
     else {
-        $url = "http://$ComputerName"+":$Port/api/hardware"
+        $url = "http://$($ComputerName):$($Port)/api/cpu"
         $EncodingCred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${User}:${Pass}"))
         $Headers = @{"Authorization" = "Basic ${EncodingCred}"}
         try {
             Invoke-RestMethod -Headers $Headers -Uri $url
         }
         catch {
-            Write-Error "Error connection"
+            Write-Host "Error connection" -ForegroundColor Red
         }
     }
 }

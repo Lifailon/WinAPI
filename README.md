@@ -68,7 +68,7 @@ All GET requests can be output in one of the following formats: **JSON (default)
 
 `/api/service` - Get list **all services** \
 `/apt/service/service_name` - Get list service by the specified name passed in URL (using **wildcard** format) \
-`/apt/process` - Get a list **all running processes** in an easy-to-read format \
+`/apt/process` - Get a list **all running processes** in an easy-to-read format (includes CPU and iops performance) \
 `/apt/process/process_name` - Get list running processes by the specified name passed in URL (using **wildcard** format) \
 `/api/files` - Get a list of files and directories at the specified path in the **Path header** with the size, number of child files and directories, date of creation, access and modification
 
@@ -89,13 +89,16 @@ All GET requests can be output in one of the following formats: **JSON (default)
 `api/network/ipconfig` - Settings for all network interfaces \
 `api/network/stat` - Network connection statistics (ports) \
 `api/network/interface/stat/current` - Current statistics of the active network interface (formatted dat) \
-`api/network/interface/stat/total` - General statistics of the active network interface since system boot (raw data)
+`api/network/interface/stat/total` - General statistics of the active network interface since system boot (raw data) \
+`/api/update` - Windows update list \
+`/api/software` - Installed software list \
+`/api/driver` - Unique driver list
 
 - **GET metrics from Open Hardware Monitor via WMI/CIM**
 
 `/api/sensor` - Summary table of all sensors
 
-Source module: [PowerShellHardwareMonitor](https://github.com/Lifailon/PowerShellHardwareMonitor) (module installation is not required)
+Source module: [PowerShellHardwareMonitor](https://github.com/Lifailon/PowerShellHardwareMonitor) (module installation is **not required**)
 
 - **Web**
 

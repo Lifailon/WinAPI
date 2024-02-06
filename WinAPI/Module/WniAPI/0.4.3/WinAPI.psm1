@@ -30,7 +30,7 @@ function Stop-WinAPI {
     Start-Process pwsh -ArgumentList "-Command Stop-Process -Id $proc_id" -Verb RunAs
 }
 
-function Get-WinAPI {
+function Test-WinAPI {
     $GitHub_Tag = (Invoke-RestMethod "https://api.github.com/repos/Lifailon/WinAPI/releases/latest").tag_name
     $Version    = $GitHub_Tag -replace ".+-"
     $Version    = "0.4.3"
@@ -38,9 +38,26 @@ function Get-WinAPI {
     $ini        = Get-Content "$path\winapi.ini"
     $port       = $($ini | ConvertFrom-StringData).port
     $listen     = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction Ignore
+    $Collections = New-Object System.Collections.Generic.List[System.Object]
     if ($listen) {
-        Write-Host "Port $port - listen" -ForegroundColor Green
+        $Collections.Add([PSCustomObject]@{
+            Port = $port;
+            Status = "Open"
+        })
     } else {
-        Write-Host "Port $port - not listen" -ForegroundColor Red
+        $Collections.Add([PSCustomObject]@{
+            Port = $port;
+            Status = "Closed"
+        })
     }
+    $Collections
+}
+
+function Read-WinAPI {
+    $GitHub_Tag = (Invoke-RestMethod "https://api.github.com/repos/Lifailon/WinAPI/releases/latest").tag_name
+    $Version    = $GitHub_Tag -replace ".+-"
+    $Version    = "0.4.3"
+    $winapi_path = "$(($env:PSModulePath -split ";")[0])\WInAPI\$Version\"
+    $Log_Path    = "$winapi_path\winapi.log"
+    Get-Content $Log_Path -Wait
 }

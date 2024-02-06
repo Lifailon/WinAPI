@@ -1,9 +1,29 @@
 function Get-WinUpdate {
-    Get-CimInstance Win32_QuickFixEngineering | Select-Object HotFixID,
-    Description,
-    InstalledBy,
-    InstalledOn
-    # wusa /uninstall /kb:123456
-    # dism /Online /Get-Packages /format:table
-    # dism /Online /Remove-Package /PackageName:Package_for_DotNetRollup_481~31bf3856ad364e35~amd64~~10.0.9206.1 /quiet /norestart
+    param (
+        $ComputerName,
+        $Port = 8443,
+        $User = "rest",
+        $Pass = "api"
+    )
+    if ($null -eq $ComputerName) {
+        Get-CimInstance Win32_QuickFixEngineering | Sort-Object -Descending InstalledOn | Select-Object HotFixID,
+        @{
+            name="InstallDate";expression={
+                $_.InstalledOn.ToString("dd.MM.yyyy")
+            }
+        },
+        Description,
+        InstalledBy
+    }
+    else {
+        $url = "http://$($ComputerName):$($Port)/api/update"
+        $EncodingCred = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${User}:${Pass}"))
+        $Headers = @{"Authorization" = "Basic ${EncodingCred}"}
+        try {
+            Invoke-RestMethod -Headers $Headers -Uri $url
+        }
+        catch {
+            Write-Host "Error connection" -ForegroundColor Red
+        }
+    }
 }
