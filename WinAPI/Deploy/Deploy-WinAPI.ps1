@@ -4,8 +4,8 @@ $Version = $GitHub_Tag -replace ".+-"
 $Version = "0.4.3"
 
 ### Clear and creat path module
-$path_root = "$(($env:PSModulePath -split ";")[0])\WInAPI\"
-$path = "$(($env:PSModulePath -split ";")[0])\WInAPI\$Version"
+$path_root = "$(($env:PSModulePath -split ";")[0])\WinAPI\"
+$path = "$(($env:PSModulePath -split ";")[0])\WinAPI\$Version"
 if (Test-Path $path_root) {
     Remove-Item "$path_root\*" -Recurse -Force
 }

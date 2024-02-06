@@ -21,6 +21,7 @@ REST API and Web server on base **.NET HttpListener** and backend only **PowerSh
 - [✅ Converting to 4 data types](#-change-data-type)
 - [✅ Response codes handling](#-response-code)
 - [✅ Error handling](#-operational-stability)
+- [✅ Control module](#-module)
 
 🍿 The server functionality is implemented in the [Kinozal-Bot](https://github.com/Lifailon/Kinozal-Bot) project.
 
@@ -68,7 +69,7 @@ All GET requests can be output in one of the following formats: **JSON (default)
 
 `/api/service` - Get list **all services** \
 `/apt/service/service_name` - Get list service by the specified name passed in URL (using **wildcard** format) \
-`/apt/process` - Get a list **all running processes** in an easy-to-read format (includes CPU and iops performance) \
+`/apt/process` - Get a list **all running processes** in an easy-to-read format (includes CPU and IOps performance) \
 `/apt/process/process_name` - Get list running processes by the specified name passed in URL (using **wildcard** format) \
 `/api/files` - Get a list of files and directories at the specified path in the **Path header** with the size, number of child files and directories, date of creation, access and modification
 
@@ -130,32 +131,43 @@ To find an executable file, the `Find-Process` function is used to scan the foll
 
 Use in **PowerShell Core**.
 
-To install or update the process scripts and latest server side (path default: `$home/Documents/WinAPI`), run the command in your console:
+To install or update the module (includes the server part), run the command in your console:
 ```PowerShell
 Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Deploy/Deploy-WinAPI.ps1")
 ```
-When the server first starts up, a default **configuration file (winapi.ini)** is created at the path: `$home/Documents/WinAPI/winapi.ini`. Configure it yourself.
+Wait for the command output: `Completed`
 
-The following variables to configure **port, login and password** for connect to the server:
+You can configure port, login and password for connect to the server in the configuration file (`WinAPI.ini`), which is located in the directory with the module
 
 ```PowerShell
-port = 8443
-user = rest
-pass = api
+port         = 8443
+user         = rest
+pass         = api
 ```
 
-And open a port on your firewall:
+Open the specified port on your firewall:
 
 ```PowerShell
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-If you want output to **log** requests to a console and/or write file, enable and set the path.
+Use the following commands to start, check the operation status and stop the server:
+
+```PowerShell
+
+```
+
+Each call to the endpoint is logged to the `WinAPI.log` file. You can disable logging:
 
 ```PowerShell
 Log_Console = True
 Log_File    = True
-Log_Path    = C:/Users/lifailon/Documents/WinAPI/winapi.log
+```
+
+Or output the current log in the console (`tail` mode):
+
+```PowerShell
+Read-WinAPI
 ```
 
 Specify the data source for the `/api/sensor` endpoint (default: **LibreHardwareMonitor**):
@@ -219,6 +231,12 @@ There are two options for launching using an **[executable file](https://github.
 **winapi-process.exe** - background process startup
 
 To stop the background process, use the command: `Get-Process *winapi* | Stop-Process`
+
+## 📡 Module
+
+Module for server management (starting and stopping background process) and interaction with remote server. The module implements most of the functions used in the server part to run on a local computer and receive the same information from a remote computer via WinAPI.
+
+
 
 ## 🔒 Authorization
 
