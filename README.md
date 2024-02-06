@@ -151,7 +151,7 @@ Open the specified port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-Use the following commands to start, check the operation status and stop the server:
+Use the following commands to `start, check the operation status and stop the server`:
 
 ```PowerShell
 
@@ -181,46 +181,24 @@ SensorSource = OpenHardwareMonitor
 For a quick installation LibreHardwareMonitor, use this command in your terminal:
 
 ```PowerShell
-Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/PowerShellHardwareMonitor/rsa/Install/Install-LibreHardwareMonitor.ps1")
+Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/PowerShell.HardwareMonitor/rsa/Install/Install-LibreHardwareMonitor.ps1")
 ```
 
 Install OpenHardwareMonitor:
 
 ```PowerShell
-Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/PowerShellHardwareMonitor/rsa/Install/Install-OpenHardwareMonitor.ps1")
+Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/PowerShell.HardwareMonitor/rsa/Install/Install-OpenHardwareMonitor.ps1")
 ```
 
-## Running. The 1st option (stable, process, added in version 0.3.2)
+There are other ways to start the server, but they are not supported since version 0.4 of the server part and the advent of the module.
 
-> 💡 **Administrator rights are required to run**
-
-The scripts are already included in the files when using server part [deployment](https://github.com/Lifailon/WinAPI#-install).
-
-**Run the server part in background process mode**:
-
-```PowerShell
-PS C:\Users\Lifailon\Documents\WinAPI> .\winapi-process-start.ps1
-```
-
-**Stop process**:
-
-```PowerShell
-PS C:\Users\Lifailon\Documents\WinAPI> .\winapi-process-stop.ps1
-```
-
-To check the status server (port):
-
-```PowerShell
-PS C:\Users\Lifailon\Documents\WinAPI> .\test-port.ps1
-```
-
-## Running. The 2nd option (service, added in version 0.3.1)
+- Running service (added in version 0.3.1)
 
 > 💡 **For reason unknown to me, the service doesn't process all the code on startup** (doesn't create an ini file and hangs at POST request to stop the process).
 
 To install the server part as a **service (used NSSM)**, download scripts to **automatically [deployument](https://github.com/Lifailon/WinAPI/tree/rsa/WinAPI/Service), start, stop and remove**.
 
-## Running. The 3rd option (executable, added in version 0.3.0)
+- Running executable (added in version 0.3.0)
 
 > 💡 **PowerShell 5.1 acts as the default handler (limitations of the ps2exe module)**, which prevents all endpoints from working correctly
 
@@ -236,7 +214,12 @@ To stop the background process, use the command: `Get-Process *winapi* | Stop-Pr
 
 Module for server management (starting and stopping background process) and interaction with remote server. The module implements most of the functions used in the server part to run on a local computer and receive the same information from a remote computer via WinAPI.
 
+```PowerShell
+> Import-Module WinAPI
+> Get-command -Module WinAPI
 
+
+```
 
 ## 🔒 Authorization
 

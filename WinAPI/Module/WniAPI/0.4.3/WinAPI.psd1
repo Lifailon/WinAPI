@@ -7,14 +7,13 @@
     PowerShellVersion = "7.3"
     NestedModules = @(
         "Functions\Find-Process.psm1",
-        "Functions\Get-ProcessDescription.psm1",
+        "Functions\Get-ProcessPerformance.psm1",
         "Functions\Get-Performance.psm1",
         "Functions\Get-Files.psm1",
         "Functions\Get-Event.psm1",
         "Functions\Get-Hardware.psm1",
         "Functions\Get-HardwareNoJob.psm1",
         "Functions\Get-CPU.psm1",
-        "Functions\Get-ProcessUse.psm1",
         "Functions\Get-MemorySize.psm1",
         "Functions\Get-MemorySlots.psm1",
         "Functions\Get-DiskPhysical.psm1",
@@ -26,14 +25,13 @@
         "Functions\Get-NetIpConfig.psm1",
         "Functions\Get-NetInterfaceStat.psm1",
         "Functions\Get-VideoCard.psm1",
-        "Functions\Get-Temperature.psm1",
+        "Functions\Get-WinUpdate.psm1",
         "Functions\Get-Software.psm1",
-        "Functions\Get-Driver.psm1",
-        "Functions\Get-WinUpdate.psm1"
+        "Functions\Get-Driver.psm1"
     )
     PrivateData       = @{
         PSData = @{
-            Tags         = @("Windows","dotNET","API","REST-API","Monitoring","Web","HTTP","Web-Server","HTTP-Server","REST-Server")
+            Tags         = @("Microsoft","Windows","dotNET","API","Web","HTTP","Server","Web-Server","HTTP-Server","API-Server","REST-Server")
             ProjectUri   = "https://github.com/Lifailon/WinAPI"
             LicenseUri   = "https://github.com/Lifailon/WinAPI/blob/rsa/LICENSE"
         }
