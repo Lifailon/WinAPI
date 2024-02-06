@@ -135,6 +135,7 @@ To install or update the module (includes the server part), run the command in y
 ```PowerShell
 Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Deploy/Deploy-WinAPI.ps1")
 ```
+
 Wait for the command output: `Completed`
 
 You can configure port, login and password for connect to the server in the configuration file (`WinAPI.ini`), which is located in the directory with the module
@@ -151,7 +152,7 @@ Open the specified port on your firewall:
 New-NetFirewallRule -DisplayName "WinAPI" -Profile Any -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8443
 ```
 
-Use the following commands to start, check the operation status server:
+Use the following commands to start and check the operation status server: `Start-WinAPI` and `Test-WinAPI`
 
 ```PowerShell
 > Start-WinAPI
@@ -162,7 +163,7 @@ Port Status
 8443 Open
 ```
 
-To stop the server:
+To stop the server: `Stop-WinAPI`
 
 ```PowerShell
 > Stop-WinAPI
@@ -176,7 +177,6 @@ Port Status
 Each call to the endpoint is logged to the `WinAPI.log` file. You can disable logging:
 
 ```PowerShell
-Log_Console = True
 Log_File    = True
 ```
 
@@ -212,7 +212,7 @@ Install OpenHardwareMonitor:
 Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/PowerShell.HardwareMonitor/rsa/Install/Install-OpenHardwareMonitor.ps1")
 ```
 
-There are other ways to start the server, but they are not supported since version 0.4 of the server part and the advent of the module.
+### There are other ways to start the server, but they are not supported since version 0.4 and the advent the module.
 
 - Running service (added in version 0.3.1)
 
@@ -572,18 +572,21 @@ Number active qbittorrent processes: 1
 {
   "Name": "qbittorrent",
   "ProcTime": "0 %",
-  "IOps": 0,
-  "IObsRead": "0,00 Mb",
+  "IOps": 3,
+  "IObsRead": "1,84 Mb",
   "IObsWrite": "0,00 Mb",
-  "RunTime": "06:02:20",
-  "TotalTime": "00:01:28",
-  "UserTime": "00:01:00",
-  "PrivTime": "00:00:28",
-  "WorkingSet": "61,96 Mb",
-  "PeakWorkingSet": "237,48 Mb",
-  "PageMemory": "946,23 Mb",
-  "Threads": 20,
-  "Handles": 633
+  "RunTime": "06:57:59",
+  "TotalTime": "00:01:42",
+  "UserTime": "00:01:09",
+  "PrivTime": "00:00:33",
+  "WorkingSet": "323,29 Mb",
+  "PeakWorkingSet": "366,97 Mb",
+  "PageMemory": "965,08 Mb",
+  "Threads": 25,
+  "Handles": 623,
+  "Path": "C:\\Program Files\\qBittorrent\\qbittorrent.exe",
+  "Company": "The qBittorrent Project",
+  "Version": "v4.6.0"
 }
 ```
 
@@ -1035,7 +1038,83 @@ Number active qbittorrent processes: 0
 }
 ```
 
-## File system
+### Network stats and IP configuration
+
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/stat | jq .[-1]`
+
+```JSON
+{
+  "ProcessName": "svchost",
+  "LocalAddress": "0.0.0.0",
+  "LocalPort": 135,
+  "RemotePort": 0,
+  "RemoteHostName": "",
+  "RemoteAddress": "0.0.0.0",
+  "State": 2,
+  "CreationTime": "2024-02-03T01:08:07+03:00",
+  "RunTime": "3.16:47:13",
+  "ProcessPath": "C:\\Windows\\system32\\svchost.exe"
+}
+```
+
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/network/ipconfig | jq .[-1]`
+
+```JSON
+{
+  "Description": "Hyper-V Virtual Ethernet Adapter #2",
+  "IPAddress": "172.22.48.1 fe80::1637:f6c9:59b9:dc6f",
+  "GatewayDefault": "",
+  "Subnet": "255.255.240.0 64",
+  "DNSServer": "",
+  "MACAddress": "00:15:5D:CB:0C:CD",
+  "DHCPEnabled": false,
+  "DHCPServer": null,
+  "DHCPLeaseObtained": null,
+  "DHCPLeaseExpires": null
+}
+```
+
+### Driver, software and Windows update
+
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/driver | jq .[-1]`
+
+```JSON
+{
+  "DriverProviderName": "WireGuard LLC",
+  "FriendlyName": "ProtonVPN Tunnel",
+  "Description": "Wintun Userspace Tunnel",
+  "DriverVersion": "0.13.0.0",
+  "DriverDate": "2021-02-08T03:00:00+03:00"
+}
+```
+
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/software | jq .[-2]`
+
+```JSON
+{
+  "Name": "ILSpy",
+  "Version": "8.0.0.7345",
+  "Vendor": "ICSharpCode Team",
+  "InstallDate": "16.10.2023",
+  "InstallLocation": null,
+  "InstallSource": "D:\\Install\\IDE\\.NET\\",
+  "PackageName": "ILSpy-8.0.0.7345.msi",
+  "LocalPackage": "C:\\Windows\\Installer\\21787.msi"
+}
+```
+
+`curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/update | jq .[0]`
+
+```JSON
+{
+  "HotFixID": "KB5033918",
+  "InstallDate": "13.01.2024",
+  "Description": "Update",
+  "InstalledBy": "NT AUTHORITY\\СИСТЕМА"
+}
+```
+
+### File system
 
 `curl -s -X GET -u $user:$pass http://192.168.3.99:8443/api/files -H "Path: D:/Movies"`
 
