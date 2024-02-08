@@ -1,5 +1,5 @@
 @{
-    RootModule        = "WinAPI.psm1"
+    RootModule        = "ps.win.api.psm1"
     ModuleVersion     = "0.4.3"
     Author            = "Lifailon"
     Copyright         = "Apache-2.0"

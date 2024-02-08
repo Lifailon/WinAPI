@@ -12,7 +12,7 @@
 
 **🔎 Test version: [README](https://github.com/Lifailon/WinAPI/blob/rsa/Test/README.md)**
 
-REST API and Web server on base **.NET HttpListener** and backend only **PowerShell Core**. Using WinAPI, you can quickly set up remote communication with Windows OS using API, without the need to configure WinRM or OpenSSH and get control from any platform, including **Linux** via browser or any REST client.
+REST API and Web server on base **.NET HttpListener** and backend only **PowerShell Core** (except for Web endpoints where minimal HTML, CSS, and JavaScript are used). Using WinAPI, you can quickly set up remote communication with Windows OS using API, without the need to configure WinRM or OpenSSH and get control from any platform, including **Linux** via browser or any REST client.
 
 **🔗 Implemented**:
 
@@ -131,9 +131,10 @@ To find an executable file, the `Find-Process` function is used to scan the foll
 
 Use in **PowerShell Core**.
 
-To install or update the module (includes the server part), run the command in your console:
+You can use this command to install a module (includes the server part) from the GitHub repository:
+
 ```PowerShell
-Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Deploy/Deploy-WinAPI.ps1")
+Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/Lifailon/WinAPI/rsa/WinAPI/Deploy/deploy-module-ps.win.api.ps1")
 ```
 
 Wait for the command output: `Completed`
@@ -237,8 +238,8 @@ To stop the background process, use the command: `Get-Process *winapi* | Stop-Pr
 Module for server management (starting and stopping background process) and interaction with remote server. The module implements most of the functions used in the server part to run on a local computer and receive the same information from a remote computer via WinAPI.
 
 ```PowerShell
-> Import-Module WinAPI
-> Get-command -Module WinAPI
+> Import-Module ps.win.api
+> Get-command -Module ps.win.api
 
 CommandType     Name                             Version    Source
 -----------     ----                             -------    ------

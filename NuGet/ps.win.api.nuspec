@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ps.win.api</id>
+    <version>0.4.3</version>
+    <authors>Lifailon</authors>
+    <owners>Lifailon</owners>
+    <description>REST API and Web server based on .NET HttpListener and backend PowerShell Core for Windows remote managment via Web browser or curl from Linux</description>
+    <tags>Microsoft, Windows, PowerShell, Module, dotNET, API, Web-Server, HTTP-Server, API-Server, REST-Server</tags>
+    <projectUrl>https://github.com/Lifailon/WinAPI</projectUrl>
+    <contentFiles>
+      <files include="ps.win.api.psm1" buildAction="Content" />
+      <files include="ps.win.api.psd1" buildAction="Content" />
+      <files include="Functions\Find-Process.psm1" buildAction="Content" />
+      <files include="Functions\Get-ProcessPerformance.psm1" buildAction="Content" />
+      <files include="Functions\Get-Performance.psm1" buildAction="Content" />
+      <files include="Functions\Get-Files.psm1" buildAction="Content" />
+      <files include="Functions\Get-Event.psm1" buildAction="Content" />
+      <files include="Functions\Get-Hardware.psm1" buildAction="Content" />
+      <files include="Functions\Get-HardwareNoJob.psm1" buildAction="Content" />
+      <files include="Functions\Get-CPU.psm1" buildAction="Content" />
+      <files include="Functions\Get-MemorySize.psm1" buildAction="Content" />
+      <files include="Functions\Get-MemorySlots.psm1" buildAction="Content" />
+      <files include="Functions\Get-DiskPhysical.psm1" buildAction="Content" />
+      <files include="Functions\Get-DiskLogical.psm1" buildAction="Content" />
+      <files include="Functions\Get-DiskPartition.psm1" buildAction="Content" />
+      <files include="Functions\Get-IOps.psm1" buildAction="Content" />
+      <files include="Functions\Get-Smart.psm1" buildAction="Content" />
+      <files include="Functions\Get-NetStat.psm1" buildAction="Content" />
+      <files include="Functions\Get-NetIpConfig.psm1" buildAction="Content" />
+      <files include="Functions\Get-NetInterfaceStat.psm1" buildAction="Content" />
+      <files include="Functions\Get-VideoCard.psm1" buildAction="Content" />
+      <files include="Functions\Get-WinUpdate.psm1" buildAction="Content" />
+      <files include="Functions\Get-Software.psm1" buildAction="Content" />
+      <files include="Functions\Get-Driver.psm1" buildAction="Content" />
+      <files include="README.md" buildAction="Content" />
+      <files include="LICENSE" buildAction="Content" />
+    </contentFiles>
+  </metadata>
+</package>

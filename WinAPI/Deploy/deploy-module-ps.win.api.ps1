@@ -4,8 +4,8 @@ $Version = $GitHub_Tag -replace ".+-"
 $Version = "0.4.3"
 
 ### Clear and creat path module
-$path_root = "$(($env:PSModulePath -split ";")[0])\WinAPI\"
-$path = "$(($env:PSModulePath -split ";")[0])\WinAPI\$Version"
+$path_root = "$(($env:PSModulePath -split ";")[0])\ps.win.api\"
+$path = "$(($env:PSModulePath -split ";")[0])\ps.win.api\$Version"
 if (Test-Path $path_root) {
     Remove-Item "$path_root\*" -Recurse -Force
 }
@@ -25,7 +25,7 @@ Start-Job {
 } | Out-Null
 
 ### Download module
-$url_modules = "https://api.github.com/repos/Lifailon/WinAPI/contents/WinAPI/Module/WniAPI/$Version"
+$url_modules = "https://api.github.com/repos/Lifailon/WinAPI/contents/WinAPI/Module/ps.win.api/$Version"
 $Module_Files = Invoke-RestMethod -Uri $url_modules
 foreach ($Module_File in $Module_Files) {
     $File_Name = $Module_File.name
@@ -36,7 +36,7 @@ foreach ($Module_File in $Module_Files) {
 }
 
 ### Download functions
-$url_modules = "https://api.github.com/repos/Lifailon/WinAPI/contents/WinAPI/Module/WniAPI/$Version/Functions"
+$url_modules = "https://api.github.com/repos/Lifailon/WinAPI/contents/WinAPI/Module/ps.win.api/$Version/Functions"
 $Process_Files = Invoke-RestMethod -Uri $url_modules
 foreach ($Process_File in $Process_Files) {
     $File_Name = $Process_File.name
