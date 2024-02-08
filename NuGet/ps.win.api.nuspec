@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>ps.win.api</id>
-    <version>0.4.3.1</version>
+    <version>0.4.3.2</version>
     <authors>Lifailon</authors>
     <owners>Lifailon</owners>
     <description>REST API and Web server based on .NET HttpListener and backend PowerShell Core for Windows remote managment via Web browser or curl from Linux</description>

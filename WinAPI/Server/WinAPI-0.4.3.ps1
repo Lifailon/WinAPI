@@ -92,7 +92,7 @@ if (!(Get-RunAs)) {
 $GitHub_Tag      = (Invoke-RestMethod "https://api.github.com/repos/Lifailon/WinAPI/releases/latest").tag_name
 $Version         = $GitHub_Tag -replace ".+-"
 $Version         = "0.4.3"
-$winapi_path     = "$(($env:PSModulePath -split ";")[0])\WInAPI\$Version\"
+$winapi_path     = "$(($env:PSModulePath -split ";")[0])\ps.win.api\$Version\"
 $ini_path        = "$winapi_path\WinAPI.ini"
 $Log_Path        = "$winapi_path\WinAPI.log"
 
