@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>ps.win.api</id>
-    <version>0.4.3</version>
+    <version>0.4.3.1</version>
     <authors>Lifailon</authors>
     <owners>Lifailon</owners>
     <description>REST API and Web server based on .NET HttpListener and backend PowerShell Core for Windows remote managment via Web browser or curl from Linux</description>
@@ -11,6 +11,8 @@
     <contentFiles>
       <files include="ps.win.api.psm1" buildAction="Content" />
       <files include="ps.win.api.psd1" buildAction="Content" />
+      <files include="winapi.ps1" buildAction="Content" />
+      <files include="winapi.ini" buildAction="Content" />
       <files include="Functions\Find-Process.psm1" buildAction="Content" />
       <files include="Functions\Get-ProcessPerformance.psm1" buildAction="Content" />
       <files include="Functions\Get-Performance.psm1" buildAction="Content" />
