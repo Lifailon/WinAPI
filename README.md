@@ -148,7 +148,14 @@ Invoke-Expression(New-Object Net.WebClient).DownloadString("https://raw.githubus
 
 Wait for the command output: `Completed`
 
-You can configure port, login and password for connect to the server in the configuration file (`WinAPI.ini`), which is located in the directory with the module
+To find out where the module is installed, use the command:
+
+```PowerShell
+> $(Get-Module ps.win.api).Path
+C:\Users\lifailon\Documents\PowerShell\Modules\ps.win.api\0.4.3\ps.win.api.psm1
+```
+
+# You can configure port, login and password for connect to the server in the configuration file `WinAPI.ini`, which is located in the directory with the module.
 
 ```PowerShell
 port         = 8443

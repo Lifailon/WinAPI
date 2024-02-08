@@ -1,5 +1,6 @@
 ### ©2023 Lifailon
-### Source: https://github.com/Lifailon/WinAPI
+### Source GitHub: https://github.com/Lifailon/WinAPI
+### Source NuGet: https://www.nuget.org/packages/ps.win.api
 ### REST API and Web server for [Kinozal-Bot](https://github.com/Lifailon/Kinozal-Bot)
 <# Client
 # Login and password default:
@@ -986,8 +987,9 @@ function Start-Socket {
                 ### GET /
                 if ($context.Request.HttpMethod -eq "GET" -and $context.Request.RawUrl -eq "/") {
                     $data = @("
-                        Version = 4.3
-                        Source = https://github.com/Lifailon/WinAPI
+                        Version = 0.4.3
+                        GitHub = https://github.com/Lifailon/WinAPI
+                        NuGet = https://www.nuget.org/packages/ps.win.api
                     ") | ConvertFrom-StringData
                     Send-Response -Data $Data -Code 200 -Body -fl
                 }
