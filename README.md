@@ -1,12 +1,9 @@
 # <img src="https://github.com/Lifailon/WinAPI/blob/rsa/Screen/ico/x128.png" width="25" /> WinAPI
 
-![GitHub release (with filter)](https://img.shields.io/github/v/release/lifailon/WinAPI?color=<green>)
-![GitHub top language](https://img.shields.io/github/languages/top/lifailon/WinAPI)
-![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/lifailon/WinAPI)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/lifailon/WinAPI)
-![GitHub License](https://img.shields.io/github/license/lifailon/WinAPI?color=<green>)
-![GitHub Repo stars](https://img.shields.io/github/stars/Lifailon/WinAPI)
-![GitHub downloads](https://img.shields.io/github/downloads/lifailon/WinAPI/total?color=<green>)
+[![GitHub Release](https://img.shields.io/github/v/release/Lifailon/WinAPI?display_name=release&logo=GitHub&label=GitHub&link=https%3A%2F%2Fgithub.com%2FLifailon%2FWinAPI%2F)](https://github.com/Lifailon/WinAPI)
+[![NuGet Version](https://img.shields.io/nuget/v/ps.win.api?logo=NuGet&label=NuGet&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2Fps.win.api)](https://www.nuget.org/packages/ps.win.api)
+[![GitHub top language](https://img.shields.io/github/languages/top/Lifailon/WinAPI?logo=PowerShell&link=https%3A%2F%2Fgithub.com%2FPowerShell%2FPowerShell)](https://github.com/PowerShell/PowerShell)
+[![GitHub License](https://img.shields.io/github/license/Lifailon/WinAPI?link=https%3A%2F%2Fgithub.com%2FLifailon%2FWinAPI%2Fblob%2Frsa%2FLICENSE)](https://github.com/Lifailon/WinAPI/blob/rsa/LICENSE)
 
 **📝 Publication on [Habr](https://habr.com/ru/articles/783022/)**
 
@@ -129,7 +126,19 @@ To find an executable file, the `Find-Process` function is used to scan the foll
 
 ## 🚀 Install
 
-Use in **PowerShell Core**.
+Use in **[PowerShell Core](https://github.com/PowerShell/PowerShell)**.
+
+Use the [NuGet](https://www.nuget.org/packages/ps.win.api) package manager:
+
+```PowerShell
+Install-Module ps.win.api -Repository NuGet
+```
+
+💡 You must have a NuGet repository registered:
+
+```PowerShell
+Register-PSRepository -Name "NuGet" -SourceLocation "https://www.nuget.org/api/v2" -InstallationPolicy Trusted
+```
 
 You can use this command to install a module (includes the server part) from the GitHub repository:
 
