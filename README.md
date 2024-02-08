@@ -155,7 +155,7 @@ To find out where the module is installed, use the command:
 C:\Users\lifailon\Documents\PowerShell\Modules\ps.win.api\0.4.3\ps.win.api.psm1
 ```
 
-# You can configure port, login and password for connect to the server in the configuration file `WinAPI.ini`, which is located in the directory with the module.
+You can configure port, login and password for connect to the server in the configuration file `WinAPI.ini`, which is located in the directory with the module:
 
 ```PowerShell
 port         = 8443
