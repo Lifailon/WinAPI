@@ -131,7 +131,7 @@ Use in **[PowerShell Core](https://github.com/PowerShell/PowerShell)**.
 Use the [NuGet](https://www.nuget.org/packages/ps.win.api) package manager:
 
 ```PowerShell
-Install-Module ps.win.api -Repository NuGet
+Install-Module ps.win.api -Repository NuGet -AllowClobber
 ```
 
 💡 You must have a NuGet repository registered:
